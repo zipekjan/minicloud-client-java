@@ -12,7 +12,7 @@ import cz.zipek.minicloud.api.download.events.DownloadAllDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileStartedEvent;
-import cz.zipek.minicloud.api.events.PleaseLoginEvent;
+import cz.zipek.minicloud.api.events.UnauthorizedEvent;
 import cz.zipek.minicloud.api.upload.UploadEvent;
 import cz.zipek.minicloud.api.upload.events.UploadAllDoneEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFailedEvent;
@@ -109,7 +109,7 @@ public class TextSync implements Listener<SyncEvent> {
 	 * @param event  API event
 	 */
 	public void handleEvent(Event event) {
-		if (event instanceof PleaseLoginEvent) {
+		if (event instanceof UnauthorizedEvent) {
 			log(System.err, "AUTH Authorization failed");
 		}
 	}

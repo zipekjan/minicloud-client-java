@@ -8,8 +8,8 @@ package cz.zipek.minicloud;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.events.PleaseLoginEvent;
 import cz.zipek.minicloud.api.events.SynckeyEvent;
+import cz.zipek.minicloud.api.events.UnauthorizedEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,8 +79,7 @@ public class Manager {
 			UIManager.setLookAndFeel(
 				UIManager.getSystemLookAndFeelClassName()
 			);
-		}
-		catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, e); // handle exception
 		}
 		
@@ -88,7 +87,7 @@ public class Manager {
 		external.addListener(new Listener<Event>() {
 			@Override
 			public void handleEvent(Event event, Object sender) {
-				if (event instanceof PleaseLoginEvent) {
+				if (event instanceof UnauthorizedEvent) {
 					Forms.hide();
 					Forms.showLogin();
 				} else if (event instanceof SynckeyEvent) {
@@ -96,7 +95,7 @@ public class Manager {
 				}
 			}
 		});
-		
+
 		//Show main form
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			@Override

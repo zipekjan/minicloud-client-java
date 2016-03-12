@@ -98,11 +98,11 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 
         tabbedMain.addTab("General", panelGeneral);
 
-        jLabel3.setText("E-mail");
+        jLabel3.setText("E-mail:");
 
-        jLabel4.setText("Password");
+        jLabel4.setText("Password:");
 
-        jLabel5.setText("Password again");
+        jLabel5.setText("Password again:");
 
         javax.swing.GroupLayout panelProfileLayout = new javax.swing.GroupLayout(panelProfile);
         panelProfile.setLayout(panelProfileLayout);
@@ -117,7 +117,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
                         .addComponent(textEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelProfileLayout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                         .addComponent(textPassword2, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelProfileLayout.createSequentialGroup()
                         .addComponent(jLabel4)
@@ -215,7 +215,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabbedMain, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                .addComponent(tabbedMain)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonSave)

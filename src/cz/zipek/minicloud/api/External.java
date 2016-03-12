@@ -12,7 +12,6 @@ import cz.zipek.minicloud.api.events.LoginFailedEvent;
 import cz.zipek.minicloud.api.events.FilesEvent;
 import cz.zipek.minicloud.api.events.UpdateConflictEvent;
 import cz.zipek.minicloud.api.events.SynckeyEvent;
-import cz.zipek.minicloud.api.events.PleaseLoginEvent;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -42,24 +41,6 @@ import org.json.JSONObject;
  */
 public class External extends Eventor<Event> {
 
-	/**
-	 * @return the url
-	 */
-	public String getServer() {
-		return server;
-	}
-
-	/**
-	 * @param aServer the url to server
-	 */
-	public final void setServer(String aServer) {
-		server = aServer;
-	}
-	
-	public String getApiUrl() {
-		return getServer() + "/api.php";
-	}
-
 	class codes {
 		public static final int OK = 100;
 		public static final int LOGIN_OK = 101;
@@ -80,11 +61,13 @@ public class External extends Eventor<Event> {
 		public static final int API_ERROR = 400;
 		public static final int UKNOWN_ACTION = 404;
 	}
-
+	
 	private final Map<Integer, Class> events = new HashMap<>();
 
 	private String server = "http://minicloud.zipek.cz";
 
+	private String auth;
+	
 	private long actionCounter;
 	
 	/**
@@ -93,9 +76,11 @@ public class External extends Eventor<Event> {
 	class ParamThread extends Thread {
 
 		public final String params;
+		public final String auth;
 
-		ParamThread(String params) {
+		ParamThread(String params, String auth) {
 			this.params = params;
+			this.auth = auth;
 		}
 	}
 
@@ -108,7 +93,6 @@ public class External extends Eventor<Event> {
 		events.put(codes.LOGOUT_OK, LogoutEvent.class);
 		events.put(codes.UPDATE_OK, UpdateEvent.class);
 		events.put(codes.LOGIN_FAILED, LoginFailedEvent.class);
-		events.put(codes.PLEASE_LOGIN, PleaseLoginEvent.class);
 		events.put(codes.UPDATE_CONFLICT, UpdateConflictEvent.class);
 		events.put(codes.SYNCKEY_OK, SynckeyEvent.class);
 	}
@@ -119,6 +103,25 @@ public class External extends Eventor<Event> {
 		this.setServer(server);
 	}
 
+	/**
+	 * @return the url
+	 */
+	public String getServer() {
+		return server;
+	}
+
+	/**
+	 * @param aServer the url to server
+	 */
+	public final void setServer(String aServer) {
+		server = aServer;
+	}
+	
+	public String getApiUrl() {
+		return getServer() + "/api.php";
+	}
+
+	
 	private String md5(String what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		return md5(what.getBytes());
 	}
@@ -151,12 +154,16 @@ public class External extends Eventor<Event> {
 		return result.toString();
 	}
 
-	public Thread request(String params) {		
-		Thread request = new ParamThread(params) {
+	public Thread request(String params) {
+		return request(params, "");
+	}
+	
+	public Thread request(String params, String auth) {		
+		Thread request = new ParamThread(params, auth) {
 			@Override
 			public void run() {
 				try {
-					JSONObject res = loadResponse(this.params);
+					JSONObject res = loadResponse(this.params, this.auth);
 					dispatchResponse(res);
 				} catch (JSONException | IOException excalibur) {
 					Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, excalibur);
@@ -194,7 +201,7 @@ public class External extends Eventor<Event> {
 		}
 	}
 
-	private JSONObject loadResponse(String params) throws IOException, JSONException {
+	private JSONObject loadResponse(String params, String auth) throws IOException, JSONException {
 		URL urlsort = new URL(getApiUrl());
 		HttpURLConnection conn = (HttpURLConnection) urlsort.openConnection();
 		conn.setReadTimeout(10000);
@@ -203,6 +210,7 @@ public class External extends Eventor<Event> {
 		conn.setDoOutput(true);
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		conn.setRequestProperty("X-Auth", auth);
 		//conn.setRequestProperty("Content-Length", "" + Integer.toString(request.getBytes().length));
 
 		try (DataOutputStream out = new DataOutputStream(conn.getOutputStream())) {
@@ -228,6 +236,20 @@ public class External extends Eventor<Event> {
 		return new JSONObject(response);
 	}
 
+	public String getServerInfo(String action_id, boolean wait) {
+		Thread request = request("action=get_server_info", getAuth());
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
 	public String login(String login, char[] password, String action_id, boolean wait) {
 		try {
 			Thread request = request(
@@ -419,5 +441,9 @@ public class External extends Eventor<Event> {
 	 */
 	public String synckey(String session_id) {
 		return synckey(session_id, Long.toString(this.actionCounter++));
+	}
+	
+	public String getAuth() {
+		return auth;
 	}
 }
