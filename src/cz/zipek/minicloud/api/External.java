@@ -43,31 +43,21 @@ import org.json.JSONObject;
 public class External extends Eventor<Event> {
 
 	/**
-	 * @return the ws
-	 */
-	public String getWs() {
-		return ws;
-	}
-
-	/**
-	 * @param aWs the ws to set
-	 */
-	public final void setWs(String aWs) {
-		ws = aWs;
-	}
-
-	/**
 	 * @return the url
 	 */
-	public String getUrl() {
-		return url;
+	public String getServer() {
+		return server;
 	}
 
 	/**
-	 * @param aUrl the url to set
+	 * @param aServer the url to server
 	 */
-	public final void setUrl(String aUrl) {
-		url = aUrl;
+	public final void setServer(String aServer) {
+		server = aServer;
+	}
+	
+	public String getApiUrl() {
+		return getServer() + "/api.php";
 	}
 
 	class codes {
@@ -93,8 +83,7 @@ public class External extends Eventor<Event> {
 
 	private final Map<Integer, Class> events = new HashMap<>();
 
-	private String ws = "http://beta-upload.zipek.cz/api2";
-	private String url = "http://beta-upload.zipek.cz";
+	private String server = "http://minicloud.zipek.cz";
 
 	private long actionCounter;
 	
@@ -124,10 +113,10 @@ public class External extends Eventor<Event> {
 		events.put(codes.SYNCKEY_OK, SynckeyEvent.class);
 	}
 
-	public External(String ws, String url) {
+	public External(String server) {
 		this();
-		this.setWs(ws);
-		this.setUrl(url);
+		
+		this.setServer(server);
 	}
 
 	private String md5(String what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -206,7 +195,7 @@ public class External extends Eventor<Event> {
 	}
 
 	private JSONObject loadResponse(String params) throws IOException, JSONException {
-		URL urlsort = new URL(getWs());
+		URL urlsort = new URL(getApiUrl());
 		HttpURLConnection conn = (HttpURLConnection) urlsort.openConnection();
 		conn.setReadTimeout(10000);
 		conn.setConnectTimeout(15000);

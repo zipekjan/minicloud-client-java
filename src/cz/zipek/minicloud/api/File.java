@@ -123,7 +123,7 @@ public class File {
 	}
 
 	public String getDownloadLink() {
-		return String.format("%s/download/%s", getSource().getUrl(), getLink());
+		return String.format("%s/download/%s", getSource().getServer(), getLink());
 	}
 	
 	/**

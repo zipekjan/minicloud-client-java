@@ -63,7 +63,7 @@ public class UploadThread extends Thread implements Listener {
 	@Override
 	public void run() {
 		try {
-			MultipartUtility sender = new MultipartUtility(uploader.getSource().getWs(), "UTF-8");
+			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8");
 			sender.addListener(this);
 			sender.addFormField("action", "upload");
 			sender.addFormField("session_id", uploader.getSessionId());
