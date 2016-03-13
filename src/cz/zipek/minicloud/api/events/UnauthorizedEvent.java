@@ -12,7 +12,7 @@ import org.json.JSONObject;
  *
  * @author Kamen
  */
-public class UnauthorizedEvent extends cz.zipek.minicloud.api.Event {	
+public class UnauthorizedEvent extends ErrorEvent {	
 	
 	public UnauthorizedEvent(External sender, JSONObject data, int code) {
 		super(sender, data, code);

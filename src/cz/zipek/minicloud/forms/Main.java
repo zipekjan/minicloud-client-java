@@ -59,6 +59,8 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 	}
 	
 	private void initCustom() {
+		setIconImages(Icons.getLogo());
+		
 		tableRemoteFiles.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
 		Manager.external.addListenerLater(this);
@@ -337,7 +339,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             tabRemoteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tabRemoteLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -417,7 +419,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             tabSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tabSyncLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(tabSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonAdd)
@@ -429,7 +431,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
         tabsMain.addTab("Synchronized folders", new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/sync.png")), tabSync); // NOI18N
 
-        buttonSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res//settings.png"))); // NOI18N
+        buttonSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/settings.png"))); // NOI18N
         buttonSettings.setText("Settings");
         buttonSettings.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -437,7 +439,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
-        buttonUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res//upload.png"))); // NOI18N
+        buttonUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/upload.png"))); // NOI18N
         buttonUpload.setText("Upload files");
         buttonUpload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -445,7 +447,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
-        buttonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res//refresh.png"))); // NOI18N
+        buttonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/refresh.png"))); // NOI18N
         buttonRefresh.setText("Refresh");
         buttonRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -453,7 +455,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/logo.png"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/miniupload/res/logo.png"))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

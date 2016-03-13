@@ -6,6 +6,7 @@
 package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
+import cz.zipek.minicloud.Icons;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
@@ -13,15 +14,8 @@ import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.events.LoginEvent;
 import cz.zipek.minicloud.api.events.LoginFailedEvent;
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -33,6 +27,8 @@ public class Login extends javax.swing.JFrame {
 	 */
 	public Login() {
 		initComponents();
+
+		setIconImages(Icons.getLogo());
 		
 		textLogin.setText(Settings.getUsername());
 		
@@ -93,7 +89,7 @@ public class Login extends javax.swing.JFrame {
         textServer = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Login - Miniupload Manager");
+        setTitle("Login - Minicloud Manager");
         setMinimumSize(getPreferredSize());
         setResizable(false);
 

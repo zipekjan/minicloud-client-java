@@ -13,7 +13,20 @@ import org.json.JSONObject;
  * @author Kamen
  */
 public class ErrorEvent extends cz.zipek.minicloud.api.Event {	
+	
+	protected String message;
+	
 	public ErrorEvent(External sender, JSONObject data, int code) {
 		super(sender, data, code);
+		
+		message = data.toString();
 	}
+
+	/**
+	 * @return the message
+	 */
+	public String getMessage() {
+		return message;
+	}
+	
 }
