@@ -14,13 +14,16 @@ import org.json.JSONObject;
  */
 public class ServerInfo {
 	
-	protected String name;
-	protected String description;
-	protected String logo;
+	private final External source;
 	
-	protected boolean niceUrl;
+	private final String name;
+	private final String description;
+	private final String logo;
 	
-	public ServerInfo(JSONObject info) throws JSONException {
+	private boolean niceUrl;
+	
+	public ServerInfo(External from, JSONObject info) throws JSONException {
+		source = from;
 		name = info.getString("name");
 		description = info.getString("description");
 		logo = info.getString("logo");
@@ -52,6 +55,13 @@ public class ServerInfo {
 	 */
 	public boolean hasNiceUrl() {
 		return niceUrl;
+	}
+
+	/**
+	 * @return the source
+	 */
+	public External getSource() {
+		return source;
 	}
 	
 }

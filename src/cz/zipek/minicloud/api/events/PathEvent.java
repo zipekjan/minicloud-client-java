@@ -3,12 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cz.zipek.minicloud.api.events;
 
 import cz.zipek.minicloud.api.External;
-import cz.zipek.minicloud.api.File;
-import cz.zipek.minicloud.api.ServerInfo;
+import cz.zipek.minicloud.api.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
@@ -18,25 +16,25 @@ import org.json.JSONObject;
  *
  * @author Kamen
  */
-public class ServerInfoEvent extends cz.zipek.minicloud.api.Event {	
+public class PathEvent extends SuccessEvent {
+
+	protected Path path;
 	
-	protected ServerInfo serverInfo;
-	
-	public ServerInfoEvent(External sender, JSONObject data, int code) {
+	public PathEvent(External sender, JSONObject data, int code) {
 		super(sender, data, code);
 		
 		try {
-			serverInfo = new ServerInfo(sender, data);
-		} catch(JSONException e) {
-			Logger.getLogger(File.class.getName()).log(Level.SEVERE, null, e);
+			path = new Path(sender, data);
+		} catch (JSONException ex) {
+			Logger.getLogger(PathEvent.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	/**
-	 * @return server info
+	 * @return the path
 	 */
-	public ServerInfo getServerInfo() {
-		return serverInfo;
+	public Path getPath() {
+		return path;
 	}
 	
 }
