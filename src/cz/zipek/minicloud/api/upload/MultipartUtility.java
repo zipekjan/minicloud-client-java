@@ -80,6 +80,10 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 	public void addFormField(String name, int value) {
 		addFormField(name, Integer.toString(value));
 	}
+	
+	public void setRequestProperty(String key, String value) {
+		httpConn.setRequestProperty(key, value);
+	}
  
     /**
      * Adds a upload file section to the request 

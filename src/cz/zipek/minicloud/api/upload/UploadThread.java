@@ -9,7 +9,9 @@ import cz.zipek.minicloud.api.Listener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,7 +68,8 @@ public class UploadThread extends Thread implements Listener {
 			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8");
 			sender.addListener(this);
 			sender.addFormField("action", "upload");
-			sender.addFormField("session_id", uploader.getSessionId());
+			sender.setRequestProperty("X-Auth", uploader.getSource().getAuth());
+			
 			if (remote == null) {
 				sender.addFormField("folder", parseFolder(targetFolder));
 			} else {

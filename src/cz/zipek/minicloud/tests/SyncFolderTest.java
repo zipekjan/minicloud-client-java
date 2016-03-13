@@ -31,7 +31,6 @@ public class SyncFolderTest implements Listener {
 	public void testSync() {
 		Manager.external = new External();
 		Manager.external.addListener(this);
-		Manager.external.login("MEN-X", "honza".toCharArray());
 		
 		JSONObject data = null;
 		String json = String.format(
@@ -56,7 +55,6 @@ public class SyncFolderTest implements Listener {
 	@Override
 	public void handleEvent(Object event, Object sender) {
 		if (event instanceof LoginEvent) {
-			Session.setId(((LoginEvent)event).getSessionId());
 			sync.sync();
 		}
 		if (event instanceof SyncEvent) {

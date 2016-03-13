@@ -159,7 +159,7 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 				first = false;
 				f.getSource().addListener(this);
 			}
-			actions.add(f.getSource().move(Session.getId(), f, path));
+			actions.add(f.getSource().move(f, path));
 		}
     }//GEN-LAST:event_buttonMoveActionPerformed
 
@@ -192,7 +192,7 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 			actions.remove(id);
 			if (actions.isEmpty()) {
 				Manager.external.removeListenerLater(this);
-				Manager.external.files(Session.getId());
+				Manager.external.getPath();
 				this.setVisible(false);
 			}
 		}

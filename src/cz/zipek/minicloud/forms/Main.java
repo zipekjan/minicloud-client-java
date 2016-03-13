@@ -64,7 +64,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		tableRemoteFiles.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
 		Manager.external.addListenerLater(this);
-		Manager.external.files(Session.getId());
+		Manager.external.getPath(null);
 		Settings.addListener(new Listener<SettingsEvent>() {
 			@Override
 			public void handleEvent(SettingsEvent event, Object sender) {
@@ -541,7 +541,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonUploadActionPerformed
 
     private void buttonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRefreshActionPerformed
-		Manager.external.files(Session.getId());
+		Manager.external.getPath();
     }//GEN-LAST:event_buttonRefreshActionPerformed
 
     private void buttonMoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMoveActionPerformed

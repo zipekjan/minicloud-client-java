@@ -6,54 +6,45 @@
 
 package cz.zipek.minicloud;
 
+import cz.zipek.minicloud.api.ServerInfo;
+import cz.zipek.minicloud.api.User;
+
 /**
  *
  * @author Kamen
  */
 public class Session {
-	private static String id;
-	private static boolean valid;
-	private static String syncKey;
+
+	private static User user;
+	private static ServerInfo server;
 
 	/**
-	 * @return the id
+	 * @return the user
 	 */
-	public static String getId() {
-		return id;
+	public static User getUser() {
+		return user;
 	}
 
 	/**
-	 * @param aId the id to set
+	 * @param aUser the user to set
 	 */
-	public static void setId(String aId) {
-		id = aId;
+	public static void setUser(User aUser) {
+		user = aUser;
 	}
 
 	/**
-	 * @return the valid
+	 * @return the server
 	 */
-	public static boolean isValid() {
-		return valid;
+	public static ServerInfo getServer() {
+		return server;
 	}
 
 	/**
-	 * @param aValid the valid to set
+	 * @param aServer the server to set
 	 */
-	public static void setValid(boolean aValid) {
-		valid = aValid;
+	public static void setServer(ServerInfo aServer) {
+		server = aServer;
 	}
-
-	/**
-	 * @return the syncKey
-	 */
-	public static String getSyncKey() {
-		return syncKey;
-	}
-
-	/**
-	 * @param aSyncKey the syncKey to set
-	 */
-	public static void setSyncKey(String aSyncKey) {
-		syncKey = aSyncKey;
-	}
+	
+	
 }

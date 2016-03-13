@@ -92,4 +92,5 @@ public class Icons {
 		
 		inicialized = true;
 	}
+	
 }

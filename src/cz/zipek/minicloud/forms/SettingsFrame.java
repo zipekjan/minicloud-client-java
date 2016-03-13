@@ -40,7 +40,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 	
 	public final void reloadData() {
 		textUsername.setText(Settings.getUsername());
-		textSyncKey.setText(Session.getSyncKey());
+		textSyncKey.setText(Manager.external.getAuth());
 	}
 
 	/**
@@ -64,10 +64,8 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
         textEmail = new javax.swing.JTextField();
         textPassword = new javax.swing.JPasswordField();
         textPassword2 = new javax.swing.JPasswordField();
-        panelSync = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         textSyncKey = new javax.swing.JTextField();
-        buttonRegen = new javax.swing.JButton();
         buttonSave = new javax.swing.JButton();
         buttonCancel = new javax.swing.JButton();
 
@@ -104,6 +102,10 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 
         jLabel5.setText("Password again:");
 
+        jLabel6.setText("Sync key:");
+
+        textSyncKey.setEditable(false);
+
         javax.swing.GroupLayout panelProfileLayout = new javax.swing.GroupLayout(panelProfile);
         panelProfile.setLayout(panelProfileLayout);
         panelProfileLayout.setHorizontalGroup(
@@ -115,14 +117,18 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(textEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelProfileLayout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                        .addComponent(textPassword2, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelProfileLayout.createSequentialGroup()
                         .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                        .addComponent(textPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelProfileLayout.createSequentialGroup()
+                        .addGroup(panelProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(textPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(panelProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(textSyncKey)
+                            .addComponent(textPassword2, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         panelProfileLayout.setVerticalGroup(
@@ -140,47 +146,14 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
                 .addGroup(panelProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(textPassword2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(127, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
+                .addGroup(panelProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(textSyncKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         tabbedMain.addTab("Profile", panelProfile);
-
-        jLabel2.setText("Sync key:");
-
-        textSyncKey.setEditable(false);
-
-        buttonRegen.setText("Regenerate");
-        buttonRegen.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonRegenActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout panelSyncLayout = new javax.swing.GroupLayout(panelSync);
-        panelSync.setLayout(panelSyncLayout);
-        panelSyncLayout.setHorizontalGroup(
-            panelSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelSyncLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textSyncKey, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonRegen)
-                .addContainerGap())
-        );
-        panelSyncLayout.setVerticalGroup(
-            panelSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelSyncLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(textSyncKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonRegen))
-                .addContainerGap(176, Short.MAX_VALUE))
-        );
-
-        tabbedMain.addTab("Synchronization", panelSync);
 
         buttonSave.setText("Save");
         buttonSave.addActionListener(new java.awt.event.ActionListener() {
@@ -241,22 +214,16 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 		setVisible(false);
     }//GEN-LAST:event_buttonSaveActionPerformed
 
-    private void buttonRegenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRegenActionPerformed
-		Manager.external.synckey(Session.getId());
-    }//GEN-LAST:event_buttonRegenActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;
-    private javax.swing.JButton buttonRegen;
     private javax.swing.JButton buttonSave;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel panelGeneral;
     private javax.swing.JPanel panelProfile;
-    private javax.swing.JPanel panelSync;
     private javax.swing.ButtonGroup syncRadioGroup;
     private javax.swing.JTabbedPane tabbedMain;
     private javax.swing.JTextField textEmail;
@@ -268,9 +235,6 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 
 	@Override
 	public void handleEvent(Event event, Object sender) {
-		if (event instanceof SynckeyEvent) {
-			SynckeyEvent e = (SynckeyEvent) event;
-			textSyncKey.setText(e.getSyncKey());
-		}
+		//@TODO: Add something
 	}
 }

@@ -31,14 +31,12 @@ import org.json.JSONObject;
 public class Uploader extends Eventor<UploadEvent> implements Listener {	
 	private final List<UploadItem> items = new ArrayList<>();
 	private final External source;
-	private final String sessionId;
 	private String targetFolder;
 	
 	private UploadThread thread;
 	
-	public Uploader(External source, String session_id) {
+	public Uploader(External source) {
 		this.source = source;
-		this.sessionId = session_id;
 	}
 	
 	public void add(java.io.File file) {
@@ -133,12 +131,5 @@ public class Uploader extends Eventor<UploadEvent> implements Listener {
 	 */
 	public External getSource() {
 		return source;
-	}
-
-	/**
-	 * @return the sessionId
-	 */
-	public String getSessionId() {
-		return sessionId;
 	}
 }

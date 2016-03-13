@@ -8,8 +8,9 @@ package cz.zipek.minicloud;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.events.SynckeyEvent;
+import cz.zipek.minicloud.api.events.ServerInfoEvent;
 import cz.zipek.minicloud.api.events.UnauthorizedEvent;
+import cz.zipek.minicloud.api.events.UserEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,8 +64,7 @@ public class Manager {
 	 * @param key sync key
 	 */
 	private static void startSync(String key) {
-		Session.setId(key);
-		Session.setValid(true);
+		external.setAuth(key);
 		
 		TextSync sync = new TextSync(Settings.getSyncFolders());
 		sync.start();
@@ -74,7 +74,7 @@ public class Manager {
 	 * Starts UI component
 	 */
 	private static void startUI() {
-		//Set pretty UI
+		// Set pretty UI
 		try {
 			UIManager.setLookAndFeel(
 				UIManager.getSystemLookAndFeelClassName()
@@ -83,15 +83,17 @@ public class Manager {
 			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, e); // handle exception
 		}
 		
-		//Check if user is still logged
+		// Check some basic events
 		external.addListener(new Listener<Event>() {
 			@Override
 			public void handleEvent(Event event, Object sender) {
 				if (event instanceof UnauthorizedEvent) {
 					Forms.hide();
 					Forms.showLogin();
-				} else if (event instanceof SynckeyEvent) {
-					Session.setSyncKey(((SynckeyEvent)event).getSyncKey());
+				} else if (event instanceof UserEvent) {
+					Session.setUser(((UserEvent)event).getUser());
+				} else if (event instanceof ServerInfoEvent) {
+					Session.setServer(((ServerInfoEvent)event).getServerInfo());
 				}
 			}
 		});

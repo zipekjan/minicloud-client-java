@@ -217,7 +217,7 @@ public class Upload extends javax.swing.JFrame implements Listener {
 		if (uploader == null) {
 			setStartEnabled(false);
 			
-			uploader = new Uploader(Manager.external, Session.getId());
+			uploader = new Uploader(Manager.external);
 			uploader.addListener(this);
 			for(File f : files) {
 				uploader.add(f);

@@ -243,7 +243,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
 		file.getSource().addListener(this);
-		actionId = file.getSource().update(Session.getId(), file, textName.getText(), textNote.getText());
+		actionId = file.getSource().update(file, textName.getText(), textNote.getText());
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
@@ -284,7 +284,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 				file.setName(textName.getText());
 				file.setNote(textNote.getText());
 				file.getSource().removeListenerLater(this);
-				file.getSource().files(Session.getId());
+				file.getSource().getPath(file.getPath());
 				setVisible(false);
 			}
 		}

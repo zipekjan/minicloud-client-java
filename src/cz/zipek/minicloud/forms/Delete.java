@@ -132,7 +132,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 		Manager.external.addListener(this);
 		
 		buttonDelete.setEnabled(false);
-		actionId = Manager.external.delete(Session.getId(), files);
+		actionId = Manager.external.delete(files);
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
@@ -164,7 +164,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 			this.setVisible(false);
 			Forms.remove(this);
 			
-			Manager.external.files(Session.getId());
+			Manager.external.getPath(null);
 		} else {
 			System.err.println("Received unexpected action-id (" + this.actionId + "," + e.getActionId() + ")");
 		}

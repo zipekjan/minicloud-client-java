@@ -12,8 +12,9 @@ import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.events.LoginEvent;
-import cz.zipek.minicloud.api.events.LoginFailedEvent;
+import cz.zipek.minicloud.api.events.ServerInfoEvent;
+import cz.zipek.minicloud.api.events.UnauthorizedEvent;
+import cz.zipek.minicloud.api.events.UserEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -48,16 +49,17 @@ public class Login extends javax.swing.JFrame {
 		Manager.external.addListener(new Listener<Event>() {
 			@Override
 			public void handleEvent(Event e, Object sender) {
-				if (e instanceof LoginEvent) {
-					Session.setId(((LoginEvent)e).getSessionId());
-					Session.setValid(true);
-					Session.setSyncKey(((LoginEvent)e).getSyncKey());
+				if (e instanceof UserEvent) {
+					Session.setUser(((UserEvent)e).getUser());
+					Manager.external.getServerInfo();
+				} else if (e instanceof ServerInfoEvent) {
+					Session.setServer(((ServerInfoEvent)e).getServerInfo());
 					
 					setState("");
 					setVisible(false);
-					
+
 					Forms.showMain();
-				} else if (e instanceof LoginFailedEvent) {
+				} else if (e instanceof UnauthorizedEvent) {
 					setState("Wrong login or password");
 				}
 			}
@@ -189,8 +191,11 @@ public class Login extends javax.swing.JFrame {
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
 		setState("Logging in ...");
+		
 		Manager.external.setServer(textServer.getText());
-		Manager.external.login(textLogin.getText(), textPassword.getPassword());
+		Manager.external.setAuth(textLogin.getText(), textPassword.getPassword());
+		
+		Manager.external.getUser();
     }//GEN-LAST:event_loginButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

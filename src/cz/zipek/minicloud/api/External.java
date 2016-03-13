@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.KeyValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -123,7 +124,7 @@ public class External extends Eventor<Event> {
 
 	
 	private String md5(String what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-		return md5(what.getBytes());
+		return md5(what.getBytes("UTF-8"));
 	}
 	
 	private String md5(char[] what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -141,21 +142,36 @@ public class External extends Eventor<Event> {
 	}
 	
 	private String md5(byte[] what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return getHexString(MessageDigest.getInstance("MD5").digest(what));
+		
+	}
+
+	private String sha256(String input) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return sha256(input.getBytes("UTF-8"));
+	}
+	
+	private String sha256(char[] input) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return sha256(toBytes(input));
+	}
+	
+	private String sha256(byte[] input) throws NoSuchAlgorithmException {
+		return getHexString(MessageDigest.getInstance("SHA-256").digest(input));
+	}
+	
+	private String getHexString(byte[] bytes) {
 		StringBuilder result = new StringBuilder();
-		MessageDigest md = MessageDigest.getInstance("MD5");
-		byte[] hash = md.digest(what);
-		for (int i = 0; i < hash.length; i++) {
-			if ((0xff & hash[i]) < 0x10) {
-				result.append("0").append(Integer.toHexString((0xFF & hash[i])));
+		for (int i = 0; i < bytes.length; i++) {
+			if ((0xff & bytes[i]) < 0x10) {
+				result.append("0").append(Integer.toHexString((0xFF & bytes[i])));
 			} else {
-				result.append(Integer.toHexString(0xFF & hash[i]));
+				result.append(Integer.toHexString(0xFF & bytes[i]));
 			}
 		}
 		return result.toString();
 	}
 
 	public Thread request(String params) {
-		return request(params, "");
+		return request(params, getAuth());
 	}
 	
 	public Thread request(String params, String auth) {		
@@ -235,9 +251,41 @@ public class External extends Eventor<Event> {
 		
 		return new JSONObject(response);
 	}
-
-	public String getServerInfo(String action_id, boolean wait) {
-		Thread request = request("action=get_server_info", getAuth());
+	
+	private String createUrl(String action, Map<String, String> params) {
+		try {
+			StringBuilder result = new StringBuilder();
+			result.append("action=");
+			result.append(URLEncoder.encode(action, "UTF-8"));
+			
+			for(Map.Entry<String, String> item : params.entrySet()) {
+				result.append("&");
+				result.append(item.getKey());
+				result.append("=");
+				result.append(URLEncoder.encode(item.getValue(), "UTF-8"));
+			}
+			
+			return result.toString();
+		} catch (UnsupportedEncodingException ex) {
+			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		return "";
+	}
+	
+	public String getServerInfo() {
+		return getServerInfo(false);
+	}
+	
+	public String getServerInfo(boolean wait) {
+		return getServerInfo(wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String getServerInfo(boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
+		
+		Thread request = request(createUrl("get_server_info", params));
 
 		if (wait) {
 			try {
@@ -250,108 +298,98 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
-	public String login(String login, char[] password, String action_id, boolean wait) {
-		try {
-			Thread request = request(
-					String.format(
-							"action=login&login=%s&password=%s&action_id=%s",
-							URLEncoder.encode(login, "UTF-8"),
-							md5(password),
-							URLEncoder.encode(action_id, "UTF-8")
-					)
-			);
-			if (wait) {
-				try {
-					request.join();
-				} catch (InterruptedException ex) {
-					Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
-			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return action_id;
+	public String getUser() {
+		return getUser(false);
 	}
+	
+	public String getUser(boolean wait) {
+		return getUser(wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String getUser(boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
 		
-	public String login(String login, char[] password, boolean wait) {
-		return login(login, password, Long.toString(this.actionCounter++), wait);
-	}
-	
-	public String login(String login, char[] password, String action_id) {
-		return login(login, password, action_id, false);
-	}
-	
-	public String login(String login, char[] password) {
-		return login(login, password, Long.toString(this.actionCounter++), false);
-	}
+		Thread request = request(createUrl("get_user", params));
 
-	/**
-	 *
-	 * @param session_id
-	 * @param action_id
-	 * @return 
-	 */
-	public String files(String session_id, String action_id) {
-		try {
-			request(
-					String.format(
-							"action=files&session_id=%s&action_id=%s",
-							URLEncoder.encode(session_id, "UTF-8"),
-							URLEncoder.encode(action_id, "UTF-8")
-					)
-			);
-		} catch (UnsupportedEncodingException ex) {
-			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
+		
 		return action_id;
 	}
 	
-	/**
-	 *
-	 * @param session_id
-	 * @return 
-	 */
-	public String files(String session_id) {
-		return files(session_id, Long.toString(this.actionCounter++));
+	public String getPath() {
+		return getPath(null);
 	}
 	
-	public String delete(String session_id, List<File> files, String action_id) {
+	public String getPath(String path) {
+		return getPath(path, false);
+	}
+	
+	public String getPath(String path, boolean wait) {
+		return getPath(path, wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String getPath(String path, boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
+		
+		if (path != null) {
+			params.put("path", path);
+		}
+		
+		Thread request = request(createUrl("get_path", params));
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
+	public String delete(List<File> files, String action_id) {
 		try {
 			StringBuilder params = new StringBuilder();
 			params.append(String.format(
-					"action=delete&session_id=%s&action_id=%s",
-					URLEncoder.encode(session_id, "UTF-8"),
+					"action=delete&action_id=%s",
 					URLEncoder.encode(action_id, "UTF-8")
 			));
 			for (File file : files) {
 				params.append("&files[]=");
 				params.append(file.getId());
 			}
-			request(params.toString());
+			request(params.toString(), getAuth());
 		} catch (UnsupportedEncodingException ex) {
 			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		return action_id;
 	}
 	
-	public String delete(String session_id, List<File> files) {
-		return delete(session_id, files, Long.toString(this.actionCounter++));
+	public String delete(List<File> files) {
+		return delete(files, Long.toString(this.actionCounter++));
 	}
 	
 	/**
 	 *
-	 * @param session_id
 	 * @param file
 	 * @param folder
 	 * @param action_id
 	 * @return 
 	 */
-	public String move(String session_id, File file, String folder, String action_id) {
+	public String move(File file, String folder, String action_id) {
 		try {
 			request(
 					String.format(
-							"action=update&session_id=%s&action_id=%s&id=%s&folder=%s",
-							URLEncoder.encode(session_id, "UTF-8"),
+							"action=update&action_id=%s&id=%s&folder=%s",
 							URLEncoder.encode(action_id, "UTF-8"),
 							Integer.toString(file.getId()),
 							URLEncoder.encode(folder, "UTF-8")
@@ -365,30 +403,27 @@ public class External extends Eventor<Event> {
 	
 	/**
 	 *
-	 * @param session_id
 	 * @param file
 	 * @param folder
 	 * @return 
 	 */
-	public String move(String session_id, File file, String folder) {
-		return move(session_id, file, folder, Long.toString(actionCounter++));
+	public String move(File file, String folder) {
+		return move(file, folder, Long.toString(actionCounter++));
 	}
 	
 	/**
 	 *
-	 * @param session_id
 	 * @param file
 	 * @param name
 	 * @param note
 	 * @param action_id
 	 * @return 
 	 */
-	public String update(String session_id, File file, String name, String note, String action_id) {
+	public String update(File file, String name, String note, String action_id) {
 		try {
 			request(
 					String.format(
-							"action=update&session_id=%s&action_id=%s&id=%s&name=%s&note=%s",
-							URLEncoder.encode(session_id, "UTF-8"),
+							"action=update&action_id=%s&id=%s&name=%s&note=%s",
 							URLEncoder.encode(action_id, "UTF-8"),
 							Integer.toString(file.getId()),
 							URLEncoder.encode(name, "UTF-8"),
@@ -403,44 +438,27 @@ public class External extends Eventor<Event> {
 	
 	/**
 	 *
-	 * @param session_id
 	 * @param file
 	 * @param name
 	 * @param note
 	 * @return 
 	 */
-	public String update(String session_id, File file, String name, String note) {
-		return update(session_id, file, name, note, Long.toString(actionCounter++));
+	public String update(File file, String name, String note) {
+		return update(file, name, note, Long.toString(actionCounter++));
 	}
 	
-	/**
-	 *
-	 * @param session_id
-	 * @param action_id
-	 * @return 
-	 */
-	public String synckey(String session_id, String action_id) {
+	public void setAuth(String aAuth) {
+		auth = aAuth;
+	}
+	
+	public void setAuth(String login, char[] password) {
+		
 		try {
-			request(
-					String.format(
-							"action=synckey&session_id=%s&action_id=%s",
-							URLEncoder.encode(session_id, "UTF-8"),
-							URLEncoder.encode(action_id, "UTF-8")
-					)
-			);
-		} catch (UnsupportedEncodingException ex) {
+			setAuth(sha256(login + sha256(password)));
+		} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
 			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		return action_id;
-	}
-	
-	/**
-	 *
-	 * @param session_id
-	 * @return 
-	 */
-	public String synckey(String session_id) {
-		return synckey(session_id, Long.toString(this.actionCounter++));
+		
 	}
 	
 	public String getAuth() {

@@ -153,7 +153,7 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 		}
 		
 		//Request file list
-		actionId = external.files(Session.getId());
+		actionId = external.getPath();
 	}
 
 	public void stop() {
@@ -224,7 +224,7 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 				timeOffset = filesEvent.getOffset();
 				
 				downloader = new Downloader();
-				uploader = new Uploader(external, Session.getId());
+				uploader = new Uploader(external);
 				
 				downloader.addListener(this);
 				uploader.addListener(this);
