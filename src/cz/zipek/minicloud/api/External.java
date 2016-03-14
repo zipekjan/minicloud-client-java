@@ -333,7 +333,7 @@ public class External extends Eventor<Event> {
 	}
 	
 	public String getPath() {
-		return getPath(null);
+		return getPath("");
 	}
 	
 	public String getPath(String path) {
@@ -364,6 +364,33 @@ public class External extends Eventor<Event> {
 		
 		return action_id;
 	}
+	
+	public String getPath(int id) {
+		return getPath(id, false);
+	}
+	
+	public String getPath(int id, boolean wait) {
+		return getPath(id, wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String getPath(int id, boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
+		params.put("id", Integer.toString(id));
+
+		Thread request = request(createUrl("get_path", params));
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
 	
 	public String delete(List<File> files, String action_id) {
 		try {

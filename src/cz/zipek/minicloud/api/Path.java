@@ -39,7 +39,7 @@ public class Path {
 		source = api;
 		
 		id = data.optInt("id", -1);
-		parent = data.optInt("parent", -1);
+		parent = data.optInt("parent_id", -1);
 		
 		path = data.optString("path", null);
 		if (path != null) {

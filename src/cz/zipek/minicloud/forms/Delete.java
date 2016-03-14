@@ -164,7 +164,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 			this.setVisible(false);
 			Forms.remove(this);
 			
-			Manager.external.getPath(null);
+			Manager.external.getPath();
 		} else {
 			System.err.println("Received unexpected action-id (" + this.actionId + "," + e.getActionId() + ")");
 		}

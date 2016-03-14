@@ -40,8 +40,8 @@ public class File {
 			
 			size = data.getLong("size");
 			name = data.getString("filename");
-			path = data.getString("path");
-			checksum = data.getString("checksum");
+			path = data.optString("path", null);
+			checksum = data.optString("checksum", null);
 			
 			mktime = new Date(data.getLong("mktime") * 1000);
 			mdtime = new Date(data.getLong("mktime") * 1000);

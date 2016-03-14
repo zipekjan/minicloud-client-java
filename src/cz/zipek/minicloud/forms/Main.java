@@ -63,7 +63,8 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		tableRemoteFiles.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
 		Manager.external.addListenerLater(this);
-		Manager.external.getPath(null);
+		Manager.external.getPath();
+		
 		Settings.addListener(new Listener<SettingsEvent>() {
 			@Override
 			public void handleEvent(SettingsEvent event, Object sender) {
@@ -114,10 +115,10 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 	}
 	
 	private void handleSubEvent(PathEvent event) {		
-		setFolder(event.getPath());
+		setPath(event.getPath());
 	}
 
-	private void setFolder(Path folder) {
+	private void setPath(Path folder) {
 		currentPath = folder;
 
 		//Get table model
@@ -145,8 +146,8 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 				Icons.getIcon(null),
 				"[" + f.getName() + "]",
 				"",
-				"",
-				""
+				(new SimpleDateFormat("dd.MM.yyyy HH:mm")).format(f.getMktime().getTime()),
+				(new SimpleDateFormat("dd.MM.yyyy HH:mm")).format(f.getMdtime().getTime())
 			});
 		}
 
@@ -156,14 +157,22 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 				Icons.getIcon(f.getExtension()),
 				f.getName(),
 				Tools.humanFileSize(f.getSize(), 2),
-				(new SimpleDateFormat("dd.MM.yyyy HH:mm")).format(f.getMdtime().getTime()),
-				""
+				(new SimpleDateFormat("dd.MM.yyyy HH:mm")).format(f.getMktime().getTime()),
+				(new SimpleDateFormat("dd.MM.yyyy HH:mm")).format(f.getMdtime().getTime())
 			});
 		}
 	}
 
 	public void loadPath(String path) {
 		Manager.external.getPath(path);
+	}
+	
+	public void loadPath(Path path) {
+		loadPath(path.getId());
+	}
+	
+	public void loadPath(int path_id) {
+		Manager.external.getPath(path_id);
 	}
 	
 	private List<File> getSelectedFiles() {
@@ -247,7 +256,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
             },
             new String [] {
-                "", "Name", "Size", "Uploaded", "Downloaded"
+                "", "Name", "Size", "Created", "Updated"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -493,16 +502,18 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 			int row = tableRemoteFiles.getSelectedRow();
 			int tfolders = currentPath.getPaths().size();
 
+			if (row == -1)
+				return;
+			
 			if (currentPath.getParent() != -1 && row == 0) {
-				//this.setFolder(currentPath.getParent());
-				//@TODO: Move UP
+				this.loadPath(currentPath.getParent());
 				return;
 			} else if (currentPath.getParent() != -1) {
 				row -= 1;
 			}
 
 			if (row < tfolders) {
-				this.setFolder(currentPath.getPaths().get(row));
+				loadPath(currentPath.getPaths().get(row));
 			} else {
 				row -= tfolders;
 				Forms.showFile(currentPath.getFiles().get(row));
