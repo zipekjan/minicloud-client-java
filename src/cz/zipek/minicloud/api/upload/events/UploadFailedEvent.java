@@ -14,7 +14,17 @@ import org.json.JSONObject;
  * @author Kamen
  */
 public class UploadFailedEvent extends UploadEvent {
-	public UploadFailedEvent(JSONObject response) {
-		
+	
+	private String response;
+	
+	public UploadFailedEvent(String response) {
+		this.response = response;
+	}
+	
+	/**
+	 * @return the response
+	 */
+	public String getResponse() {
+		return response;
 	}
 }

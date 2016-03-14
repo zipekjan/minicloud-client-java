@@ -9,9 +9,7 @@ import cz.zipek.minicloud.api.Listener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,17 +63,29 @@ public class UploadThread extends Thread implements Listener {
 	@Override
 	public void run() {
 		try {
-			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8");
-			sender.addListener(this);
-			sender.addFormField("action", "upload");
-			sender.setRequestProperty("X-Auth", uploader.getSource().getAuth());
+			// Helper for sending big requests
+			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8", uploader.getSource().getAuth());
 			
-			if (remote == null) {
-				sender.addFormField("folder", parseFolder(targetFolder));
-			} else {
-				sender.addFormField("id", remote.getId());
+			// Listen to sender events
+			sender.addListener(this);
+			
+			// Proper aciton
+			sender.addFormField("action", "upload_file");
+
+			// Path to upload files to
+			if (targetFolder != null) {
+				sender.addFormField("path", parseFolder(targetFolder));
 			}
+			
+			// Override existing file
+			if (remote != null) {
+				sender.addFormField("override[file]", remote.getId());
+			}
+			
+			// Add file
 			sender.addFilePart("file", file);
+			
+			// Start sending
 			sender.finish();
 		} catch (IOException ex) {
 			Logger.getLogger(UploadThread.class.getName()).log(Level.SEVERE, null, ex);

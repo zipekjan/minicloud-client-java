@@ -57,7 +57,7 @@ public class File {
 	}
 	
 	public String getDownloadLink() {
-		return String.format("?action=download&id=%s", getSource().getApiUrl(), getId());
+		return String.format("%s?action=download_file&id=%s", getSource().getApiUrl(), getId());
 	}
 	
 	/**

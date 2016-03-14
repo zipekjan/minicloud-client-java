@@ -26,12 +26,14 @@ class DownloadThread extends Thread
 {
 	private final File source;
 	private final String target;
+	private final String auth;
 	private boolean stopDownload;
 
-	public DownloadThread(File source, String target) {
+	public DownloadThread(File source, String target, String auth) {
 		super("File download");
 		this.source = source;
 		this.target = target;
+		this.auth = auth;
 	}
 	
 	protected final List<Listener> listeners = new ArrayList<>();
@@ -61,6 +63,8 @@ class DownloadThread extends Thread
 				httpConn.setDoOutput(true);
 				httpConn.setDoInput(true);
 				httpConn.setChunkedStreamingMode(4096);
+				httpConn.setRequestProperty("X-Auth", auth);
+				
 				int status = httpConn.getResponseCode();
 				if (status == HttpURLConnection.HTTP_OK) {
 					FileOutputStream outputStream;

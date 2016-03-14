@@ -41,7 +41,7 @@ public class MultipartUtility extends Eventor<UploadEvent> {
      * @param charset
      * @throws IOException
      */
-    public MultipartUtility(String requestURL, String charset)
+    public MultipartUtility(String requestURL, String charset, String auth)
             throws IOException {
         this.charset = charset;
          
@@ -53,9 +53,10 @@ public class MultipartUtility extends Eventor<UploadEvent> {
         httpConn.setDoOutput(true); // indicates POST method
         httpConn.setDoInput(true);
         httpConn.setChunkedStreamingMode(4096);
-        httpConn.setRequestProperty("Content-Type",
-                "multipart/form-data; boundary=" + boundary);
-        outputStream = httpConn.getOutputStream();
+        httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+		httpConn.setRequestProperty("X-Auth", auth);
+		
+			outputStream = httpConn.getOutputStream();
         writer = new PrintWriter(new OutputStreamWriter(outputStream, charset),
                 true);
     }
@@ -79,10 +80,6 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 	
 	public void addFormField(String name, int value) {
 		addFormField(name, Integer.toString(value));
-	}
-	
-	public void setRequestProperty(String key, String value) {
-		httpConn.setRequestProperty(key, value);
 	}
  
     /**
@@ -132,7 +129,7 @@ public class MultipartUtility extends Eventor<UploadEvent> {
      */
     public String finish() throws IOException {
 		StringBuilder data = new StringBuilder();
-
+		
         writer.append(LINE_FEED).flush();
         writer.append("--" + boundary + "--").append(LINE_FEED);
         writer.close();
@@ -151,7 +148,17 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 			}
 			httpConn.disconnect();
         } else {
-            fireEvent(new UploadFailedEvent(null));
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+					httpConn.getErrorStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					if (data.length() != 0)
+						data.append(LINE_FEED);
+					data.append(line);
+				}
+			}
+			
+			fireEvent(new UploadFailedEvent(data.toString()));
         }
         
         fireEvent(new UploadThreadSentEvent(data.toString()));

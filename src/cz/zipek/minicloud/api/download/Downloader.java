@@ -5,6 +5,7 @@
  */
 package cz.zipek.minicloud.api.download;
 
+import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.api.Eventor;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
@@ -66,7 +67,7 @@ public class Downloader extends Eventor<DownloadEvent> implements Listener {
 		
 		fireEvent(new DownloadFileStartedEvent(file.getFile(), target));
 		
-		thread = new DownloadThread(file.getFile(), target);
+		thread = new DownloadThread(file.getFile(), target, Manager.external.getAuth());
 		thread.addListener(this);
 		thread.start();
 	}
