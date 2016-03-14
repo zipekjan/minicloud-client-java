@@ -20,8 +20,8 @@ public class UserEvent extends SuccessEvent {
 
 	protected User user;
 	
-	public UserEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public UserEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 		
 		try {
 			user = new User(sender, data);

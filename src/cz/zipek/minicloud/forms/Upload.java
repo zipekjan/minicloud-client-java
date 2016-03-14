@@ -38,9 +38,12 @@ public class Upload extends javax.swing.JFrame implements Listener {
 	public Upload() {
 		initComponents();
 
+		//@TODO: How to do this
+		/*
 		for(String folder : Forms.getMain().getFoldersPaths()) {
 			comboTarget.addItem(folder);
 		}
+		*/
 	}
 
 	/**

@@ -17,29 +17,13 @@ import org.json.JSONObject;
 public class Event {
 	protected final External sender;
 	protected final JSONObject data;
-	protected final int code;
-	
+
 	private String actionId = null;
 
-	public Event(External sender, JSONObject data, int code) {
+	public Event(External sender, JSONObject data, String action_id) {
 		this.sender = sender;
-		this.code = code;
 		this.data = data;
-		
-		if (data.has("action-id")) {
-			try {
-				this.actionId = data.getString("action-id");
-			} catch (JSONException ex) {
-				Logger.getLogger(Event.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-	}
-
-	/**
-	 * @return the code
-	 */
-	public int getCode() {
-		return code;
+		this.actionId = action_id;
 	}
 
 	/**

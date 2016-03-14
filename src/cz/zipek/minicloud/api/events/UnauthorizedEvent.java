@@ -14,8 +14,8 @@ import org.json.JSONObject;
  */
 public class UnauthorizedEvent extends ErrorEvent {	
 	
-	public UnauthorizedEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public UnauthorizedEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 	}
 	
 }

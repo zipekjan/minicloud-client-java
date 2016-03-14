@@ -24,9 +24,9 @@ public class ServerInfo {
 	
 	public ServerInfo(External from, JSONObject info) throws JSONException {
 		source = from;
-		name = info.getString("name");
-		description = info.getString("description");
-		logo = info.getString("logo");
+		name = info.optString("name", "");
+		description = info.optString("description", "");
+		logo = info.optString("logo", null);
 	}
 
 	/**

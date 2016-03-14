@@ -20,8 +20,8 @@ public class PathEvent extends SuccessEvent {
 
 	protected Path path;
 	
-	public PathEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public PathEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 		
 		try {
 			path = new Path(sender, data);

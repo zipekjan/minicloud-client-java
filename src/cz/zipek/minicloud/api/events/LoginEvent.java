@@ -21,8 +21,8 @@ public class LoginEvent extends cz.zipek.minicloud.api.Event {
 	private String sessionId;
 	private String syncKey;
 	
-	public LoginEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public LoginEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 		
 		this.sessionId = null;
 		if (data != null) {

@@ -40,14 +40,17 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 		for(cz.zipek.minicloud.api.File file : files) {
 			dm.addRow(new String[] {
 				file.getName(),
-				file.getFolder().getPath(),
+				file.getPath(),
 				Tools.humanFileSize(file.getSize(), 2),
 			});
 		}
 		
+		//@TODO: How to do this?
+		/*
 		for(String folder : Forms.getMain().getFoldersPaths()) {
 			comboFolder.addItem(folder);
 		}
+		*/
 	}
 
 	/**

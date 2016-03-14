@@ -34,9 +34,9 @@ public class User {
 		name = data.getString("name");
 		email = data.getString("email");
 		
-		key = data.getString("key");
+		key = data.optString("key", null);
 		
-		admin = data.getBoolean("admin");
+		admin = data.optBoolean("admin", false);
 		
 	}
 

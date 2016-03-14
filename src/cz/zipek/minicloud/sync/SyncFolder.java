@@ -5,18 +5,17 @@
  */
 package cz.zipek.minicloud.sync;
 
-import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Eventor;
 import cz.zipek.minicloud.api.External;
-import cz.zipek.minicloud.api.Folder;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.Path;
 import cz.zipek.minicloud.api.download.DownloadEvent;
 import cz.zipek.minicloud.api.download.Downloader;
 import cz.zipek.minicloud.api.download.events.DownloadAllDoneEvent;
-import cz.zipek.minicloud.api.events.FilesEvent;
+import cz.zipek.minicloud.api.events.PathEvent;
 import cz.zipek.minicloud.api.upload.UploadEvent;
 import cz.zipek.minicloud.api.upload.Uploader;
 import cz.zipek.minicloud.api.upload.events.UploadAllDoneEvent;
@@ -203,7 +202,7 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 		}
 	}
 	
-	private File remoteFileToLocal(String root, cz.zipek.minicloud.api.File remote, Folder remote_root) {
+	private File remoteFileToLocal(String root, cz.zipek.minicloud.api.File remote, Path remote_root) {
 		if (remote_root != null)
 			return new File(
 				root + File.separator + remote.getRelativePath(remote_root).replace("/", File.separator)
@@ -218,10 +217,12 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 		fireEvent(new SyncExternalEvent(event));
 		
 		if (event.getActionId() != null && event.getActionId().equals(actionId)) {
-			if (event instanceof FilesEvent) {
-				FilesEvent filesEvent = (FilesEvent)event;
-				Folder folder = filesEvent.getRoot().findPath(remote, false);
-				timeOffset = filesEvent.getOffset();
+			if (event instanceof PathEvent) {
+				PathEvent pathEvent = (PathEvent)event;
+				Path folder = pathEvent.getPath();
+				
+				//@TODO: Implement
+				timeOffset = 0; //filesEvent.getOffset();
 				
 				downloader = new Downloader();
 				uploader = new Uploader(external);
@@ -233,15 +234,16 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 				List<cz.zipek.minicloud.api.File> files = new ArrayList<>();
 
 				if (folder != null) {
-					files = folder.getAllFiles();
+					//@TODO: Use getAllFiles!
+					files = folder.getFiles();
 
 					//Download new files, sync changed
 					for(cz.zipek.minicloud.api.File file : files) {
 						boolean invalid = false;
 						//Check if there isn't copy
-						for(cz.zipek.minicloud.api.File brother : file.getFolder().getFiles()) {
+						for(cz.zipek.minicloud.api.File brother : file.getParent().getFiles()) {
 							if (brother.getName().equals(file.getName()) &&
-								brother.getDate().before(file.getDate())) {
+								brother.getMdtime().before(file.getMdtime())) {
 								invalid = true;
 								break;
 							}
@@ -337,8 +339,8 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 				return false;
 			}
 
-			if (!md5.equals(remote.getMd5())) {
-				if (local.lastModified() > remote.getDate().getTime() + timeOffset) {
+			if (!md5.equals(remote.getChecksum())) {
+				if (local.lastModified() > remote.getMdtime().getTime() + timeOffset) {
 					uploader.add(local, remote);
 				} else {
 					downloader.add(remote, local.getAbsolutePath());

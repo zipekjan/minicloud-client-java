@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * @author Kamen
  */
 public class UpdateConflictEvent extends cz.zipek.minicloud.api.Event {	
-	public UpdateConflictEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public UpdateConflictEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 	}
 }

@@ -41,7 +41,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 			dm.addRow(new String[] {
 				file.getName(),
 				Tools.humanFileSize(file.getSize(), 2),
-				file.getFolder().getPath()
+				file.getPath()
 			});
 		}
 	}

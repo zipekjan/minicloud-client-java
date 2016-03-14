@@ -16,10 +16,11 @@ public class ErrorEvent extends cz.zipek.minicloud.api.Event {
 	
 	protected String message;
 	
-	public ErrorEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public ErrorEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 		
-		message = data.toString();
+		if (data != null)
+			message = data.toString();
 	}
 
 	/**

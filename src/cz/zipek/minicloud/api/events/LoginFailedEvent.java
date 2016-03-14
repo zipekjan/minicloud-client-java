@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * @author Kamen
  */
 public class LoginFailedEvent extends cz.zipek.minicloud.api.Event {	
-	public LoginFailedEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public LoginFailedEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 	}
 }

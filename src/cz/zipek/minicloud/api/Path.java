@@ -38,16 +38,34 @@ public class Path {
 		
 		source = api;
 		
-		id = data.getInt("id");
-		parent = data.getInt("parent");
+		id = data.optInt("id", -1);
+		parent = data.optInt("parent", -1);
 		
-		name = data.getString("name");
-		path = data.getString("path");
+		path = data.optString("path", null);
+		if (path != null) {
+			String[] split = path.split("/");
+			if (split.length > 0) {
+				name = split[split.length - 1];
+			} else {
+				name = null;
+			}
+		} else {
+			name = null;
+		}
 		
-		checksum = data.getString("checksum");
+		checksum = data.optString("checksum", null);
 		
-		mktime = new Date(data.getLong("mktime") * 1000);
-		mdtime = new Date(data.getLong("mdtime") * 1000);
+		if (data.optLong("mktime", -1) > 0) {
+			mktime = new Date(data.getLong("mktime") * 1000);
+		} else {
+			mktime = null;
+		}
+		
+		if (data.optLong("mdtime", -1) > 0) {
+			mdtime = new Date(data.getLong("mdtime") * 1000);
+		} else {
+			mdtime = null;
+		}
 		
 		JSONArray ch_files = data.getJSONArray("files");
 		JSONArray ch_paths = data.getJSONArray("paths");
@@ -130,6 +148,14 @@ public class Path {
 	 */
 	public List<Path> getPaths() {
 		return paths;
+	}
+	
+	public String getRelativePath(Path relative_to) {
+		return getRelativePath(relative_to.getPath());
+	}
+	
+	public String getRelativePath(String relative_to) {
+		return path.substring(relative_to.length());
 	}
 	
 }

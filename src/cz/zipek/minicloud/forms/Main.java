@@ -8,15 +8,14 @@ package cz.zipek.minicloud.forms;
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Icons;
 import cz.zipek.minicloud.Manager;
-import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.SettingsEvent;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
-import cz.zipek.minicloud.api.Folder;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.events.FilesEvent;
+import cz.zipek.minicloud.api.Path;
+import cz.zipek.minicloud.api.events.PathEvent;
 import cz.zipek.minicloud.events.SyncFolderAddedEvent;
 import cz.zipek.minicloud.events.SyncFolderModifiedEvent;
 import cz.zipek.minicloud.events.SyncFolderRemovedEvent;
@@ -36,8 +35,8 @@ import javax.swing.table.DefaultTableModel;
  * @author zipekjan
  */
 public class Main extends javax.swing.JFrame implements Listener<Event> {
-	private Folder currentFolder;
-	private Folder rootFolder;
+	private Path currentPath;
+	private Path rootPath;
 
 	class ImageRenderer extends DefaultTableCellRenderer {
 
@@ -109,22 +108,17 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 	
 	@Override
 	public void handleEvent(Event event, Object sender) {
-		if (event instanceof FilesEvent) {
-			handleSubEvent((FilesEvent) event);
+		if (event instanceof PathEvent) {
+			handleSubEvent((PathEvent) event);
 		}
 	}
 	
-	private void handleSubEvent(FilesEvent event) {
-		String path = "";
-		if (currentFolder != null) {
-			path = currentFolder.getPath();
-		}
-		rootFolder = event.getRoot();
-		setPath(path);
+	private void handleSubEvent(PathEvent event) {		
+		setFolder(event.getPath());
 	}
 
-	private void setFolder(Folder folder) {
-		currentFolder = folder;
+	private void setFolder(Path folder) {
+		currentPath = folder;
 
 		//Get table model
 		DefaultTableModel dm = ((DefaultTableModel) tableRemoteFiles.getModel());
@@ -135,7 +129,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		}
 
 		//Add up folder
-		if (currentFolder.getParent() != null) {
+		if (currentPath.getParent() != -1) {
 			dm.addRow(new Object[]{
 				null,
 				"..",
@@ -146,53 +140,58 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		}
 
 		//Insert folders
-		for (Folder f : currentFolder.getFolders()) {
+		for (Path f : currentPath.getPaths()) {
 			dm.addRow(new Object[]{
 				Icons.getIcon(null),
 				"[" + f.getName() + "]",
-				Tools.humanFileSize(f.getSize(), 2),
+				"",
 				"",
 				""
 			});
 		}
 
 		//Insert files
-		for (File f : currentFolder.getFiles()) {
+		for (File f : currentPath.getFiles()) {
 			dm.addRow(new Object[]{
 				Icons.getIcon(f.getExtension()),
 				f.getName(),
 				Tools.humanFileSize(f.getSize(), 2),
-				(new SimpleDateFormat("dd.MM.yyyy HH:mm")).format(f.getDate().getTime()),
-				Integer.toString(f.getDownloads())
+				(new SimpleDateFormat("dd.MM.yyyy HH:mm")).format(f.getMdtime().getTime()),
+				""
 			});
 		}
 	}
 
-	public void setPath(String path) {
-		setFolder(rootFolder.findPath(path));
+	public void loadPath(String path) {
+		Manager.external.getPath(path);
 	}
 	
 	private List<File> getSelectedFiles() {
 		List<File> files = new ArrayList<>();
 
-		int folders = currentFolder.getFolders().size();
-		if (currentFolder.getParent() != null) {
+		int folders = currentPath.getPaths().size();
+		if (currentPath.getParent() != -1) {
 			folders += 1;
 		}
 
 		int[] rows = tableRemoteFiles.getSelectedRows();
 		for (int row : rows) {
 			if (row >= folders) {
-				files.add(currentFolder.getFiles().get(row - folders));
+				files.add(currentPath.getFiles().get(row - folders));
 			} else {
-				if (currentFolder.getParent() != null)
+				if (currentPath.getParent() != -1)
 					row -= 1;
+				
+				//@TODO: Add handling of selected folders
+				
+				/*
 				files.addAll(
-					currentFolder
-					.getFolders()
+					currentPath
+					.getPaths()
 					.get(row)
 					.getAllFiles()
 				);
+				*/
 			}
 		}
 
@@ -339,7 +338,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             tabRemoteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tabRemoteLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -419,7 +418,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             tabSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tabSyncLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(tabSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonAdd)
@@ -455,7 +454,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/miniupload/res/logo.png"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/logo32.png"))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -492,20 +491,21 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
     private void tableRemoteFilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableRemoteFilesMouseClicked
 		if (evt.getClickCount() == 2) {
 			int row = tableRemoteFiles.getSelectedRow();
-			int tfolders = this.currentFolder.getFolders().size();
+			int tfolders = currentPath.getPaths().size();
 
-			if (this.currentFolder.getParent() != null && row == 0) {
-				this.setFolder(this.currentFolder.getParent());
+			if (currentPath.getParent() != -1 && row == 0) {
+				//this.setFolder(currentPath.getParent());
+				//@TODO: Move UP
 				return;
-			} else if (this.currentFolder.getParent() != null) {
+			} else if (currentPath.getParent() != -1) {
 				row -= 1;
 			}
 
 			if (row < tfolders) {
-				this.setFolder(this.currentFolder.getFolders().get(row));
+				this.setFolder(currentPath.getPaths().get(row));
 			} else {
 				row -= tfolders;
-				Forms.showFile(this.currentFolder.getFiles().get(row));
+				Forms.showFile(currentPath.getFiles().get(row));
 			}
 		}
     }//GEN-LAST:event_tableRemoteFilesMouseClicked
@@ -523,18 +523,6 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 			Forms.showDelete(files);
 		}
     }//GEN-LAST:event_buttonDeleteActionPerformed
-
-	public List<String> getFoldersPaths() {
-		List<String> paths = new ArrayList<>();
-		if (rootFolder != null) {
-			for(Folder folder : rootFolder.getAllFolders()) {
-				paths.add(folder.getPath());
-			}
-		} else {
-			paths.add("/");
-		}
-		return paths;
-	}
 	
     private void buttonUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUploadActionPerformed
 		Forms.showUpload();

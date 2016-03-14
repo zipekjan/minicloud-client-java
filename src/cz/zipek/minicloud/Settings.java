@@ -44,6 +44,9 @@ public class Settings {
 	///@var toRemove listeners to be removed after all event is handled by all listeners
 	protected static final List<Listener> toRemove = new ArrayList<>();
 	
+	///@var server server url
+	protected static String server = "";
+	
 	/**
 	 * Adds new listener
 	 * 
@@ -119,39 +122,14 @@ public class Settings {
 		JSONObject data = new JSONObject(json);
 		
 		//Load basic data
-		username = tryToGetString(data, "username", "");
+		username = data.optString("username", "");
+		server = data.optString("server", "");
 			
 		//Load sync folders
 		JSONArray folders = data.getJSONArray("folders");
 		for(int i = 0, l = folders.length(); i < l; i++) {
 			syncFolders.add(new SyncFolder(folders.getJSONObject(i)));
 		}
-	}
-	
-	/**
-	 * Helper function. Tries to load from json and return it, on fail it returns notfound string.
-	 * 
-	 * @param source	from where to load
-	 * @param key		key of string to load
-	 * @param notfound  what to return when key doesn't exists
-	 * @return content
-	 * @throws JSONException 
-	 */
-	private static String tryToGetString(JSONObject source, String key, String notfound) throws JSONException {
-		return source.has(key) ? source.getString(key) : notfound;
-	}
-	
-	/**
-	  * Helper function. Tries to load from json and return it, on fail it returns notfound string.
-	 * 
-	 * @param source	from where to load
-	 * @param key		key of string to load
-	 * @param notfound  what to return when key doesn't exists
-	 * @return content
-	 * @throws JSONException 
-	 */
-	private static boolean tryToGetBoolean(JSONObject source, String key, boolean notfound) throws JSONException {
-		return source.has(key) ? source.getBoolean(key) : notfound;
 	}
 	
 	/**
@@ -177,6 +155,7 @@ public class Settings {
 		
 		JSONObject data = new JSONObject();
 		data.put("username", username);
+		data.put("server", server);
 
 		JSONArray folders = new JSONArray();
 		int index = 0;
@@ -288,5 +267,19 @@ public class Settings {
 	 */
 	public static List<SyncFolder> getSyncFolders() {
 		return syncFolders;
+	}
+
+	/**
+	 * @return the server
+	 */
+	public static String getServer() {
+		return server;
+	}
+
+	/**
+	 * @param aServer the server to set
+	 */
+	public static void setServer(String aServer) {
+		server = aServer;
 	}
 }

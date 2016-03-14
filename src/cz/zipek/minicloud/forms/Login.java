@@ -12,11 +12,16 @@ import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.ServerInfoEvent;
-import cz.zipek.minicloud.api.events.UnauthorizedEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
 
 /**
  *
@@ -31,8 +36,9 @@ public class Login extends javax.swing.JFrame {
 
 		setIconImages(Icons.getLogo());
 		
+		textServer.setText(Settings.getServer());
+
 		textLogin.setText(Settings.getUsername());
-		
 		textLogin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -59,7 +65,7 @@ public class Login extends javax.swing.JFrame {
 					setVisible(false);
 
 					Forms.showMain();
-				} else if (e instanceof UnauthorizedEvent) {
+				} else if (e instanceof ErrorEvent) {
 					setState("Wrong login or password");
 				}
 			}
@@ -191,6 +197,15 @@ public class Login extends javax.swing.JFrame {
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
 		setState("Logging in ...");
+		
+		Settings.setUsername(textLogin.getText());
+		Settings.setServer(textServer.getText());
+		
+		try {
+			Settings.save();
+		} catch (JSONException | FileNotFoundException | UnsupportedEncodingException ex) {
+			Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		
 		Manager.external.setServer(textServer.getText());
 		Manager.external.setAuth(textLogin.getText(), textPassword.getPassword());

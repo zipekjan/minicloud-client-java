@@ -19,8 +19,8 @@ import org.json.JSONObject;
 public class SynckeyEvent extends cz.zipek.minicloud.api.Event {	
 	private String syncKey;
 	
-	public SynckeyEvent(External sender, JSONObject data, int code) {
-		super(sender, data, code);
+	public SynckeyEvent(External sender, JSONObject data, String action_id) {
+		super(sender, data, action_id);
 		
 		if (data != null) {
 			try {

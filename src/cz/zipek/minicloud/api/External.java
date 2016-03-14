@@ -4,14 +4,12 @@
  */
 package cz.zipek.minicloud.api;
 
-import cz.zipek.minicloud.api.events.DeleteEvent;
-import cz.zipek.minicloud.api.events.UpdateEvent;
-import cz.zipek.minicloud.api.events.LoginEvent;
-import cz.zipek.minicloud.api.events.LogoutEvent;
-import cz.zipek.minicloud.api.events.LoginFailedEvent;
-import cz.zipek.minicloud.api.events.FilesEvent;
-import cz.zipek.minicloud.api.events.UpdateConflictEvent;
-import cz.zipek.minicloud.api.events.SynckeyEvent;
+import cz.zipek.minicloud.api.events.ErrorEvent;
+import cz.zipek.minicloud.api.events.FileEvent;
+import cz.zipek.minicloud.api.events.PathEvent;
+import cz.zipek.minicloud.api.events.ServerInfoEvent;
+import cz.zipek.minicloud.api.events.SuccessEvent;
+import cz.zipek.minicloud.api.events.UserEvent;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.KeyValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,27 +40,15 @@ import org.json.JSONObject;
 public class External extends Eventor<Event> {
 
 	class codes {
-		public static final int OK = 100;
-		public static final int LOGIN_OK = 101;
-		public static final int LOGOUT_OK = 102;
-		public static final int FILES_OK = 103;
-		public static final int UPDATE_OK = 104;
-		public static final int DELETE_OK = 105;
-		public static final int UPLOAD_OK = 106;
-		public static final int SYNCKEY_OK = 108;
-
-		public static final int PLEASE_LOGIN = 500;
-		public static final int LOGIN_FAILED = 501;
-		public static final int UPLOAD_INVALID_EXTENSION = 502;
-		public static final int UPLOAD_TOO_BIG = 503;
-		public static final int UPLOAD_FAILED = 504;
-		public static final int UPDATE_CONFLICT = 505;
-
-		public static final int API_ERROR = 400;
-		public static final int UKNOWN_ACTION = 404;
+		public static final String PATH = "path";
+		public static final String FILE = "file";
+		public static final String FILES = "files";
+		public static final String USER = "user";
+		public static final String SERVER_INFO = "server";
+		public static final String ERROR = "error";
 	}
 	
-	private final Map<Integer, Class> events = new HashMap<>();
+	private final Map<String, Class> events = new HashMap<>();
 
 	private String server = "http://minicloud.zipek.cz";
 
@@ -88,14 +73,13 @@ public class External extends Eventor<Event> {
 	public External() {
 		this.actionCounter = 0;
 		
-		events.put(codes.LOGIN_OK, LoginEvent.class);
-		events.put(codes.FILES_OK, FilesEvent.class);
-		events.put(codes.DELETE_OK, DeleteEvent.class);
-		events.put(codes.LOGOUT_OK, LogoutEvent.class);
-		events.put(codes.UPDATE_OK, UpdateEvent.class);
-		events.put(codes.LOGIN_FAILED, LoginFailedEvent.class);
-		events.put(codes.UPDATE_CONFLICT, UpdateConflictEvent.class);
-		events.put(codes.SYNCKEY_OK, SynckeyEvent.class);
+		events.put("", SuccessEvent.class);
+		events.put(codes.FILE, FileEvent.class);
+		events.put(codes.ERROR, ErrorEvent.class);
+		events.put(codes.PATH, PathEvent.class);
+		events.put(codes.USER, UserEvent.class);
+		events.put(codes.SERVER_INFO, ServerInfoEvent.class);
+		
 	}
 
 	public External(String server) {
@@ -182,6 +166,7 @@ public class External extends Eventor<Event> {
 					JSONObject res = loadResponse(this.params, this.auth);
 					dispatchResponse(res);
 				} catch (JSONException | IOException excalibur) {
+					dispatchResponse(null);
 					Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, excalibur);
 				}
 			}
@@ -190,16 +175,28 @@ public class External extends Eventor<Event> {
 		return request;
 	}
 
-	private void dispatchResponse(JSONObject response) throws JSONException {
-		int code = response.getInt("code");
-		Class handler = events.get(code);
+	private void dispatchResponse(JSONObject response) {
+		
+		if (response == null) {
+			fireEvent(new ErrorEvent(this, null, null));
+			return;
+		}
+		
+		String type = response.optString("type", "");
+		String action_id = response.optString("action_id", null);
+		JSONObject data = response.optJSONObject("data");
+		
+		Class handler = events.get(type);
 		
 		if (handler != null) {
+					
+			System.out.println("Event type " + handler.getName());
+			
 			try {
 				fireEvent((Event)(
 					handler
-						.getDeclaredConstructor(External.class, JSONObject.class, int.class)
-						.newInstance(this, response, code)
+						.getDeclaredConstructor(External.class, JSONObject.class, String.class)
+						.newInstance(this, data, action_id)
 				));
 			} catch (NoSuchMethodException |
 					SecurityException |
@@ -210,10 +207,10 @@ public class External extends Eventor<Event> {
 				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
 				
 				//We need to fire something
-				fireEvent(new Event(this, response, code));
+				fireEvent(new Event(this, data, action_id));
 			}
 		} else {
-			fireEvent(new Event(this, response, code));
+			fireEvent(new Event(this, data, action_id));
 		}
 	}
 
@@ -229,6 +226,8 @@ public class External extends Eventor<Event> {
 		conn.setRequestProperty("X-Auth", auth);
 		//conn.setRequestProperty("Content-Length", "" + Integer.toString(request.getBytes().length));
 
+		System.out.println(params);
+		
 		try (DataOutputStream out = new DataOutputStream(conn.getOutputStream())) {
 			out.writeBytes(params);
 			out.flush();
@@ -242,12 +241,22 @@ public class External extends Eventor<Event> {
 			response = "";
 			String line;
 			while ((line = in.readLine()) != null) {
-				response += line;
+				response += line + "\n";
 			}
 		} catch (Exception e) {
-			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, e);
-			return null;
+			try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getErrorStream()))) {
+				response = "";
+				String line;
+				while ((line = in.readLine()) != null) {
+					response += line + "\n";
+				}
+			} catch (Exception e2) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, e2);
+				return null;
+			}
 		}
+		
+		System.out.print(response);
 		
 		return new JSONObject(response);
 	}
