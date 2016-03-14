@@ -46,9 +46,15 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 		textName.setText(this.file.getName());
 		textLink.setText(this.file.getDownloadLink());
 		labelSize.setText(Tools.humanFileSize(this.file.getSize(), 2));
-		labelUploaded.setText(
+
+		labelCreated.setText(
 				new SimpleDateFormat("dd.MM.YYYY HH:mm")
-						.format(this.file.getMktime())
+						.format(this.file.getMdtime())
+		);
+		
+		labelUpdated.setText(
+				new SimpleDateFormat("dd.MM.YYYY HH:mm")
+						.format(this.file.getMdtime())
 		);
 		
 		return this;
@@ -68,15 +74,15 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
         jLabel7 = new javax.swing.JLabel();
         labelSize = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        labelUploaded = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        textNote = new javax.swing.JTextArea();
+        labelUpdated = new javax.swing.JLabel();
         buttonDownload = new javax.swing.JButton();
         buttonMove = new javax.swing.JButton();
         buttonCancel = new javax.swing.JButton();
         buttonSave = new javax.swing.JButton();
         textLink = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        labelCreated = new javax.swing.JLabel();
 
         jLabel6.setText("Name:");
 
@@ -86,15 +92,9 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 
         labelSize.setText("12.3 MiB");
 
-        jLabel9.setText("Uploaded:");
+        jLabel9.setText("Updated:");
 
-        labelUploaded.setText("10.11.2014 13:22");
-
-        jScrollPane1.setToolTipText("File note");
-
-        textNote.setColumns(20);
-        textNote.setRows(5);
-        jScrollPane1.setViewportView(textNote);
+        labelUpdated.setText("10.11.2014 13:22");
 
         buttonDownload.setText("Download");
         buttonDownload.addActionListener(new java.awt.event.ActionListener() {
@@ -129,36 +129,41 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 
         jLabel14.setText("Download link:");
 
+        jLabel10.setText("Created:");
+
+        labelCreated.setText("10.11.2014 13:22");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(buttonDownload)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonMove)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                         .addComponent(buttonSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonCancel))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(textName)
-                            .addComponent(labelSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(labelUploaded, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(textLink)))
+                            .addComponent(labelSize, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labelUpdated, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labelCreated, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(textLink, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -175,14 +180,16 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(labelUploaded))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(labelUpdated))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelCreated)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonDownload)
                     .addComponent(buttonMove)
@@ -208,7 +215,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
 		file.getSource().addListener(this);
-		actionId = file.getSource().update(file, textName.getText(), textNote.getText());
+		actionId = file.getSource().updateFile(file, textName.getText());
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
@@ -220,16 +227,16 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     private javax.swing.JButton buttonDownload;
     private javax.swing.JButton buttonMove;
     private javax.swing.JButton buttonSave;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelCreated;
     private javax.swing.JLabel labelSize;
-    private javax.swing.JLabel labelUploaded;
+    private javax.swing.JLabel labelUpdated;
     private javax.swing.JTextField textLink;
     private javax.swing.JTextField textName;
-    private javax.swing.JTextArea textNote;
     // End of variables declaration//GEN-END:variables
 
 	@Override

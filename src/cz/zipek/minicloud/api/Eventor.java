@@ -1,16 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package cz.zipek.minicloud.api;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Class capable of firing events.
+ * 
  * @author Kamen
  * @param <E> expected event class
  */
@@ -38,7 +33,7 @@ public class Eventor<E> {
 	}
 	
 	/**
-	 * This method should be only called inside handler method
+	 * This method should be only called inside handler method.
 	 * 
 	 * @param listener 
 	 */

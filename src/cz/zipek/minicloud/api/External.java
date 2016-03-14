@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.zipek.minicloud.api;
 
 import cz.zipek.minicloud.api.events.ErrorEvent;
@@ -34,11 +30,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
+ * This class manages interaction with minicloud server API
+ * 
  * @author Kamen
  */
 public class External extends Eventor<Event> {
 
+	/**
+	 * Codes used to determine response type.
+	 */
 	class codes {
 		public static final String PATH = "path";
 		public static final String FILE = "file";
@@ -48,16 +48,20 @@ public class External extends Eventor<Event> {
 		public static final String ERROR = "error";
 	}
 	
+	///@var events maps response type to class that parses said response
 	private final Map<String, Class> events = new HashMap<>();
 
+	///@var server path to server
 	private String server = "http://minicloud.zipek.cz";
 
+	///@var auth authorization string used to autorize against API
 	private String auth;
 	
+	///@var long counter used to automatically create action_id
 	private long actionCounter;
 	
 	/**
-	 * Used for parametrized thread
+	 * Used for parametrized thread.
 	 */
 	class ParamThread extends Thread {
 
@@ -70,6 +74,9 @@ public class External extends Eventor<Event> {
 		}
 	}
 
+	/**
+	 * Initializes basic event mapping.
+	 */
 	public External() {
 		this.actionCounter = 0;
 		
@@ -82,6 +89,11 @@ public class External extends Eventor<Event> {
 		
 	}
 
+	/**
+	 * Initializes basic event mapping and sets server url.
+	 * 
+	 * @param server serve to use
+	 */
 	public External(String server) {
 		this();
 		
@@ -89,24 +101,32 @@ public class External extends Eventor<Event> {
 	}
 
 	/**
-	 * @return the url
+	 * Returns url to minicloud server, without api suffix.
+	 * 
+	 * @return server url without api suffix.
 	 */
 	public String getServer() {
 		return server;
 	}
 
 	/**
-	 * @param aServer the url to server
+	 * Sets url to minicloud server, without api suffix.
+	 * 
+	 * @param aServer the url to server without api suffix
 	 */
 	public final void setServer(String aServer) {
 		server = aServer;
 	}
 	
+	/**
+	 * Url to server with api suffix.
+	 * 
+	 * @return url to server with api suffix
+	 */
 	public String getApiUrl() {
 		return getServer() + "/api.php";
 	}
 
-	
 	private String md5(String what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		return md5(what.getBytes("UTF-8"));
 	}
@@ -154,11 +174,11 @@ public class External extends Eventor<Event> {
 		return result.toString();
 	}
 
-	public Thread request(String params) {
+	private Thread request(String params) {
 		return request(params, getAuth());
 	}
 	
-	public Thread request(String params, String auth) {		
+	private Thread request(String params, String auth) {		
 		Thread request = new ParamThread(params, auth) {
 			@Override
 			public void run() {
@@ -282,14 +302,32 @@ public class External extends Eventor<Event> {
 		return "";
 	}
 	
+	/**
+	 * Requests server info.
+	 * 
+	 * @return action id
+	 */
 	public String getServerInfo() {
 		return getServerInfo(false);
 	}
 	
+	/**
+	 * Requests server info.
+	 * 
+	 * @param wait wait for request to finish
+	 * @return action id
+	 */
 	public String getServerInfo(boolean wait) {
 		return getServerInfo(wait, Long.toString(this.actionCounter++));
 	}
 	
+	/**
+	 * Requests server info.
+	 * 
+	 * @param wait wait for request to finish
+	 * @param action_id user specified action id
+	 * @return action id
+	 */
 	public String getServerInfo(boolean wait, String action_id) {
 		Map<String, String> params = new HashMap<>();
 		params.put("action_id", action_id);
@@ -307,14 +345,32 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
+	/**
+	 * Requests current user info.
+	 * 
+	 * @return action id
+	 */
 	public String getUser() {
 		return getUser(false);
 	}
 	
+	/**
+	 * Requests current user info.
+	 * 
+	 * @param wait wait for request to finish
+	 * @return action id
+	 */
 	public String getUser(boolean wait) {
 		return getUser(wait, Long.toString(this.actionCounter++));
 	}
 	
+	/**
+	 * Requests current user info.
+	 * 
+	 * @param wait wait for request to finish
+	 * @param action_id user specified action id
+	 * @return action id
+	 */
 	public String getUser(boolean wait, String action_id) {
 		Map<String, String> params = new HashMap<>();
 		params.put("action_id", action_id);
@@ -332,18 +388,44 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
+	/**
+	 * Requests root path info.
+	 * 
+	 * @return action id
+	 */
 	public String getPath() {
 		return getPath("");
 	}
 	
+	/**
+	 * Requests path info.
+	 * 
+	 * @param path queried path
+	 * @return action id
+	 */
 	public String getPath(String path) {
 		return getPath(path, false);
 	}
 	
+	/**
+	 * Requests path info.
+	 * 
+	 * @param path queried path
+	 * @param wait wait for request to finish
+	 * @return action id
+	 */
 	public String getPath(String path, boolean wait) {
 		return getPath(path, wait, Long.toString(this.actionCounter++));
 	}
 	
+	/**
+	 * Requests path info.
+	 * 
+	 * @param path queried path
+	 * @param wait wait for request to finish
+	 * @param action_id user specified action id
+	 * @return action id
+	 */
 	public String getPath(String path, boolean wait, String action_id) {
 		Map<String, String> params = new HashMap<>();
 		params.put("action_id", action_id);
@@ -365,14 +447,35 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
+	/**
+	 * Requests path info.
+	 * 
+	 * @param id queried path id
+	 * @return action id
+	 */
 	public String getPath(int id) {
 		return getPath(id, false);
 	}
 	
+	/**
+	 * Requests path info.
+	 * 
+	 * @param id queried path id
+	 * @param wait wait for request to finish
+	 * @return action id
+	 */
 	public String getPath(int id, boolean wait) {
 		return getPath(id, wait, Long.toString(this.actionCounter++));
 	}
 	
+	/**
+	 * Requests path info.
+	 * 
+	 * @param id queried path id
+	 * @param wait wait for request to finish
+	 * @param action_id user specified action id
+	 * @return action id
+	 */
 	public String getPath(int id, boolean wait, String action_id) {
 		Map<String, String> params = new HashMap<>();
 		params.put("action_id", action_id);
@@ -390,9 +493,25 @@ public class External extends Eventor<Event> {
 		
 		return action_id;
 	}
+		
+	/**
+	 * Requests deletion of specified files.
+	 * 
+	 * @param files files to deleteFile
+	 * @return action id
+	 */
+	public String deleteFile(List<File> files) {
+		return deleteFile(files, Long.toString(this.actionCounter++));
+	}
 	
-	
-	public String delete(List<File> files, String action_id) {
+	/**
+	 * Requests deletion of specified files.
+	 * 
+	 * @param files files to deleteFile
+	 * @param action_id user specified action id
+	 * @return action id
+	 */
+	public String deleteFile(List<File> files, String action_id) {
 		try {
 			StringBuilder params = new StringBuilder();
 			params.append(String.format(
@@ -410,25 +529,33 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
-	public String delete(List<File> files) {
-		return delete(files, Long.toString(this.actionCounter++));
+	/**
+	 * Requests moving of specified file to specified path.
+	 * 
+	 * @param file file to be moved
+	 * @param path target path
+	 * @return action id
+	 */
+	public String moveFile(File file, String path) {
+		return moveFile(file, path, Long.toString(actionCounter++));
 	}
 	
 	/**
-	 *
-	 * @param file
-	 * @param folder
-	 * @param action_id
-	 * @return 
+	 * Requests moving of specified file to specified path.
+	 * 
+	 * @param file file to be moved
+	 * @param path target path
+	 * @param action_id user specified action id
+	 * @return action id
 	 */
-	public String move(File file, String folder, String action_id) {
+	public String moveFile(File file, String path, String action_id) {
 		try {
 			request(
 					String.format(
-							"action=update&action_id=%s&id=%s&folder=%s",
+							"action=updateFile&action_id=%s&id=%s&path=%s",
 							URLEncoder.encode(action_id, "UTF-8"),
 							Integer.toString(file.getId()),
-							URLEncoder.encode(folder, "UTF-8")
+							URLEncoder.encode(path, "UTF-8")
 					)
 			);
 		} catch (UnsupportedEncodingException ex) {
@@ -438,32 +565,21 @@ public class External extends Eventor<Event> {
 	}
 	
 	/**
-	 *
-	 * @param file
-	 * @param folder
-	 * @return 
+	 * Requests change of file informations.
+	 * 
+	 * @param file file to be changed
+	 * @param name new file name
+	 * @param action_id user specified action id
+	 * @return action id
 	 */
-	public String move(File file, String folder) {
-		return move(file, folder, Long.toString(actionCounter++));
-	}
-	
-	/**
-	 *
-	 * @param file
-	 * @param name
-	 * @param note
-	 * @param action_id
-	 * @return 
-	 */
-	public String update(File file, String name, String note, String action_id) {
+	public String updateFile(File file, String name, String action_id) {
 		try {
 			request(
 					String.format(
-							"action=update&action_id=%s&id=%s&name=%s&note=%s",
+							"action=updateFile&action_id=%s&id=%s&filename=%s",
 							URLEncoder.encode(action_id, "UTF-8"),
 							Integer.toString(file.getId()),
-							URLEncoder.encode(name, "UTF-8"),
-							URLEncoder.encode(note, "UTF-8")
+							URLEncoder.encode(name, "UTF-8")
 					)
 			);
 		} catch (UnsupportedEncodingException ex) {
@@ -473,20 +589,31 @@ public class External extends Eventor<Event> {
 	}
 	
 	/**
-	 *
-	 * @param file
-	 * @param name
-	 * @param note
-	 * @return 
+	 * Requests change of file informations.
+	 * 
+	 * @param file file to be changed
+	 * @param name new file name
+	 * @return action id
 	 */
-	public String update(File file, String name, String note) {
-		return update(file, name, note, Long.toString(actionCounter++));
+	public String updateFile(File file, String name) {
+		return updateFile(file, name, Long.toString(actionCounter++));
 	}
 	
+	/**
+	 * Sets plain authorization string.
+	 * 
+	 * @param aAuth 
+	 */
 	public void setAuth(String aAuth) {
 		auth = aAuth;
 	}
 	
+	/**
+	 * Builds authorization string from specified parameters.
+	 * 
+	 * @param login
+	 * @param password 
+	 */
 	public void setAuth(String login, char[] password) {
 		
 		try {
@@ -497,6 +624,11 @@ public class External extends Eventor<Event> {
 		
 	}
 	
+	/**
+	 * Returns authorization string.
+	 * 
+	 * @return authorization string
+	 */
 	public String getAuth() {
 		return auth;
 	}

@@ -162,7 +162,7 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 				first = false;
 				f.getSource().addListener(this);
 			}
-			actions.add(f.getSource().move(f, path));
+			actions.add(f.getSource().moveFile(f, path));
 		}
     }//GEN-LAST:event_buttonMoveActionPerformed
 

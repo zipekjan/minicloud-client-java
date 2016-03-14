@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package cz.zipek.minicloud.api;
 
 /**
- *
+ * Basic listener class listening for API events
+ * 
  * @author Kamen
  * @param <E>
  */

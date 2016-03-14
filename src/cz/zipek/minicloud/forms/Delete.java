@@ -132,7 +132,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 		Manager.external.addListener(this);
 		
 		buttonDelete.setEnabled(false);
-		actionId = Manager.external.delete(files);
+		actionId = Manager.external.deleteFile(files);
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed

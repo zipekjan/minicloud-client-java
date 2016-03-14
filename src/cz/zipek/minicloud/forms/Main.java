@@ -249,7 +249,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Miniupload Manager");
+        setTitle("Minicloud Manager");
 
         tableRemoteFiles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -463,7 +463,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/logo32.png"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/wide-small.png"))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

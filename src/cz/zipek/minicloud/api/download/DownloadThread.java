@@ -83,7 +83,7 @@ class DownloadThread extends Thread
 							outputStream.write(buffer, 0, bytesRead);
 
 							downloaded += bytesRead;
-							this.fireEvent(new DownloadProgressEvent(source, target, downloaded, total));
+							fireEvent(new DownloadProgressEvent(source, target, downloaded, total));
 						}
 
 						outputStream.close();

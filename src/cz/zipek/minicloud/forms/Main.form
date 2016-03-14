@@ -3,7 +3,7 @@
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="title" type="java.lang.String" value="Miniupload Manager"/>
+    <Property name="title" type="java.lang.String" value="Minicloud Manager"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -372,7 +372,7 @@
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/cz/zipek/minicloud/res/logo32.png"/>
+          <Image iconType="3" name="/cz/zipek/minicloud/res/wide-small.png"/>
         </Property>
       </Properties>
     </Component>
