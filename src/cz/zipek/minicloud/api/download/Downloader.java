@@ -5,10 +5,11 @@
  */
 package cz.zipek.minicloud.api.download;
 
-import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.api.Eventor;
+import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.download.events.DownloadAllDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileStartedEvent;
@@ -22,10 +23,19 @@ import java.util.List;
  */
 public class Downloader extends Eventor<DownloadEvent> implements Listener {
 
-	private final List<DownloadItem> items = new LinkedList<>();
+	private final List<DownloadItem> items;
 	private DownloadThread thread;
 	private String targetFolder;
-
+	private final External external;
+	
+	private final User user;
+	
+	public Downloader(External aExternal, User aUser) {
+		items = new LinkedList<>();
+		external = aExternal;
+		user = aUser;
+	}
+	
 	public void add(File file) {
 		add(file, null);
 	}
@@ -67,7 +77,7 @@ public class Downloader extends Eventor<DownloadEvent> implements Listener {
 		
 		fireEvent(new DownloadFileStartedEvent(file.getFile(), target));
 		
-		thread = new DownloadThread(file.getFile(), target, Manager.external.getAuth());
+		thread = new DownloadThread(file.getFile(), target, external.getAuth(), user.getKey());
 		thread.addListener(this);
 		thread.start();
 	}

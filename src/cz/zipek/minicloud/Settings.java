@@ -39,13 +39,19 @@ public class Settings {
 	///@var syncFolders synchronization folders
 	private static final List<SyncFolder> syncFolders = new ArrayList<>();
 	
+	///@var encryption encyption settings
+	private static String encryption;
+	
+	///@var encryptionOptions possible encryption values
+	private static final String[] encryptionOptions = new String[] { null, "AES/CBC/PKCS5Padding" };
+	
+	///@var server server url
+	protected static String server = "";
+	
 	///@var listeners settings changes listeners
 	protected static final List<Listener> listeners = new ArrayList<>();
 	///@var toRemove listeners to be removed after all event is handled by all listeners
 	protected static final List<Listener> toRemove = new ArrayList<>();
-	
-	///@var server server url
-	protected static String server = "";
 	
 	/**
 	 * Adds new listener
@@ -124,7 +130,8 @@ public class Settings {
 		//Load basic data
 		username = data.optString("username", "");
 		server = data.optString("server", "");
-			
+		encryption = data.optString("encryption", "");
+		
 		//Load sync folders
 		JSONArray folders = data.getJSONArray("folders");
 		for(int i = 0, l = folders.length(); i < l; i++) {
@@ -156,6 +163,7 @@ public class Settings {
 		JSONObject data = new JSONObject();
 		data.put("username", username);
 		data.put("server", server);
+		data.put("encryption", encryption);
 
 		JSONArray folders = new JSONArray();
 		int index = 0;
@@ -281,5 +289,26 @@ public class Settings {
 	 */
 	public static void setServer(String aServer) {
 		server = aServer;
+	}
+
+	/**
+	 * @return the encryption
+	 */
+	public static String getEncryption() {
+		return encryption;
+	}
+
+	/**
+	 * @param aEncryption the encryption to set
+	 */
+	public static void setEncryption(String aEncryption) {
+		encryption = aEncryption;
+	}
+
+	/**
+	 * @return the encryptionOptions
+	 */
+	public static String[] getEncryptionOptions() {
+		return encryptionOptions;
 	}
 }

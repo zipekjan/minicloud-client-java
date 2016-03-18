@@ -23,6 +23,7 @@ import org.json.JSONException;
  * @author zipekjan
  */
 public class Manager {
+	
 	public static External external;
 	
 	/**

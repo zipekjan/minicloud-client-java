@@ -6,6 +6,7 @@
 package cz.zipek.minicloud.api.upload;
 
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -26,6 +27,7 @@ public class UploadThread extends Thread implements Listener {
 	protected final cz.zipek.minicloud.api.File remote;
 	protected final List<Listener> listeners = new ArrayList<>();
 	protected final String targetFolder;
+	protected final Encryptor encryptor;
 	
 	public synchronized void addListener(Listener listener) {
 		listeners.add(listener);
@@ -41,22 +43,24 @@ public class UploadThread extends Thread implements Listener {
 		}
 	}
 	
-	public UploadThread(Uploader uploader, File file, String target_folder) {
+	public UploadThread(Uploader uploader, File file, String target_folder, Encryptor encryptor) {
 		super("Upload thread");
 		
 		this.uploader = uploader;
 		this.file = file;
 		this.targetFolder = target_folder;
 		this.remote = null;
+		this.encryptor = encryptor;
 	}
 	
-	public UploadThread(Uploader uploader, File local, cz.zipek.minicloud.api.File remote) {
+	public UploadThread(Uploader uploader, File local, cz.zipek.minicloud.api.File remote, Encryptor encryptor) {
 		super("Upload thread");
 		
 		this.uploader = uploader;
 		this.file = local;
 		this.remote = remote;
 		this.targetFolder = null;
+		this.encryptor = encryptor;
 	}
 	
 	private String parseFolder(String folder) {
@@ -67,7 +71,7 @@ public class UploadThread extends Thread implements Listener {
 	public void run() {
 		try {
 			// Helper for sending big requests
-			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8", uploader.getSource().getAuth(), null);
+			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8", uploader.getSource().getAuth(), encryptor);
 			
 			// Listen to sender events
 			sender.addListener(this);

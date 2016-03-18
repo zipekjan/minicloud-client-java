@@ -19,6 +19,7 @@ public class File {
 	private String name;
 	private String path;
 	private String extension;
+	private String encryption;
 	
 	private Path parent;
 	
@@ -37,6 +38,7 @@ public class File {
 			name = data.getString("filename");
 			path = data.optString("path", null);
 			checksum = data.optString("checksum", null);
+			encryption = data.optString("encryption", null);
 			
 			mktime = new Date(data.getLong("mktime") * 1000);
 			mdtime = new Date(data.getLong("mktime") * 1000);
@@ -161,6 +163,13 @@ public class File {
 	 */
 	public Date getMdtime() {
 		return mdtime;
+	}
+
+	/**
+	 * @return the encryption
+	 */
+	public String getEncryption() {
+		return encryption;
 	}
 	
 }

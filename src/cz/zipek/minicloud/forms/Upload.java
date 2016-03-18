@@ -5,9 +5,9 @@
  */
 package cz.zipek.minicloud.forms;
 
-import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
+import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.upload.Uploader;
@@ -16,8 +16,12 @@ import cz.zipek.minicloud.api.upload.events.UploadFailedEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFileDoneEvent;
 import cz.zipek.minicloud.api.upload.events.UploadProgressEvent;
 import java.io.File;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -218,14 +222,26 @@ public class Upload extends javax.swing.JFrame implements Listener {
 
     private void buttonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartActionPerformed
 		if (uploader == null) {
-			setStartEnabled(false);
-			
-			uploader = new Uploader(Manager.external);
-			uploader.addListener(this);
-			for(File f : files) {
-				uploader.add(f);
+			try {
+				setStartEnabled(false);
+				
+				uploader = new Uploader(Manager.external, Session.getUser().getEncryptor(Settings.getEncryption()));
+				uploader.addListener(this);
+				for(File f : files) {
+					uploader.add(f);
+				}
+				uploader.start(comboTarget.getSelectedItem().toString() + textTagret.getText());
+				
+			} catch (NoSuchAlgorithmException | NoSuchPaddingException ex) {
+				JOptionPane.showMessageDialog(
+						this,
+						"Failed to upload file. There is problem with encryption.",
+						"Upload failed",
+						JOptionPane.ERROR_MESSAGE
+				);
+				
+				Logger.getLogger(Upload.class.getName()).log(Level.SEVERE, null, ex);
 			}
-			uploader.start(comboTarget.getSelectedItem().toString() + textTagret.getText());
 		}
     }//GEN-LAST:event_buttonStartActionPerformed
 

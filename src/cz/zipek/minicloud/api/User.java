@@ -1,5 +1,9 @@
 package cz.zipek.minicloud.api;
 
+import cz.zipek.minicloud.api.encryption.Encryptor;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import javax.crypto.NoSuchPaddingException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,7 +21,7 @@ public class User {
 	protected String name;
 	protected String email;
 	
-	protected String key;
+	protected byte[] key;
 	
 	protected boolean admin;
 	
@@ -30,7 +34,11 @@ public class User {
 		name = data.getString("name");
 		email = data.getString("email");
 		
-		key = data.optString("key", null);
+		String keySource = data.optString("key", null);
+		
+		if (keySource != null && keySource.length() > 0) {
+			key = Base64.getDecoder().decode(keySource);
+		}
 		
 		admin = data.optBoolean("admin", false);
 		
@@ -67,7 +75,7 @@ public class User {
 	/**
 	 * @return the key
 	 */
-	public String getKey() {
+	public byte[] getKey() {
 		return key;
 	}
 
@@ -76,6 +84,12 @@ public class User {
 	 */
 	public boolean isAdmin() {
 		return admin;
+	}
+	
+	public Encryptor getEncryptor(String options) throws NoSuchAlgorithmException, NoSuchPaddingException {
+		if (options == null || options.length() == 0)
+			return null;
+		return new Encryptor(key, options);
 	}
 	
 }

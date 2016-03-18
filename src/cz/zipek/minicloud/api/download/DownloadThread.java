@@ -5,35 +5,45 @@
  */
 package cz.zipek.minicloud.api.download;
 
+import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
 import cz.zipek.minicloud.api.download.events.DownloadStoppedEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadProgressEvent;
+import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 class DownloadThread extends Thread
 {
 	private final File source;
 	private final String target;
 	private final String auth;
+	private final byte[] key;
+	
 	private boolean stopDownload;
 
-	public DownloadThread(File source, String target, String auth) {
+	public DownloadThread(File source, String target, String auth, byte[] key) {
 		super("File download");
 		this.source = source;
 		this.target = target;
 		this.auth = auth;
+		this.key = key;
 	}
 	
 	protected final List<Listener> listeners = new ArrayList<>();
@@ -56,6 +66,11 @@ class DownloadThread extends Thread
 	public void run() {
 		try {
 			URL url = new URL(this.getSource().getDownloadLink());
+			Encryptor encryptor = null;
+			if (getSource().getEncryption() != null) {
+				encryptor = new Encryptor(Session.getUser().getKey(), getSource().getEncryption());
+			}
+			
 			HttpURLConnection httpConn;
 			
 			try {
@@ -80,7 +95,13 @@ class DownloadThread extends Thread
 						downloaded = 0;
 
 						while ((bytesRead = inputStream.read(buffer)) != -1 && !stopDownload) {
-							outputStream.write(buffer, 0, bytesRead);
+							
+							//@TODO: Block size should be same
+							if (encryptor != null) {
+								outputStream.write(encryptor.decrypt(buffer), 0, bytesRead);
+							} else {
+								outputStream.write(buffer, 0, bytesRead);
+							}
 
 							downloaded += bytesRead;
 							fireEvent(new DownloadProgressEvent(source, target, downloaded, total));
@@ -94,8 +115,12 @@ class DownloadThread extends Thread
 						} else {
 							fireEvent(new DownloadFileDoneEvent(source, target));
 						}
+						
 					} catch (IOException ex) {
 						fireEvent(new DownloadFailedEvent(source, ex));
+					} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+						fireEvent(new DownloadFailedEvent(source, ex));
+						Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 					}
 				} else {
 					fireEvent(new DownloadFailedEvent(source, null));
@@ -104,7 +129,7 @@ class DownloadThread extends Thread
 				fireEvent(new DownloadFailedEvent(source, ex));
 				Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 			}
-		} catch (MalformedURLException ex) {
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | MalformedURLException ex) {
 			fireEvent(new DownloadFailedEvent(source, ex));
 			Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 		}

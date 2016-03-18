@@ -10,6 +10,7 @@ import cz.zipek.minicloud.api.Eventor;
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.encryption.Encryptor;
 import cz.zipek.minicloud.api.upload.events.UploadAllDoneEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFailedEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFileDoneEvent;
@@ -31,12 +32,14 @@ import org.json.JSONObject;
 public class Uploader extends Eventor<UploadEvent> implements Listener {	
 	private final List<UploadItem> items = new ArrayList<>();
 	private final External source;
-	private String targetFolder;
+	private final Encryptor encryptor;
 	
+	private String targetFolder;
 	private UploadThread thread;
 	
-	public Uploader(External source) {
+	public Uploader(External source, Encryptor encryption) {
 		this.source = source;
+		encryptor = encryption;
 	}
 	
 	public void add(java.io.File file) {
@@ -84,9 +87,9 @@ public class Uploader extends Eventor<UploadEvent> implements Listener {
 			if (target == null) {
 				target = targetFolder;
 			}
-			thread = new UploadThread(this, file.getFile(), target);
+			thread = new UploadThread(this, file.getFile(), target, encryptor);
 		} else {
-			thread = new UploadThread(this, file.getFile(), file.getExisting());
+			thread = new UploadThread(this, file.getFile(), file.getExisting(), encryptor);
 		}
 		
 		thread.addListener(this);

@@ -5,6 +5,7 @@
  */
 package cz.zipek.minicloud.sync;
 
+import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
@@ -22,6 +23,7 @@ import cz.zipek.minicloud.api.upload.events.UploadAllDoneEvent;
 import cz.zipek.minicloud.sync.events.SyncChecksumFailedEvent;
 import cz.zipek.minicloud.sync.events.SyncDone;
 import cz.zipek.minicloud.sync.events.SyncDownloadEvent;
+import cz.zipek.minicloud.sync.events.SyncEncryptionFailedEvent;
 import cz.zipek.minicloud.sync.events.SyncExternalEvent;
 import cz.zipek.minicloud.sync.events.SyncMkdirFailedEvent;
 import cz.zipek.minicloud.sync.events.SyncUploadEvent;
@@ -35,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.crypto.NoSuchPaddingException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -218,82 +221,87 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 		
 		if (event.getActionId() != null && event.getActionId().equals(actionId)) {
 			if (event instanceof PathEvent) {
-				PathEvent pathEvent = (PathEvent)event;
-				Path folder = pathEvent.getPath();
-				
-				//@TODO: Implement
-				timeOffset = 0; //filesEvent.getOffset();
-				
-				downloader = new Downloader();
-				uploader = new Uploader(external);
-				
-				downloader.addListener(this);
-				uploader.addListener(this);
-				
-				//All files in remote folder
-				List<cz.zipek.minicloud.api.File> files = new ArrayList<>();
-
-				if (folder != null) {
-					//@TODO: Use getAllFiles!
-					files = folder.getFiles();
-
-					//Download new files, sync changed
-					for(cz.zipek.minicloud.api.File file : files) {
-						boolean invalid = false;
-						//Check if there isn't copy
-						for(cz.zipek.minicloud.api.File brother : file.getParent().getFiles()) {
-							if (brother.getName().equals(file.getName()) &&
-								brother.getMdtime().before(file.getMdtime())) {
-								invalid = true;
+				try {
+					PathEvent pathEvent = (PathEvent)event;
+					Path folder = pathEvent.getPath();
+					
+					//@TODO: Implement
+					timeOffset = 0; //filesEvent.getOffset();
+					
+					downloader = new Downloader(external, Session.getUser());
+					uploader = new Uploader(external, Session.getUser().getEncryptor(Settings.getEncryption()));
+					
+					downloader.addListener(this);
+					uploader.addListener(this);
+					
+					//All files in remote folder
+					List<cz.zipek.minicloud.api.File> files = new ArrayList<>();
+					
+					if (folder != null) {
+						//@TODO: Use getAllFiles!
+						files = folder.getFiles();
+						
+						//Download new files, sync changed
+						for(cz.zipek.minicloud.api.File file : files) {
+							boolean invalid = false;
+							//Check if there isn't copy
+							for(cz.zipek.minicloud.api.File brother : file.getParent().getFiles()) {
+								if (brother.getName().equals(file.getName()) &&
+										brother.getMdtime().before(file.getMdtime())) {
+									invalid = true;
+									break;
+								}
+							}
+							if (!invalid) {
+								if (!syncFile(remoteFileToLocal(local.getAbsolutePath(), file, folder), file)) {
+									return;
+								}
+							}
+						}
+					}
+					
+					//Find new local files
+					List<File> loc = getAllFiles(local);
+					for(File file : loc) {
+						boolean exists = false;
+						
+						if (maxSize != 0 && file.length() > maxSize) {
+							continue;
+						}
+						
+						for(cz.zipek.minicloud.api.File external_file : files) {
+							File ondisk = remoteFileToLocal(local.getAbsolutePath(), external_file, folder);
+							if (ondisk.getAbsolutePath().equals(file.getAbsolutePath())) {
+								exists = true;
 								break;
 							}
 						}
-						if (!invalid) {
-							if (!syncFile(remoteFileToLocal(local.getAbsolutePath(), file, folder), file)) {
-								return;
+						if (!exists) {
+							String relative = file.getParentFile().getAbsolutePath().substring(local.getAbsolutePath().length()).replace(File.separator, "/");
+							
+							if (regexp == null || !regexp.matcher(relative).matches()) {
+								String path = remote + "/" + relative;
+								
+								//Because trim with char param is too OP for java
+								while (path.length() > 0 && path.charAt(path.length() - 1) == '/')
+									path = path.substring(0, path.length() - 1);
+								while (path.length() > 0 && path.charAt(0) == '/')
+									path = path.substring(1);
+								
+								uploader.add(file, path);
 							}
 						}
 					}
-				}
-				
-				//Find new local files
-				List<File> loc = getAllFiles(local);
-				for(File file : loc) {
-					boolean exists = false;
 					
-					if (maxSize != 0 && file.length() > maxSize) {
-						continue;
+					if (downloader.getItems().isEmpty() && uploader.getItems().isEmpty()) {
+						checkIfComplete();
+					} else {
+						downloader.start(local.getAbsolutePath());
+						uploader.start(remote);
 					}
-					
-					for(cz.zipek.minicloud.api.File external_file : files) {
-						File ondisk = remoteFileToLocal(local.getAbsolutePath(), external_file, folder);
-						if (ondisk.getAbsolutePath().equals(file.getAbsolutePath())) {
-							exists = true;
-							break;
-						}
-					}
-					if (!exists) {
-						String relative = file.getParentFile().getAbsolutePath().substring(local.getAbsolutePath().length()).replace(File.separator, "/");
-						
-						if (regexp == null || !regexp.matcher(relative).matches()) {
-							String path = remote + "/" + relative;
-
-							//Because trim with char param is too OP for java
-							while (path.length() > 0 && path.charAt(path.length() - 1) == '/')
-								path = path.substring(0, path.length() - 1);
-							while (path.length() > 0 && path.charAt(0) == '/')
-								path = path.substring(1);
-
-							uploader.add(file, path);
-						}
-					}
-				}
-				
-				if (downloader.getItems().isEmpty() && uploader.getItems().isEmpty()) {
-					checkIfComplete();
-				} else {
-					downloader.start(local.getAbsolutePath());
-					uploader.start(remote);
+				} catch (NoSuchAlgorithmException | NoSuchPaddingException ex) {
+					fireEvent(new SyncEncryptionFailedEvent());
+					Logger.getLogger(SyncFolder.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
 		}
