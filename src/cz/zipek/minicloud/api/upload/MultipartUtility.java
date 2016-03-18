@@ -5,6 +5,7 @@
 package cz.zipek.minicloud.api.upload;
 
 import cz.zipek.minicloud.api.Eventor;
+import cz.zipek.minicloud.api.encryption.Encryptor;
 import cz.zipek.minicloud.api.upload.events.UploadThreadSentEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFailedEvent;
 import cz.zipek.minicloud.api.upload.events.UploadThreadProgressEvent;
@@ -19,6 +20,9 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.InvalidKeyException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
  
 /**
  * This utility class provides an abstraction layer for sending multipart HTTP
@@ -33,18 +37,23 @@ public class MultipartUtility extends Eventor<UploadEvent> {
     private final String charset;
     private final OutputStream outputStream;
     private final PrintWriter writer;
-      
+	
+	private final Encryptor encryptor;
+	
     /**
      * This constructor initializes a new HTTP POST request with content type
      * is set to multipart/form-data
      * @param requestURL
      * @param charset
+	 * @param auth
      * @throws IOException
      */
-    public MultipartUtility(String requestURL, String charset, String auth)
+    public MultipartUtility(String requestURL, String charset, String auth, Encryptor encrypt)
             throws IOException {
-        this.charset = charset;
-         
+       
+		this.charset = charset;
+        this.encryptor = encrypt;
+		
         // creates a unique boundary based on time stamp
         boundary = "===" + System.currentTimeMillis() + "===";
          
@@ -56,9 +65,8 @@ public class MultipartUtility extends Eventor<UploadEvent> {
         httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 		httpConn.setRequestProperty("X-Auth", auth);
 		
-			outputStream = httpConn.getOutputStream();
-        writer = new PrintWriter(new OutputStreamWriter(outputStream, charset),
-                true);
+		outputStream = httpConn.getOutputStream();
+        writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
     }
  
     /**
@@ -88,7 +96,7 @@ public class MultipartUtility extends Eventor<UploadEvent> {
      * @param uploadFile a File to be uploaded 
      * @throws IOException
      */
-    public void addFilePart(String fieldName, File uploadFile) throws IOException {
+    public void addFilePart(String fieldName, File uploadFile) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         String fileName = uploadFile.getName();
         writer.append("--" + boundary).append(LINE_FEED);
         writer.append(
@@ -111,7 +119,13 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 			total = uploadFile.length();
 			sentTotal = 0;
 			while ((sentNow = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, sentNow);
+				
+				if (encryptor != null) {
+					outputStream.write(buffer, 0, sentNow);
+				} else {
+					outputStream.write(encryptor.encrypt(buffer), 0, sentNow);
+				}
+				
 				sentTotal += sentNow;
 				fireEvent(new UploadThreadProgressEvent(sentTotal, total));
 				

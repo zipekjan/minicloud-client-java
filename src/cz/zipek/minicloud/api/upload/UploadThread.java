@@ -8,10 +8,13 @@ package cz.zipek.minicloud.api.upload;
 import cz.zipek.minicloud.api.Listener;
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 /**
  *
@@ -64,7 +67,7 @@ public class UploadThread extends Thread implements Listener {
 	public void run() {
 		try {
 			// Helper for sending big requests
-			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8", uploader.getSource().getAuth());
+			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8", uploader.getSource().getAuth(), null);
 			
 			// Listen to sender events
 			sender.addListener(this);
@@ -87,7 +90,7 @@ public class UploadThread extends Thread implements Listener {
 			
 			// Start sending
 			sender.finish();
-		} catch (IOException ex) {
+		} catch (IOException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
 			Logger.getLogger(UploadThread.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
