@@ -6,6 +6,7 @@
 
 package cz.zipek.minicloud.forms;
 
+import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
@@ -192,7 +193,7 @@ public class Download extends javax.swing.JFrame implements Listener {
 		if (downloader == null) {
 			java.io.File path = new java.io.File(textTarget.getText());
 			if (path.exists() && path.isDirectory()) {
-				downloader = new Downloader();
+				downloader = new Downloader(Manager.external);
 				downloader.addListener(this);
 				for(File f : files) {
 					downloader.add(f);
