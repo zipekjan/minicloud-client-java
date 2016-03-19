@@ -1,9 +1,13 @@
 package cz.zipek.minicloud.api.encryption;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
@@ -32,6 +36,14 @@ public class Encryptor {
 		
 	}
 	
+	public CipherOutputStream getOutputStream(OutputStream stream) {
+		return new CipherOutputStream(stream, cipher);
+	}
+	
+	public CipherInputStream getInputStream(InputStream stream) {
+		return new CipherInputStream(stream, cipher);
+	}
+	
 	public byte[] encrypt(byte[] input) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		
 		cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -44,6 +56,10 @@ public class Encryptor {
 		cipher.init(Cipher.DECRYPT_MODE, key);
 		return cipher.doFinal(input);
 		
+	}
+	
+	public String getConfig() {
+		return config;
 	}
 	
 }

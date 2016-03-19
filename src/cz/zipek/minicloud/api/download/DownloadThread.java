@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
@@ -89,7 +90,12 @@ class DownloadThread extends Thread
 					byte[] buffer;
 					try (InputStream inputStream = httpConn.getInputStream()) {
 						outputStream = new FileOutputStream(this.getTarget());
-
+						
+						CipherOutputStream cipherStream = null;
+						if (encryptor != null) {
+							cipherStream = encryptor.getOutputStream(outputStream);
+						}
+						
 						buffer = new byte[4096];
 						total = httpConn.getContentLengthLong();
 						downloaded = 0;
@@ -97,8 +103,8 @@ class DownloadThread extends Thread
 						while ((bytesRead = inputStream.read(buffer)) != -1 && !stopDownload) {
 							
 							//@TODO: Block size should be same
-							if (encryptor != null) {
-								outputStream.write(encryptor.decrypt(buffer), 0, bytesRead);
+							if (cipherStream != null) {
+								cipherStream.write(buffer, 0, bytesRead);
 							} else {
 								outputStream.write(buffer, 0, bytesRead);
 							}
@@ -107,6 +113,11 @@ class DownloadThread extends Thread
 							fireEvent(new DownloadProgressEvent(source, target, downloaded, total));
 						}
 
+						if (cipherStream != null) {
+							cipherStream.flush();
+							cipherStream.close();
+						}
+						
 						outputStream.close();
 						inputStream.close();
 
@@ -118,9 +129,6 @@ class DownloadThread extends Thread
 						
 					} catch (IOException ex) {
 						fireEvent(new DownloadFailedEvent(source, ex));
-					} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-						fireEvent(new DownloadFailedEvent(source, ex));
-						Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 					}
 				} else {
 					fireEvent(new DownloadFailedEvent(source, null));

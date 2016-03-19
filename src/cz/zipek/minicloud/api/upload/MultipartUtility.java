@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
  
 /**
@@ -46,6 +47,7 @@ public class MultipartUtility extends Eventor<UploadEvent> {
      * @param requestURL
      * @param charset
 	 * @param auth
+	 * @param encrypt
      * @throws IOException
      */
     public MultipartUtility(String requestURL, String charset, String auth, Encryptor encrypt)
@@ -95,6 +97,9 @@ public class MultipartUtility extends Eventor<UploadEvent> {
      * @param fieldName name attribute
      * @param uploadFile a File to be uploaded 
      * @throws IOException
+	 * @throws java.security.InvalidKeyException
+	 * @throws javax.crypto.IllegalBlockSizeException
+	 * @throws javax.crypto.BadPaddingException
      */
     public void addFilePart(String fieldName, File uploadFile) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         String fileName = uploadFile.getName();
@@ -116,20 +121,31 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 			int sentNow;
 			long sentTotal, total;
 			
+			CipherOutputStream cipherStream = null;
+			if (encryptor != null) {
+				cipherStream = encryptor.getOutputStream(outputStream);
+			}
+			
 			total = uploadFile.length();
 			sentTotal = 0;
 			while ((sentNow = inputStream.read(buffer)) != -1) {
 				
-				if (encryptor != null) {
-					outputStream.write(buffer, 0, sentNow);
+				if (cipherStream != null) {
+					cipherStream.write(buffer, 0, sentNow);
 				} else {
-					outputStream.write(encryptor.encrypt(buffer), 0, sentNow);
+					outputStream.write(buffer, 0, sentNow);
 				}
 				
 				sentTotal += sentNow;
 				fireEvent(new UploadThreadProgressEvent(sentTotal, total));
 				
 			}
+			
+			if (cipherStream != null) {
+				cipherStream.flush();
+				cipherStream.close();
+			}
+			
 			outputStream.flush();
 		}
         writer.flush();   

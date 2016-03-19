@@ -5,11 +5,14 @@
  */
 package cz.zipek.minicloud.api.upload;
 
+import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -71,7 +74,10 @@ public class UploadThread extends Thread implements Listener {
 	public void run() {
 		try {
 			// Helper for sending big requests
-			MultipartUtility sender = new MultipartUtility(uploader.getSource().getApiUrl(), "UTF-8", uploader.getSource().getAuth(), encryptor);
+			MultipartUtility sender = new MultipartUtility(
+				uploader.getSource().getApiUrl(), "UTF-8",
+				uploader.getSource().getAuth(), encryptor
+			);
 			
 			// Listen to sender events
 			sender.addListener(this);
@@ -84,17 +90,25 @@ public class UploadThread extends Thread implements Listener {
 				sender.addFormField("path", parseFolder(targetFolder));
 			}
 			
+			// Add encryption info
+			if (encryptor != null) {
+				sender.addFormField("encryption[file]", encryptor.getConfig());
+			}
+			
 			// Override existing file
 			if (remote != null) {
 				sender.addFormField("override[file]", remote.getId());
 			}
+			
+			// Add file checksum (unencrypted = important)
+			sender.addFormField("checksum[file]", Tools.md5Checksum(file));
 			
 			// Add file
 			sender.addFilePart("file", file);
 			
 			// Start sending
 			sender.finish();
-		} catch (IOException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+		} catch (IOException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException ex) {
 			Logger.getLogger(UploadThread.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
