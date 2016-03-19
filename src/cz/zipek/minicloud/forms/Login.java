@@ -55,6 +55,10 @@ public class Login extends javax.swing.JFrame {
 		Manager.external.addListener(new Listener<Event>() {
 			@Override
 			public void handleEvent(Event e, Object sender) {
+				if (!isVisible()) {
+					return;
+				}
+				
 				if (e instanceof UserEvent) {
 					Session.setUser(((UserEvent)e).getUser());
 					Manager.external.getServerInfo();
@@ -63,8 +67,13 @@ public class Login extends javax.swing.JFrame {
 					
 					setState("");
 					setVisible(false);
-
-					Forms.showMain();
+					
+					if (Session.getUser().getKey() == null) {
+						Forms.showNewUser();
+					} else {
+						Forms.showMain();
+					}
+					
 				} else if (e instanceof ErrorEvent) {
 					setState("Wrong login or password");
 				}

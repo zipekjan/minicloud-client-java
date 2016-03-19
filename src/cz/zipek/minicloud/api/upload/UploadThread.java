@@ -9,7 +9,6 @@ import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -100,7 +99,7 @@ public class UploadThread extends Thread implements Listener {
 				sender.addFormField("override[file]", remote.getId());
 			}
 			
-			// Add file checksum (unencrypted = important)
+			// Add file checksum (unencrypted)
 			sender.addFormField("checksum[file]", Tools.md5Checksum(file));
 			
 			// Add file

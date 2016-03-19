@@ -2,6 +2,7 @@ package cz.zipek.minicloud.api.encryption;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
@@ -10,6 +11,7 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -24,6 +26,8 @@ public class Encryptor {
 	
 	private SecretKeySpec key;
 
+	private IvParameterSpec iv;
+	
 	public Encryptor(byte[] key) throws NoSuchAlgorithmException, NoSuchPaddingException {
 		this(key, "AES/CBC/PKCS5Padding");
 	}
@@ -33,15 +37,22 @@ public class Encryptor {
 		config = aConfig;
 		cipher = Cipher.getInstance(config);
 		key = new SecretKeySpec(rawKey, "AES");
+		iv = new IvParameterSpec(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 		
 	}
 	
-	public CipherOutputStream getOutputStream(OutputStream stream) {
+	public CipherOutputStream getOutputStream(OutputStream stream, int optmode) throws InvalidKeyException, InvalidAlgorithmParameterException {
+		
+		cipher.init(optmode, key, iv);
 		return new CipherOutputStream(stream, cipher);
+		
 	}
 	
-	public CipherInputStream getInputStream(InputStream stream) {
+	public CipherInputStream getInputStream(InputStream stream, int optmode) throws InvalidKeyException, InvalidAlgorithmParameterException {
+		
+		cipher.init(optmode, key, iv);
 		return new CipherInputStream(stream, cipher);
+		
 	}
 	
 	public byte[] encrypt(byte[] input) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {

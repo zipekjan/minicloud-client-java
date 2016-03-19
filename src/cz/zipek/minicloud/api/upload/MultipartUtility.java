@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
  
@@ -123,7 +124,7 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 			
 			CipherOutputStream cipherStream = null;
 			if (encryptor != null) {
-				cipherStream = encryptor.getOutputStream(outputStream);
+				cipherStream = encryptor.getOutputStream(outputStream, Cipher.ENCRYPT_MODE);
 			}
 			
 			total = uploadFile.length();
@@ -143,7 +144,6 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 			
 			if (cipherStream != null) {
 				cipherStream.flush();
-				cipherStream.close();
 			}
 			
 			outputStream.flush();

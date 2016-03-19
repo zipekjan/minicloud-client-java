@@ -14,6 +14,7 @@ import cz.zipek.minicloud.forms.Sync;
 import cz.zipek.minicloud.forms.Upload;
 import cz.zipek.minicloud.forms.Move;
 import cz.zipek.minicloud.forms.Main;
+import cz.zipek.minicloud.forms.NewUserFrame;
 import cz.zipek.minicloud.forms.SettingsFrame;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class Forms {
 	private static SyncFolderFrame newSyncFolder;
 	private static Login login;
 	private static Main main;
+	private static NewUserFrame newUser;
 	
 	/**
 	 * Adds frame to frame control.
@@ -74,6 +76,18 @@ public class Forms {
 		}
 		
 		login.setVisible(true);
+	}
+	
+	/**
+	 * Shows new user frame.
+	 */
+	public static void showNewUser() {
+		if (newUser == null) {
+			newUser = new NewUserFrame();
+			frames.add(newUser);
+		}
+		
+		newUser.setVisible(true);
 	}
 	
 	/**

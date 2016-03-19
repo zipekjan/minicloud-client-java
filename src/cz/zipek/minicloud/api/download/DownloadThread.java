@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 class DownloadThread extends Thread
@@ -93,7 +92,7 @@ class DownloadThread extends Thread
 						
 						CipherOutputStream cipherStream = null;
 						if (encryptor != null) {
-							cipherStream = encryptor.getOutputStream(outputStream);
+							cipherStream = encryptor.getOutputStream(outputStream, Cipher.DECRYPT_MODE);
 						}
 						
 						buffer = new byte[4096];
@@ -127,8 +126,9 @@ class DownloadThread extends Thread
 							fireEvent(new DownloadFileDoneEvent(source, target));
 						}
 						
-					} catch (IOException ex) {
+					} catch (IOException | InvalidKeyException ex) {
 						fireEvent(new DownloadFailedEvent(source, ex));
+						Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 					}
 				} else {
 					fireEvent(new DownloadFailedEvent(source, null));

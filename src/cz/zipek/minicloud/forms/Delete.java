@@ -8,12 +8,11 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
-import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.events.DeleteEvent;
+import cz.zipek.minicloud.api.events.SuccessEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -132,7 +131,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 		Manager.external.addListener(this);
 		
 		buttonDelete.setEnabled(false);
-		actionId = Manager.external.deleteFile(files);
+		actionId = Manager.external.deleteFiles(files);
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
@@ -157,7 +156,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 			
 			Manager.external.removeListenerLater(this);
 			
-			if (!(e instanceof DeleteEvent)) {
+			if (!(e instanceof SuccessEvent)) {
 				JOptionPane.showMessageDialog(this, "Failed to detele files.", "Error ocurred", JOptionPane.ERROR_MESSAGE);
 			}
 			

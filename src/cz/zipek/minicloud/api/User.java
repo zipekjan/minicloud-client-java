@@ -32,7 +32,7 @@ public class User {
 		id = data.getInt("id");
 		
 		name = data.getString("name");
-		email = data.getString("email");
+		email = data.optString("email", null);
 		
 		String keySource = data.optString("key", null);
 		

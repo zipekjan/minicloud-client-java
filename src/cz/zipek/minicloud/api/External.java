@@ -391,6 +391,49 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
+	public String setUser(User user, String email, char[] password, String key) {
+		return setUser(user, email, password, key, false);
+	}
+	
+	public String setUser(User user, String email, char[] password, String key, boolean wait) {
+		return setUser(user, email, password, key, wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String setUser(User user, String email, char[] password, String key, boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		
+		params.put("action_id", action_id);
+		params.put("id", Integer.toString(user.getId()));
+		
+		if (email != null) {
+			params.put("email", email);
+		}
+		
+		if (password != null) {
+			try {
+				params.put("password", sha256(password));
+			} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		if (key != null) {
+			params.put("key", key);
+		}
+		
+		Thread request = request(createUrl("set_user", params));
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
 	/**
 	 * Requests root path info.
 	 * 
@@ -500,25 +543,25 @@ public class External extends Eventor<Event> {
 	/**
 	 * Requests deletion of specified files.
 	 * 
-	 * @param files files to deleteFile
+	 * @param files files to deleteFiles
 	 * @return action id
 	 */
-	public String deleteFile(List<File> files) {
-		return deleteFile(files, Long.toString(this.actionCounter++));
+	public String deleteFiles(List<File> files) {
+		return deleteFiles(files, Long.toString(this.actionCounter++));
 	}
 	
 	/**
 	 * Requests deletion of specified files.
 	 * 
-	 * @param files files to deleteFile
+	 * @param files files to deleteFiles
 	 * @param action_id user specified action id
 	 * @return action id
 	 */
-	public String deleteFile(List<File> files, String action_id) {
+	public String deleteFiles(List<File> files, String action_id) {
 		try {
 			StringBuilder params = new StringBuilder();
 			params.append(String.format(
-					"action=delete&action_id=%s",
+					"action=delete_files&action_id=%s",
 					URLEncoder.encode(action_id, "UTF-8")
 			));
 			for (File file : files) {
