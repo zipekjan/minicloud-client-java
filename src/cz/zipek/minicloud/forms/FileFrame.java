@@ -40,22 +40,35 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 	public final FileFrame updateFile(cz.zipek.minicloud.api.File file) {
 		this.file = file;
 		
-		setTitle(this.file.getName());
-		setIconImage(Icons.getIcon(this.file.getExtension()).getImage());
+		setTitle(file.getName());
+		setIconImage(Icons.getIcon(file.getExtension()).getImage());
 		
-		textName.setText(this.file.getName());
-		textLink.setText(this.file.getDownloadLink());
-		labelSize.setText(Tools.humanFileSize(this.file.getSize(), 2));
+		textName.setText(file.getName());
+		labelSize.setText(Tools.humanFileSize(file.getSize(), 2));
 
 		labelCreated.setText(
 				new SimpleDateFormat("dd.MM.YYYY HH:mm")
-						.format(this.file.getMdtime())
+						.format(file.getMdtime())
 		);
 		
 		labelUpdated.setText(
 				new SimpleDateFormat("dd.MM.YYYY HH:mm")
-						.format(this.file.getMdtime())
+						.format(file.getMdtime())
 		);
+		
+		labelEncryption.setText(
+				file.getEncryption() != null ?
+						file.getEncryption() : "Disabled"
+		);
+		
+		if (file.isPublic()) {
+			textLink.setText(file.getPublicDownloadLink(Session.getServer().hasNiceUrl()));
+		} else {
+			textLink.setText("Private file");
+		}
+		
+		buttonPrivate.setVisible(file.isPublic());
+		buttonPublic.setVisible(!file.isPublic());
 		
 		return this;
 	}
@@ -83,6 +96,10 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
         jLabel14 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         labelCreated = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        labelEncryption = new javax.swing.JLabel();
+        buttonPublic = new javax.swing.JButton();
+        buttonPrivate = new javax.swing.JButton();
 
         jLabel6.setText("Name:");
 
@@ -133,6 +150,14 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 
         labelCreated.setText("10.11.2014 13:22");
 
+        jLabel11.setText("Encryption:");
+
+        labelEncryption.setText("AES");
+
+        buttonPublic.setText("Make public");
+
+        buttonPrivate.setText("Make private");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -154,15 +179,22 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                             .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(textName)
                             .addComponent(labelSize, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(labelUpdated, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(labelCreated, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labelEncryption, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(textLink, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(buttonPublic)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(buttonPrivate))
+                                    .addComponent(textLink, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
@@ -186,10 +218,18 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                     .addComponent(labelCreated)
                     .addComponent(jLabel10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelEncryption)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonPublic)
+                    .addComponent(buttonPrivate))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonDownload)
                     .addComponent(buttonMove)
@@ -226,13 +266,17 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     private javax.swing.JButton buttonCancel;
     private javax.swing.JButton buttonDownload;
     private javax.swing.JButton buttonMove;
+    private javax.swing.JButton buttonPrivate;
+    private javax.swing.JButton buttonPublic;
     private javax.swing.JButton buttonSave;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel labelCreated;
+    private javax.swing.JLabel labelEncryption;
     private javax.swing.JLabel labelSize;
     private javax.swing.JLabel labelUpdated;
     private javax.swing.JTextField textLink;

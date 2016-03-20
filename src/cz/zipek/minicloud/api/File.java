@@ -50,7 +50,7 @@ public class File {
 			mktime = new Date(data.getLong("mktime") * 1000);
 			mdtime = new Date(data.getLong("mktime") * 1000);
 
-			isPublic = data.optBoolean("public", false);
+			isPublic = data.optInt("public", 0) == 1;
 			
 			extension = "";
 			if (name != null && name.length() > 0 && name.contains(".")) {
@@ -89,7 +89,7 @@ public class File {
 				format = "%s/download/%s/%s/%s";
 			}
 			
-			return String.format("%s?action=download_file&id=%s&hash=%s&filename=%s", getSource().getApiUrl(), getId(), Tools.md5(getId() + getChecksum()), getName());
+			return String.format("%s?action=download_file&id=%s&hash=%s&filename=%s", getSource().getApiUrl(), getId(), Tools.md5(getId() + getChecksum()).substring(0, 8), getName());
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
 			Logger.getLogger(File.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
