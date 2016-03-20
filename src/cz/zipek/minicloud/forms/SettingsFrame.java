@@ -241,7 +241,11 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-		Settings.setEncryption(comboEncryption.getSelectedItem().toString());
+		String enc = comboEncryption.getSelectedItem().toString();
+		if (enc.equals("Disabled"))
+			enc = null;
+		
+		Settings.setEncryption(enc);
 		
 		if (textPassword.getPassword().length > 0) {
 			if (!Arrays.equals(textPassword.getPassword(), textPassword2.getPassword())) {

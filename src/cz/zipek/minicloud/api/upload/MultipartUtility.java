@@ -127,7 +127,7 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 
 		CipherOutputStream cipherStream = null;
 		if (encryptor != null) {
-			cipherStream = encryptor.getOutputStream(outputStream, Cipher.ENCRYPT_MODE);
+			cipherStream = encryptor.getOutputStream(new NotClosingOutputStream(outputStream), Cipher.ENCRYPT_MODE);
 		}
 
 		sentTotal = 0;
@@ -143,9 +143,10 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 			fireEvent(new UploadThreadProgressEvent(sentTotal, size));
 
 		}
-
+		
 		if (cipherStream != null) {
 			cipherStream.flush();
+			cipherStream.close();
 		}
 
 		outputStream.flush();

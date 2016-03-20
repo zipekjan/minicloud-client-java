@@ -263,6 +263,7 @@ public class Download extends javax.swing.JFrame implements Listener {
 				buttonStop.setEnabled(false);
 				buttonCancel.setText("Close");
 				JOptionPane.showMessageDialog(this, "All files downloaded", "Done", JOptionPane.INFORMATION_MESSAGE);
+				setVisible(false);
 			}
 		} else if (event instanceof DownloadStoppedEvent) {
 			downloader = null;

@@ -12,7 +12,7 @@ import cz.zipek.minicloud.api.download.events.DownloadStoppedEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadProgressEvent;
 import cz.zipek.minicloud.api.encryption.Encryptor;
-import java.io.FileOutputStream;
+import cz.zipek.minicloud.api.upload.NotClosingOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -96,7 +96,7 @@ class DownloadThread extends Thread
 						
 						CipherOutputStream cipherStream = null;
 						if (encryptor != null) {
-							cipherStream = encryptor.getOutputStream(outputStream, Cipher.DECRYPT_MODE);
+							cipherStream = encryptor.getOutputStream(new NotClosingOutputStream(outputStream), Cipher.DECRYPT_MODE);
 						}
 						
 						buffer = new byte[4096];
@@ -121,6 +121,7 @@ class DownloadThread extends Thread
 							cipherStream.close();
 						}
 						
+						outputStream.flush();
 						outputStream.close();
 						inputStream.close();
 
