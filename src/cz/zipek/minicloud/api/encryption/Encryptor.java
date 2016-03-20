@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -28,16 +30,20 @@ public class Encryptor {
 
 	private IvParameterSpec iv;
 	
-	public Encryptor(byte[] key) throws NoSuchAlgorithmException, NoSuchPaddingException {
+	public Encryptor(byte[] key) throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
 		this(key, "AES/CBC/PKCS5Padding");
 	}
 	
-	public Encryptor(byte[] rawKey, String aConfig) throws NoSuchAlgorithmException, NoSuchPaddingException {
+	public Encryptor(byte[] rawKey, String aConfig) throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
 		
 		config = aConfig;
 		cipher = Cipher.getInstance(config);
+		
+		byte[] ivParam = new byte[16];
+		Arrays.fill( ivParam, (byte) 0 );
+		
 		key = new SecretKeySpec(rawKey, "AES");
-		iv = new IvParameterSpec(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+		iv = new IvParameterSpec(ivParam);
 		
 	}
 	
@@ -55,16 +61,16 @@ public class Encryptor {
 		
 	}
 	
-	public byte[] encrypt(byte[] input) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public byte[] encrypt(byte[] input) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 		
-		cipher.init(Cipher.ENCRYPT_MODE, key);
+		cipher.init(Cipher.ENCRYPT_MODE, key, iv);
 		return cipher.doFinal(input);
 
 	}
 	
-	public byte[] decrypt(byte[] input) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public byte[] decrypt(byte[] input) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 		
-		cipher.init(Cipher.DECRYPT_MODE, key);
+		cipher.init(Cipher.DECRYPT_MODE, key, iv);
 		return cipher.doFinal(input);
 		
 	}

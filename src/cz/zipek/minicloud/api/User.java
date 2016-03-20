@@ -1,14 +1,21 @@
 package cz.zipek.minicloud.api;
 
 import cz.zipek.minicloud.Tools;
+import cz.zipek.minicloud.Tools.Hash;
 import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,9 +89,23 @@ public class User {
 	 * Unhashed user password needs to be saved in order to decrypt user key.
 	 * 
 	 * @param password unhashed password 
+	 * @param decrypt 
+	 * @throws java.security.NoSuchAlgorithmException 
+	 * @throws javax.crypto.NoSuchPaddingException 
+	 * @throws java.security.InvalidKeyException 
+	 * @throws javax.crypto.IllegalBlockSizeException 
+	 * @throws javax.crypto.BadPaddingException 
+	 * @throws java.security.InvalidAlgorithmParameterException 
+	 * @throws java.io.UnsupportedEncodingException 
+	 * @throws java.security.NoSuchProviderException 
 	 */
-	public void setPassword(char[] password) {
-		this.password = password;
+	public void setPassword(char[] password, boolean decrypt) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException, NoSuchProviderException {
+		this.password = Arrays.copyOf(password, password.length);
+		
+		// Decrypt user key using password
+		if (key != null && decrypt) {
+			key = getKeyEncryptor().decrypt(key);
+		}
 	}
 	
 	/**
@@ -94,7 +115,9 @@ public class User {
 	 * @return unhashed password
 	 */
 	public char[] getPassword() {
-		return password;
+		if (password == null)
+			return password;
+		return Arrays.copyOf(password, password.length);
 	}
 	
 	/**
@@ -144,6 +167,34 @@ public class User {
 	public byte[] getKey() {
 		return key;
 	}
+	
+	/**
+	 * Returns user key.
+	 * 
+	 * @param encrypted
+	 * @return the key
+	 * @throws java.security.NoSuchAlgorithmException
+	 * @throws javax.crypto.NoSuchPaddingException
+	 * @throws java.security.InvalidKeyException
+	 * @throws javax.crypto.IllegalBlockSizeException
+	 * @throws javax.crypto.BadPaddingException
+	 * @throws java.security.InvalidAlgorithmParameterException
+	 * @throws java.io.UnsupportedEncodingException
+	 * @throws java.security.NoSuchProviderException
+	 */
+	public byte[] getKey(boolean encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException, NoSuchProviderException {
+		
+		// Skip null key
+		if (key == null)
+			return key;
+
+		// Encrypt user key using password
+		if (encrypted) {
+			return getKeyEncryptor().encrypt(key);
+		}
+		
+		return key;
+	}
 
 	/**
 	 * Returns if user is admin.
@@ -162,8 +213,9 @@ public class User {
 	 * @return encryptor with user key applied
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException 
+	 * @throws java.security.NoSuchProviderException 
 	 */
-	public Encryptor getEncryptor(String options) throws NoSuchAlgorithmException, NoSuchPaddingException {
+	public Encryptor getEncryptor(String options) throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
 		if (options == null || options.length() == 0)
 			return null;
 		return new Encryptor(key, options);
@@ -175,8 +227,9 @@ public class User {
 	 * It's used when calling updateFile method of API.
 	 * 
 	 * @return updatable file params with current values
+	 * @throws java.security.NoSuchProviderException
 	 */
-	public Map<String, String> getUpdate() {
+	public Map<String, String> getUpdate() throws NoSuchProviderException {
 		Map<String, String> items = new HashMap<>();
 		
 		if (getPassword() != null) {
@@ -187,8 +240,13 @@ public class User {
 			}
 		}
 		
-		if (getKey() != null) {
-			items.put("key", Base64.getEncoder().encodeToString(key));
+		try {
+			byte[] crypto = getKey(true);
+			if (crypto != null) {
+				items.put("key", Base64.getEncoder().encodeToString(crypto));
+			}
+		} catch (InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		items.put("email", getEmail());
@@ -204,7 +262,23 @@ public class User {
 	 * @return action id
 	 */
 	public String save() {
-		return getSource().setUser(this);
+		try {
+			return getSource().setUser(this);
+		} catch (NoSuchProviderException ex) {
+			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return null;
+	}
+	
+	/**
+	 * Craetes encryptor that can be used to encrypt/decrypt user key.
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchPaddingException
+	 * @throws UnsupportedEncodingException 
+	 */
+	private Encryptor getKeyEncryptor() throws NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException {		
+		return new Encryptor(Tools.sha256Bytes(getPassword()), "AES/CBC/PKCS5Padding");
 	}
 	
 }

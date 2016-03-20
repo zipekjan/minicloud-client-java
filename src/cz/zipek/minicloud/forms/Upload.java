@@ -17,6 +17,7 @@ import cz.zipek.minicloud.api.upload.events.UploadFileDoneEvent;
 import cz.zipek.minicloud.api.upload.events.UploadProgressEvent;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -233,7 +234,7 @@ public class Upload extends javax.swing.JFrame implements Listener {
 				}
 				uploader.start(comboTarget.getSelectedItem().toString() + textTagret.getText());
 				
-			} catch (NoSuchAlgorithmException | NoSuchPaddingException ex) {
+			} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
 				JOptionPane.showMessageDialog(
 						this,
 						"Failed to upload file. There is problem with encryption.",

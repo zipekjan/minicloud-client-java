@@ -12,10 +12,16 @@ import cz.zipek.minicloud.api.events.ServerInfoEvent;
 import cz.zipek.minicloud.api.events.UnauthorizedEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.Security;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONException;
 
 /**
@@ -30,6 +36,17 @@ public class Manager {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
+		// Security
+		Security.addProvider(new BouncyCastleProvider());
+
+		// BC is required
+		if (Security.getProvider("BC") == null){
+            System.err.println("Failed to load security provider.");
+			return;
+        }
+		
+		removeCryptographyRestrictions();
+		
 		//API
 		external = new External();
 		
@@ -106,5 +123,51 @@ public class Manager {
 				Forms.showLogin();
 			}
 		});
+	}
+	
+	private static void removeCryptographyRestrictions() {
+		Logger logger = Logger.getLogger(Manager.class.getName());
+		
+		if (!isRestrictedCryptography()) {
+			logger.fine("Cryptography restrictions removal not needed");
+			return;
+		}
+		try {
+			/*
+			 * Do the following, but with reflection to bypass access checks:
+			 *
+			 * JceSecurity.isRestricted = false;
+			 * JceSecurity.defaultPolicy.perms.clear();
+			 * JceSecurity.defaultPolicy.add(CryptoAllPermission.INSTANCE);
+			 */
+			final Class<?> jceSecurity = Class.forName("javax.crypto.JceSecurity");
+			final Class<?> cryptoPermissions = Class.forName("javax.crypto.CryptoPermissions");
+			final Class<?> cryptoAllPermission = Class.forName("javax.crypto.CryptoAllPermission");
+
+			final Field isRestrictedField = jceSecurity.getDeclaredField("isRestricted");
+			isRestrictedField.setAccessible(true);
+			isRestrictedField.set(null, false);
+
+			final Field defaultPolicyField = jceSecurity.getDeclaredField("defaultPolicy");
+			defaultPolicyField.setAccessible(true);
+			final PermissionCollection defaultPolicy = (PermissionCollection) defaultPolicyField.get(null);
+
+			final Field perms = cryptoPermissions.getDeclaredField("perms");
+			perms.setAccessible(true);
+			((Map<?, ?>) perms.get(defaultPolicy)).clear();
+
+			final Field instance = cryptoAllPermission.getDeclaredField("INSTANCE");
+			instance.setAccessible(true);
+			defaultPolicy.add((Permission) instance.get(null));
+
+			logger.fine("Successfully removed cryptography restrictions");
+		} catch (final Exception e) {
+			logger.log(Level.WARNING, "Failed to remove cryptography restrictions", e);
+		}
+	}
+
+	private static boolean isRestrictedCryptography() {
+		// This simply matches the Oracle JRE, but not OpenJDK.
+		return "Java(TM) SE Runtime Environment".equals(System.getProperty("java.runtime.name"));
 	}
 }

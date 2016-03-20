@@ -26,6 +26,23 @@ import java.util.Arrays;
  */
 public class Tools {
 	
+	public enum Hash {
+		MD5("MD5"),
+		SHA256("SHA-256"),
+		SHA512("SHA-512");
+		
+		private final String value;
+		
+		private Hash(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
+	
 	/**
 	 * Returns human readable file size.
 	 * 
@@ -112,6 +129,26 @@ public class Tools {
 	
 	public static String sha256(byte[] input) throws NoSuchAlgorithmException {
 		return getHexString(MessageDigest.getInstance("SHA-256").digest(input));
+	}
+	
+	public static byte[] sha256Bytes(char[] input) throws NoSuchAlgorithmException {
+		return sha256Bytes(toBytes(input));
+	}
+	
+	public static byte[] sha256Bytes(byte[] input) throws NoSuchAlgorithmException {
+		return MessageDigest.getInstance("SHA-256").digest(input);
+	}
+	
+	public static String hash(String input, Hash encoder) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return hash(input.getBytes("UTF-8"), encoder);
+	}
+	
+	public static String hash(char[] input, Hash encoder) throws NoSuchAlgorithmException {
+		return hash(toBytes(input), encoder);
+	}
+	
+	public static String hash(byte[] input, Hash encoder) throws NoSuchAlgorithmException {
+		return getHexString(MessageDigest.getInstance(encoder.toString()).digest(input));
 	}
 	
 	public static byte[] toBytes(char[] chars) {

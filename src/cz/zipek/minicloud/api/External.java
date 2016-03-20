@@ -23,6 +23,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -393,15 +394,15 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
-	public String setUser(User user) {
+	public String setUser(User user) throws NoSuchProviderException {
 		return setUser(user, false);
 	}
 	
-	public String setUser(User user, boolean wait) {
+	public String setUser(User user, boolean wait) throws NoSuchProviderException {
 		return setUser(user, wait, Long.toString(this.actionCounter++));
 	}
 	
-	public String setUser(User user, boolean wait, String action_id) {
+	public String setUser(User user, boolean wait, String action_id) throws NoSuchProviderException {
 		Map<String, String> params = new HashMap<>();
 		
 		params.putAll(user.getUpdate());

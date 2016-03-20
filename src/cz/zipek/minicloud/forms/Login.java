@@ -10,7 +10,6 @@ import cz.zipek.minicloud.Icons;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
-import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.ServerInfoEvent;
@@ -19,15 +18,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.swing.JOptionPane;
 import org.json.JSONException;
 
 /**
  *
  * @author zipekjan
  */
-public class Login extends javax.swing.JFrame {
+public class Login extends javax.swing.JFrame implements Listener {
 	/**
 	 * Creates new form Login
 	 */
@@ -52,33 +59,7 @@ public class Login extends javax.swing.JFrame {
 			}
 		});
 		
-		Manager.external.addListener(new Listener<Event>() {
-			@Override
-			public void handleEvent(Event e, Object sender) {
-				if (!isVisible()) {
-					return;
-				}
-				
-				if (e instanceof UserEvent) {
-					Session.setUser(((UserEvent)e).getUser());
-					Manager.external.getServerInfo();
-				} else if (e instanceof ServerInfoEvent) {
-					Session.setServer(((ServerInfoEvent)e).getServerInfo());
-					
-					setState("");
-					setVisible(false);
-					
-					if (Session.getUser().getKey() == null) {
-						Forms.showNewUser();
-					} else {
-						Forms.showMain();
-					}
-					
-				} else if (e instanceof ErrorEvent) {
-					setState("Wrong login or password");
-				}
-			}
-		});
+		Manager.external.addListener(this);
 	}
 
 	public synchronized void setState(String state) {
@@ -209,6 +190,10 @@ public class Login extends javax.swing.JFrame {
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
 		setState("Logging in ...");
 		
+		loginButton.setEnabled(false);
+		textLogin.setEnabled(false);
+		textServer.setEnabled(false);
+		
 		Settings.setUsername(textLogin.getText());
 		Settings.setServer(textServer.getText());
 		
@@ -224,6 +209,58 @@ public class Login extends javax.swing.JFrame {
 		Manager.external.getUser();
     }//GEN-LAST:event_loginButtonActionPerformed
 
+	@Override
+	public void handleEvent(Object e, Object sender) {
+		if (!isVisible()) {
+			return;
+		}
+
+		if (e instanceof UserEvent) {
+			Session.setUser(((UserEvent)e).getUser());
+			try {
+				Session.getUser().setPassword(textPassword.getPassword(), true);
+			} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException ex) {
+
+				JOptionPane.showMessageDialog(
+						this,
+						"There was error when decrypting user key. Error: " + ex.getMessage(),
+						"Unexpected error.",
+						JOptionPane.ERROR_MESSAGE
+				);
+
+				Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+				
+				loginButton.setEnabled(true);
+				textLogin.setEnabled(true);
+				textServer.setEnabled(true);
+				
+				setState("Invalid password");
+				
+				return;
+			}
+
+			Manager.external.getServerInfo();
+		} else if (e instanceof ServerInfoEvent) {
+			Session.setServer(((ServerInfoEvent)e).getServerInfo());
+
+			setState("");
+			setVisible(false);
+
+			if (Session.getUser().getKey() == null) {
+				Forms.showNewUser();
+			} else {
+				Forms.showMain();
+			}
+
+		} else if (e instanceof ErrorEvent) {
+			setState("Wrong login or password");
+
+			loginButton.setEnabled(true);
+			textLogin.setEnabled(true);
+			textServer.setEnabled(true);
+		}
+	}
+	
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JLabel jLabel1;

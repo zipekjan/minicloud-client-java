@@ -7,11 +7,18 @@ import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.swing.JOptionPane;
 
@@ -110,6 +117,7 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 		if (!Arrays.equals(textPassword.getPassword(), textPassword2.getPassword())) {
+			
 			JOptionPane.showMessageDialog(
 				this,
 				"Passwords don't match.",
@@ -122,14 +130,16 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
 		
 		try {
 			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+			keyGen.init(256);
 			SecretKey key = keyGen.generateKey();
 			User user = Session.getUser();
 			
-			user.setPassword(textPassword.getPassword());
 			user.setKey(key.getEncoded());
+			user.setPassword(textPassword.getPassword(), false);
 			
-			Manager.external.setUser(user);
-		} catch (NoSuchAlgorithmException ex) {
+			user.save();
+		} catch (NoSuchProviderException | InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+			
 			JOptionPane.showMessageDialog(
 				this,
 				"Failed to generate private key. " + ex.getMessage(),

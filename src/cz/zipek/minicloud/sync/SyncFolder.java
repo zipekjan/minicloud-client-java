@@ -30,6 +30,7 @@ import cz.zipek.minicloud.sync.events.SyncUploadEvent;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -299,7 +300,7 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 						downloader.start(local.getAbsolutePath());
 						uploader.start(remote);
 					}
-				} catch (NoSuchAlgorithmException | NoSuchPaddingException ex) {
+				} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
 					fireEvent(new SyncEncryptionFailedEvent());
 					Logger.getLogger(SyncFolder.class.getName()).log(Level.SEVERE, null, ex);
 				}

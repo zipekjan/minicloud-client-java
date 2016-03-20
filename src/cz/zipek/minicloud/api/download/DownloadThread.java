@@ -22,6 +22,7 @@ import java.net.URL;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -140,7 +141,7 @@ class DownloadThread extends Thread
 				fireEvent(new DownloadFailedEvent(source, ex));
 				Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 			}
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | MalformedURLException ex) {
+		} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException | MalformedURLException ex) {
 			fireEvent(new DownloadFailedEvent(source, ex));
 			Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 		}

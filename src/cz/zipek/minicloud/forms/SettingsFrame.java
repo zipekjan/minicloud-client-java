@@ -10,11 +10,20 @@ import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.events.SynckeyEvent;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import org.json.JSONException;
@@ -233,6 +242,25 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
 		Settings.setEncryption(comboEncryption.getSelectedItem().toString());
+		
+		if (textPassword.getPassword().length > 0) {
+			if (!Arrays.equals(textPassword.getPassword(), textPassword2.getPassword())) {
+				JOptionPane.showMessageDialog(
+						this,
+						"Passwords don't match.",
+						"Problem with your input",
+						JOptionPane.WARNING_MESSAGE
+				);
+
+				return;
+			}
+
+			try {
+				Session.getUser().setPassword(textPassword.getPassword(), false);
+			} catch (NoSuchProviderException | UnsupportedEncodingException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+				Logger.getLogger(SettingsFrame.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 		
 		try {
 			Settings.save();

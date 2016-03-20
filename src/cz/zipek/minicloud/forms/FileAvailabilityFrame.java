@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.NoSuchPaddingException;
@@ -95,7 +96,7 @@ public class FileAvailabilityFrame extends javax.swing.JFrame implements Listene
 			
 			downloader.add(file, output);
 			uploader.add(input, file);
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException ex) {
+		} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException | IOException ex) {
 			Logger.getLogger(FileAvailabilityFrame.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
