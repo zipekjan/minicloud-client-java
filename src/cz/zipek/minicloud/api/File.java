@@ -370,4 +370,15 @@ public class File {
 	public String save() {
 		return getSource().updateFile(this);
 	}
+	
+	/**
+	 * Checks if file is saved encrypted.
+	 * File is considered encrypted when encryption options are set.
+	 * 
+	 * @return if file is saved encrypted
+	 */
+	public boolean isEncrypted() {
+		return getEncryption() == null || getEncryption().isEmpty();
+	}
+	
 }

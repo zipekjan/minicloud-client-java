@@ -15,6 +15,7 @@ import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,17 +32,15 @@ import javax.crypto.NoSuchPaddingException;
 
 class DownloadThread extends Thread
 {
-	private final File source;
-	private final String target;
+	private final DownloadItem item;
 	private final String auth;
 	private final byte[] key;
 	
 	private boolean stopDownload;
 
-	public DownloadThread(File source, String target, String auth, byte[] key) {
+	public DownloadThread(DownloadItem item, String auth, byte[] key) {
 		super("File download");
-		this.source = source;
-		this.target = target;
+		this.item = item;
 		this.auth = auth;
 		this.key = key;
 	}
@@ -64,8 +63,12 @@ class DownloadThread extends Thread
 
 	@Override
 	public void run() {
+		File source = item.getFile();
+		String target = item.getTarget();
+		
 		try {
 			URL url = new URL(this.getSource().getDownloadLink());
+			
 			Encryptor encryptor = null;
 			if (getSource().getEncryption() != null) {
 				encryptor = new Encryptor(key, getSource().getEncryption());
@@ -82,13 +85,13 @@ class DownloadThread extends Thread
 				
 				int status = httpConn.getResponseCode();
 				if (status == HttpURLConnection.HTTP_OK) {
-					FileOutputStream outputStream;
+					OutputStream outputStream;
 					long total;
 					long downloaded;
 					int bytesRead;
 					byte[] buffer;
 					try (InputStream inputStream = httpConn.getInputStream()) {
-						outputStream = new FileOutputStream(this.getTarget());
+						outputStream = item.getStream();
 						
 						CipherOutputStream cipherStream = null;
 						if (encryptor != null) {
@@ -147,14 +150,14 @@ class DownloadThread extends Thread
 	 * @return the source
 	 */
 	public File getSource() {
-		return source;
+		return item.getFile();
 	}
 
 	/**
 	 * @return the target
 	 */
 	public String getTarget() {
-		return target;
+		return item.getTarget();
 	}
 
 	/**

@@ -6,6 +6,7 @@
 package cz.zipek.minicloud.api.upload;
 
 import cz.zipek.minicloud.api.File;
+import java.io.InputStream;
 
 /**
  *
@@ -15,11 +16,16 @@ public class UploadItem {
 	private final java.io.File file;
 	private final File existing;
 	private final String target;
+	private final InputStream stream;
+	
+	private String filename;
+	private long size;
 	
 	public UploadItem(java.io.File file) {
 		this.file = file;
 		this.target = null;
 		this.existing = null;
+		this.stream = null;
 	}
 	
 	
@@ -27,12 +33,28 @@ public class UploadItem {
 		this.file = file;
 		this.target = target;
 		this.existing = null;
+		this.stream = null;
 	}
 	
 	public UploadItem(java.io.File file, File existing) {
 		this.file = file;
 		this.existing = existing;
 		this.target = null;
+		this.stream = null;
+	}
+	
+	public UploadItem(InputStream stream, File existing) {
+		this(stream, existing.getName(), existing.getSize(), existing);
+	}
+	
+	public UploadItem(InputStream stream, String filename, long size, File existing) {
+		this.file = null;
+		this.existing = existing;
+		this.target = null;
+		this.stream = stream;
+		
+		this.filename = filename;
+		this.size = size;
 	}
 
 	/**
@@ -55,4 +77,17 @@ public class UploadItem {
 	public String getTarget() {
 		return target;
 	}
+	
+	public InputStream getStream() {
+		return stream;
+	}
+	
+	public String getFilename() {
+		return filename;
+	}
+	
+	public long getSize() {
+		return size;
+	}
+	
 }

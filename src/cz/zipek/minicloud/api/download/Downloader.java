@@ -13,6 +13,7 @@ import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.download.events.DownloadAllDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileStartedEvent;
+import java.io.OutputStream;
 import java.nio.file.FileSystems;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,11 +38,19 @@ public class Downloader extends Eventor<DownloadEvent> implements Listener {
 	}
 	
 	public void add(File file) {
-		add(file, null);
+		add(new DownloadItem(file, null));
 	}
 
 	public void add(File file, String target) {
-		getItems().add(new DownloadItem(file, target));
+		add(new DownloadItem(file, target));
+	}
+	
+	public void add(File file, OutputStream target) {
+		add(new DownloadItemStream(file, target));
+	}
+	
+	public void add(DownloadItem item) {
+		getItems().add(item);
 	}
 	
 	public void remove(File file) {
@@ -70,14 +79,15 @@ public class Downloader extends Eventor<DownloadEvent> implements Listener {
 
 		String target = file.getTarget();
 		if (target == null) {
-			target = targetFolder
+			file.setTarget(targetFolder
 				+ FileSystems.getDefault().getSeparator()
-				+ file.getFile().getName();
+				+ file.getFile().getName()
+			);
 		}
 		
 		fireEvent(new DownloadFileStartedEvent(file.getFile(), target));
 		
-		thread = new DownloadThread(file.getFile(), target, external.getAuth(), user.getKey());
+		thread = new DownloadThread(file, external.getAuth(), user.getKey());
 		thread.addListener(this);
 		thread.start();
 	}

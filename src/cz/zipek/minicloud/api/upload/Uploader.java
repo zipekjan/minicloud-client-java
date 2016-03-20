@@ -18,6 +18,7 @@ import cz.zipek.minicloud.api.upload.events.UploadFileStartedEvent;
 import cz.zipek.minicloud.api.upload.events.UploadProgressEvent;
 import cz.zipek.minicloud.api.upload.events.UploadThreadProgressEvent;
 import cz.zipek.minicloud.api.upload.events.UploadThreadSentEvent;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,15 +44,23 @@ public class Uploader extends Eventor<UploadEvent> implements Listener {
 	}
 	
 	public void add(java.io.File file) {
-		items.add(new UploadItem(file));
+		add(new UploadItem(file));
 	}
 	
 	public void add(java.io.File local, File remote) {
-		items.add(new UploadItem(local, remote));
+		add(new UploadItem(local, remote));
 	}
 	
 	public void add(java.io.File local, String target) {
-		items.add(new UploadItem(local, target));
+		add(new UploadItem(local, target));
+	}
+	
+	public void add(InputStream local, File remote) {
+		add(new UploadItem(local, remote));
+	}
+	
+	public void add(UploadItem item) {
+		items.add(item);
 	}
 	
 	public void start(String target) {

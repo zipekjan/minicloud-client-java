@@ -158,8 +158,18 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
         labelEncryption.setText("AES");
 
         buttonPublic.setText("Make public");
+        buttonPublic.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPublicActionPerformed(evt);
+            }
+        });
 
         buttonPrivate.setText("Make private");
+        buttonPrivate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPrivateActionPerformed(evt);
+            }
+        });
 
         buttonDelete.setText("Delete");
         buttonDelete.setToolTipText("");
@@ -277,6 +287,14 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonDeleteActionPerformed
+
+    private void buttonPrivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrivateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonPrivateActionPerformed
+
+    private void buttonPublicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPublicActionPerformed
+
+    }//GEN-LAST:event_buttonPublicActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;

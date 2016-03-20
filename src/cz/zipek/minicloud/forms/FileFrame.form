@@ -218,11 +218,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Make public"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonPublicActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="buttonPrivate">
       <Properties>
         <Property name="text" type="java.lang.String" value="Make private"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonPrivateActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="buttonDelete">
       <Properties>

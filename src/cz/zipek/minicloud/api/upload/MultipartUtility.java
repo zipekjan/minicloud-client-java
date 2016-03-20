@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -20,6 +21,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -93,17 +95,19 @@ public class MultipartUtility extends Eventor<UploadEvent> {
 		addFormField(name, Integer.toString(value));
 	}
  
-    /**
+	/**
      * Adds a upload file section to the request 
-     * @param fieldName name attribute
-     * @param uploadFile a File to be uploaded 
+     * @param fieldName name attribute 
+	 * @param fileName input stream filename
+	 * @param stream input stream
+	 * @param size input stream size
      * @throws IOException
 	 * @throws java.security.InvalidKeyException
 	 * @throws javax.crypto.IllegalBlockSizeException
 	 * @throws javax.crypto.BadPaddingException
+	 * @throws java.security.InvalidAlgorithmParameterException
      */
-    public void addFilePart(String fieldName, File uploadFile) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        String fileName = uploadFile.getName();
+	public void addFilePart(String fieldName, String fileName, InputStream stream, long size) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         writer.append("--" + boundary).append(LINE_FEED);
         writer.append(
                 "Content-Disposition: form-data; name=\"" + fieldName
@@ -117,38 +121,49 @@ public class MultipartUtility extends Eventor<UploadEvent> {
         writer.append(LINE_FEED);
         writer.flush();
  
-		try (FileInputStream inputStream = new FileInputStream(uploadFile)) {
-			byte[] buffer = new byte[4096];
-			int sentNow;
-			long sentTotal, total;
-			
-			CipherOutputStream cipherStream = null;
-			if (encryptor != null) {
-				cipherStream = encryptor.getOutputStream(outputStream, Cipher.ENCRYPT_MODE);
-			}
-			
-			total = uploadFile.length();
-			sentTotal = 0;
-			while ((sentNow = inputStream.read(buffer)) != -1) {
-				
-				if (cipherStream != null) {
-					cipherStream.write(buffer, 0, sentNow);
-				} else {
-					outputStream.write(buffer, 0, sentNow);
-				}
-				
-				sentTotal += sentNow;
-				fireEvent(new UploadThreadProgressEvent(sentTotal, total));
-				
-			}
-			
-			if (cipherStream != null) {
-				cipherStream.flush();
-			}
-			
-			outputStream.flush();
+		byte[] buffer = new byte[4096];
+		int sentNow;
+		long sentTotal;
+
+		CipherOutputStream cipherStream = null;
+		if (encryptor != null) {
+			cipherStream = encryptor.getOutputStream(outputStream, Cipher.ENCRYPT_MODE);
 		}
+
+		sentTotal = 0;
+		while ((sentNow = stream.read(buffer)) != -1) {
+
+			if (cipherStream != null) {
+				cipherStream.write(buffer, 0, sentNow);
+			} else {
+				outputStream.write(buffer, 0, sentNow);
+			}
+
+			sentTotal += sentNow;
+			fireEvent(new UploadThreadProgressEvent(sentTotal, size));
+
+		}
+
+		if (cipherStream != null) {
+			cipherStream.flush();
+		}
+
+		outputStream.flush();
         writer.flush();   
+    }
+	
+    /**
+     * Adds a upload file section to the request 
+     * @param fieldName name attribute
+     * @param uploadFile a File to be uploaded 
+     * @throws IOException
+	 * @throws java.security.InvalidKeyException
+	 * @throws javax.crypto.IllegalBlockSizeException
+	 * @throws javax.crypto.BadPaddingException
+	 * @throws java.security.InvalidAlgorithmParameterException
+     */
+    public void addFilePart(String fieldName, File uploadFile) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+		addFilePart(fieldName, uploadFile.getName(), new FileInputStream(uploadFile), uploadFile.length());
     }
  
     /**

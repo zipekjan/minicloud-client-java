@@ -10,6 +10,8 @@ import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -27,9 +29,13 @@ public class UploadThread extends Thread implements Listener {
 	protected final Uploader uploader;
 	protected final File file;
 	protected final cz.zipek.minicloud.api.File remote;
+	protected final InputStream stream;
 	protected final List<Listener> listeners = new ArrayList<>();
 	protected final String targetFolder;
 	protected final Encryptor encryptor;
+	
+	protected String fileName;
+	protected long size;
 	
 	public synchronized void addListener(Listener listener) {
 		listeners.add(listener);
@@ -52,6 +58,7 @@ public class UploadThread extends Thread implements Listener {
 		this.file = file;
 		this.targetFolder = target_folder;
 		this.remote = null;
+		this.stream = null;
 		this.encryptor = encryptor;
 	}
 	
@@ -61,8 +68,22 @@ public class UploadThread extends Thread implements Listener {
 		this.uploader = uploader;
 		this.file = local;
 		this.remote = remote;
+		this.stream = null;
 		this.targetFolder = null;
 		this.encryptor = encryptor;
+	}
+	
+	public UploadThread(Uploader uploader, File local, InputStream stream, String fileName, long size, Encryptor encryptor) {
+		super("Upload thread");
+		
+		this.uploader = uploader;
+		this.file = local;
+		this.remote = null;
+		this.stream = stream;
+		this.targetFolder = null;
+		this.encryptor = encryptor;
+		this.fileName = fileName;
+		this.size = size;
 	}
 	
 	private String parseFolder(String folder) {
@@ -103,11 +124,15 @@ public class UploadThread extends Thread implements Listener {
 			sender.addFormField("checksum[file]", Tools.md5Checksum(file));
 			
 			// Add file
-			sender.addFilePart("file", file);
+			if (file != null) {
+				sender.addFilePart("file", file);
+			} else {
+				sender.addFilePart("file", fileName, stream, size);
+			}
 			
 			// Start sending
 			sender.finish();
-		} catch (IOException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException ex) {
+		} catch (IOException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException ex) {
 			Logger.getLogger(UploadThread.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
