@@ -33,6 +33,7 @@ public class UploadThread extends Thread implements Listener {
 	protected final List<Listener> listeners = new ArrayList<>();
 	protected final String targetFolder;
 	protected final Encryptor encryptor;
+	protected final boolean isPublic;
 	
 	protected String fileName;
 	protected long size;
@@ -51,7 +52,7 @@ public class UploadThread extends Thread implements Listener {
 		}
 	}
 	
-	public UploadThread(Uploader uploader, File file, String target_folder, Encryptor encryptor) {
+	public UploadThread(Uploader uploader, File file, String target_folder, boolean isPublic, Encryptor encryptor) {
 		super("Upload thread");
 		
 		this.uploader = uploader;
@@ -60,9 +61,10 @@ public class UploadThread extends Thread implements Listener {
 		this.remote = null;
 		this.stream = null;
 		this.encryptor = encryptor;
+		this.isPublic = isPublic;
 	}
 	
-	public UploadThread(Uploader uploader, File local, cz.zipek.minicloud.api.File remote, Encryptor encryptor) {
+	public UploadThread(Uploader uploader, File local, cz.zipek.minicloud.api.File remote, boolean isPublic, Encryptor encryptor) {
 		super("Upload thread");
 		
 		this.uploader = uploader;
@@ -70,20 +72,22 @@ public class UploadThread extends Thread implements Listener {
 		this.remote = remote;
 		this.stream = null;
 		this.targetFolder = null;
+		this.isPublic = isPublic;
 		this.encryptor = encryptor;
 	}
 	
-	public UploadThread(Uploader uploader, File local, InputStream stream, String fileName, long size, Encryptor encryptor) {
+	public UploadThread(Uploader uploader, InputStream stream, String fileName, long size, cz.zipek.minicloud.api.File remote, boolean isPublic, Encryptor encryptor) {
 		super("Upload thread");
 		
 		this.uploader = uploader;
-		this.file = local;
-		this.remote = null;
+		this.file = null;
+		this.remote = remote;
 		this.stream = stream;
 		this.targetFolder = null;
 		this.encryptor = encryptor;
 		this.fileName = fileName;
 		this.size = size;
+		this.isPublic = isPublic;
 	}
 	
 	private String parseFolder(String folder) {
@@ -113,15 +117,20 @@ public class UploadThread extends Thread implements Listener {
 			// Add encryption info
 			if (encryptor != null) {
 				sender.addFormField("encryption[file]", encryptor.getConfig());
+			} else {
+				sender.addFormField("encryption[file]", "");
 			}
 			
 			// Override existing file
 			if (remote != null) {
-				sender.addFormField("override[file]", remote.getId());
+				sender.addFormField("replace[file]", remote.getId());
 			}
 			
 			// Add file checksum (unencrypted)
-			sender.addFormField("checksum[file]", Tools.md5Checksum(file));
+			sender.addFormField("checksum[file]", file != null ? Tools.md5Checksum(file) : remote.getChecksum());
+			
+			// Add public param
+			sender.addFormField("public[file]", isPublic ? '1' : '0');
 			
 			// Add file
 			if (file != null) {

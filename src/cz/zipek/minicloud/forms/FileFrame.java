@@ -57,7 +57,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 		);
 		
 		labelEncryption.setText(
-				file.getEncryption() != null ?
+				file.isEncrypted() ?
 						file.getEncryption() : "Disabled"
 		);
 		
@@ -289,11 +289,11 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
     private void buttonPrivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrivateActionPerformed
-        // TODO add your handling code here:
+        Forms.showAvailability(this, file, false);
     }//GEN-LAST:event_buttonPrivateActionPerformed
 
     private void buttonPublicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPublicActionPerformed
-
+		Forms.showAvailability(this, file, true);
     }//GEN-LAST:event_buttonPublicActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -13,10 +13,12 @@ import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.download.DownloadEvent;
 import cz.zipek.minicloud.api.download.Downloader;
+import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.SuccessEvent;
 import cz.zipek.minicloud.api.upload.UploadEvent;
 import cz.zipek.minicloud.api.upload.Uploader;
+import cz.zipek.minicloud.api.upload.events.UploadFailedEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFileDoneEvent;
 import cz.zipek.minicloud.api.upload.events.UploadProgressEvent;
 import java.io.IOException;
@@ -32,38 +34,50 @@ import javax.swing.JOptionPane;
  *
  * @author Kamen
  */
-public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener {
+public class FileAvailabilityFrame extends javax.swing.JFrame implements Listener {
 
-	private final File file;
-	private final boolean setPublic;
+	private FileFrame listener;
+	
+	private File file;
+	private boolean setPublic;
 
 	private Uploader uploader;
 	private Downloader downloader;
 	
 	private String actionId;
 	
-	/**
-	 * Creates new form FileAvaibility
-	 * @param listener frame that receives success state
-	 * @param file file to be updated
-	 * @param publ result publicity state state
-	 */
-	public FileAvaibilityFrame(FileFrame listener, File file, boolean publ) {
+	public FileAvailabilityFrame() {
 		initComponents();
+	}
+	
+	public void setFile(FileFrame listener, File file, boolean pub) {
 		
+		// Default dialogs
+		labelInfo.setVisible(true);
+		labelAction.setText("Reupload");
+		labelState.setText("Ready");
+		progressState.setValue(0);
+		
+		// Save params
+		this.listener = listener;
 		this.file = file;
-		this.setPublic = publ;
+		setPublic = pub;
 		
 		labelPath.setText(file.getPath());
-		
-		// Determine correct action
+
+		// Determine correct action		
 		if (setPublic) {
-			file.setPublic(setPublic);
-			
 			if (file.isEncrypted()) {
 				prepareReupload(false);
 			} else {
-				file.save();
+				Manager.external.addListener(this);
+					
+				labelInfo.setVisible(false);
+				labelAction.setText("Save changes");
+				labelState.setText("Saving changes...");
+				
+				file.setPublic(setPublic);
+				actionId = file.save();
 			}
 		} else {
 			prepareReupload(true);
@@ -81,11 +95,8 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
 			
 			downloader.add(file, output);
 			uploader.add(input, file);
-			
-			downloader.start(null);
-			uploader.start(null);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException ex) {
-			Logger.getLogger(FileAvaibilityFrame.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(FileAvailabilityFrame.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 	}
@@ -103,6 +114,22 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
 	}
 	
 	private void handleDownload(DownloadEvent event) {
+			
+		if (event instanceof DownloadFailedEvent) {
+			labelState.setText("Download failed");
+			
+			JOptionPane.showMessageDialog(
+				this,
+				"File download failed.",
+				"Problem",
+				JOptionPane.ERROR_MESSAGE
+			);
+			
+			downloader.stop();
+			uploader.stop();
+			
+			buttonStart.setEnabled(true);
+		}
 		
 	}
 	
@@ -123,6 +150,22 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
 			actionId = file.save();
 		}
 		
+		if (event instanceof UploadFailedEvent) {
+			labelState.setText("Upload failed");
+			
+			JOptionPane.showMessageDialog(
+				this,
+				"File upload failed.",
+				"Problem",
+				JOptionPane.ERROR_MESSAGE
+			);
+			
+			downloader.stop();
+			uploader.stop();
+			
+			buttonStart.setEnabled(true);
+		}
+		
 	}
 	
 	private void handleExternal(Event event) {
@@ -132,7 +175,7 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
 				
 				JOptionPane.showMessageDialog(
 						this,
-						"File was successfuly reuploaded.",
+						setPublic ? "File is now public." : "File is now private.",
 						"Done",
 						JOptionPane.INFORMATION_MESSAGE
 				);
@@ -153,8 +196,19 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
 			}
 			
 			actionId = null;
+			buttonStart.setEnabled(true);
 			
-			Manager.external.removeListener(this);
+			if (downloader != null)
+				downloader.removeListenerLater(this);
+			
+			if (uploader != null)
+				uploader.removeListenerLater(this);
+			
+			if (listener != null) {
+				listener.updateFile(file);
+			}
+			
+			Manager.external.removeListenerLater(this);
 		}
 		
 	}
@@ -171,13 +225,12 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
         jLabel1 = new javax.swing.JLabel();
         labelPath = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        labelAction = new javax.swing.JLabel();
+        labelInfo = new javax.swing.JLabel();
         progressState = new javax.swing.JProgressBar();
         labelState = new javax.swing.JLabel();
         buttonStart = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Update file publicity");
         setMinimumSize(getPreferredSize());
 
@@ -187,10 +240,10 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
 
         jLabel3.setText("Required action:");
 
-        jLabel4.setText("Reupload");
+        labelAction.setText("Reupload");
 
-        jLabel5.setText("<html>\nFile is stored on server in encrypted format. You'll need to reupload it to make it public.<br>\nPublic files are stored unencrypted.\n</html>");
-        jLabel5.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        labelInfo.setText("<html>\nFile is stored on server in encrypted format. You'll need to reupload it to make it public.<br>\nPublic files are stored unencrypted.\n</html>");
+        labelInfo.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         labelState.setText("Ready");
 
@@ -214,7 +267,7 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
                             .addComponent(jLabel3))
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labelAction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(labelPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(progressState, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,7 +277,7 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(buttonStart))
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(0, 0, Short.MAX_VALUE))))
                 .addContainerGap())
         );
@@ -238,9 +291,9 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(labelAction))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progressState, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -255,8 +308,21 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
 
     private void buttonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartActionPerformed
 
+		
+		file.setPublic(setPublic);
+		
+		if (!setPublic)
+			file.setEncryption(Settings.getEncryption());
+		
+		buttonStart.setEnabled(false);
 		labelState.setText("Reuploading...");
+		
+		downloader.addListener(this);
+		uploader.addListener(this);
 		Manager.external.addListener(this);
+		
+		downloader.start(null);
+		uploader.start(null);
 		
     }//GEN-LAST:event_buttonStartActionPerformed
 
@@ -264,8 +330,8 @@ public class FileAvaibilityFrame extends javax.swing.JFrame implements Listener 
     private javax.swing.JButton buttonStart;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel labelAction;
+    private javax.swing.JLabel labelInfo;
     private javax.swing.JLabel labelPath;
     private javax.swing.JLabel labelState;
     private javax.swing.JProgressBar progressState;

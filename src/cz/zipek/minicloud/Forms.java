@@ -7,6 +7,7 @@ package cz.zipek.minicloud;
 
 import cz.zipek.minicloud.forms.Delete;
 import cz.zipek.minicloud.forms.Download;
+import cz.zipek.minicloud.forms.FileAvailabilityFrame;
 import cz.zipek.minicloud.forms.Login;
 import cz.zipek.minicloud.forms.SyncFolderFrame;
 import cz.zipek.minicloud.forms.FileFrame;
@@ -32,6 +33,7 @@ public class Forms {
 	private static final List<JFrame> frames = new ArrayList<>();
 	private static final Map<Integer, FileFrame> files = new HashMap<>();
 	private static final Map<Integer, SyncFolderFrame> syncFolders = new HashMap<>();
+	private static final Map<Integer, FileAvailabilityFrame> availability = new HashMap<>();
 	
 	private static SettingsFrame settings;
 	private static SyncFolderFrame newSyncFolder;
@@ -141,7 +143,27 @@ public class Forms {
 		frames.add(frame);
 		frame.setVisible(true);
 	}
-			
+	
+	/**
+	 * @param listener
+	 * @param file file to be shown
+	 * @param pub
+	 */
+	public static void showAvailability(FileFrame listener, cz.zipek.minicloud.api.File file, boolean pub) {
+		FileAvailabilityFrame frame;
+		
+		if (availability.containsKey(file.getId())) {
+			frame = availability.get(file.getId());
+		} else {
+			frame = new FileAvailabilityFrame();
+			availability.put(file.getId(), frame);
+			frames.add(frame);
+		}
+		
+		frame.setFile(listener, file, pub);
+		frame.setVisible(true);
+	}
+	
 	/**
 	 * @param file file to be shown
 	 */

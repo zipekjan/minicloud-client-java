@@ -70,7 +70,7 @@ class DownloadThread extends Thread
 			URL url = new URL(this.getSource().getDownloadLink());
 			
 			Encryptor encryptor = null;
-			if (getSource().getEncryption() != null) {
+			if (getSource().isEncrypted()) {
 				encryptor = new Encryptor(key, getSource().getEncryption());
 			}
 			

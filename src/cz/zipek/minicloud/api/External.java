@@ -294,7 +294,9 @@ public class External extends Eventor<Event> {
 				result.append("&");
 				result.append(item.getKey());
 				result.append("=");
-				result.append(URLEncoder.encode(item.getValue(), "UTF-8"));
+				if (item.getValue() != null) {
+					result.append(URLEncoder.encode(item.getValue(), "UTF-8"));
+				}
 			}
 			
 			return result.toString();
