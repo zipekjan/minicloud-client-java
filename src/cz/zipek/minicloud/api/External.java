@@ -391,35 +391,21 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
-	public String setUser(User user, String email, char[] password, String key) {
-		return setUser(user, email, password, key, false);
+	public String setUser(User user) {
+		return setUser(user, false);
 	}
 	
-	public String setUser(User user, String email, char[] password, String key, boolean wait) {
-		return setUser(user, email, password, key, wait, Long.toString(this.actionCounter++));
+	public String setUser(User user, boolean wait) {
+		return setUser(user, wait, Long.toString(this.actionCounter++));
 	}
 	
-	public String setUser(User user, String email, char[] password, String key, boolean wait, String action_id) {
+	public String setUser(User user, boolean wait, String action_id) {
 		Map<String, String> params = new HashMap<>();
+		
+		params.putAll(user.getUpdate());
 		
 		params.put("action_id", action_id);
 		params.put("id", Integer.toString(user.getId()));
-		
-		if (email != null) {
-			params.put("email", email);
-		}
-		
-		if (password != null) {
-			try {
-				params.put("password", sha256(password));
-			} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
-				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-		
-		if (key != null) {
-			params.put("key", key);
-		}
 		
 		Thread request = request(createUrl("set_user", params));
 
@@ -611,38 +597,32 @@ public class External extends Eventor<Event> {
 	}
 	
 	/**
-	 * Requests change of file informations.
+	 * Requests applying of local changes to server.
 	 * 
-	 * @param file file to be changed
-	 * @param name new file name
-	 * @param action_id user specified action id
+	 * @param file changed file
 	 * @return action id
 	 */
-	public String updateFile(File file, String name, String action_id) {
-		try {
-			request(
-					String.format(
-							"action=updateFile&action_id=%s&id=%s&filename=%s",
-							URLEncoder.encode(action_id, "UTF-8"),
-							Integer.toString(file.getId()),
-							URLEncoder.encode(name, "UTF-8")
-					)
-			);
-		} catch (UnsupportedEncodingException ex) {
-			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return action_id;
+	public String updateFile(File file) {
+		return updateFile(file, Long.toString(actionCounter++));
 	}
 	
 	/**
-	 * Requests change of file informations.
+	 * Requests applying of local changes to server.
 	 * 
-	 * @param file file to be changed
-	 * @param name new file name
+	 * @param file changed file
+	 * @param action_id user specified action id
 	 * @return action id
 	 */
-	public String updateFile(File file, String name) {
-		return updateFile(file, name, Long.toString(actionCounter++));
+	public String updateFile(File file, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.putAll(file.getUpdate());
+		
+		params.put("action_id", action_id);
+		params.put("id", Integer.toString(file.getId()));
+
+		request(createUrl("set_file", params));
+		
+		return action_id;
 	}
 	
 	/**

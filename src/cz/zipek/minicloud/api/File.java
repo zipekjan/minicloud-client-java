@@ -4,6 +4,8 @@ import cz.zipek.minicloud.Tools;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
@@ -216,8 +218,42 @@ public class File {
 	 */
 	public void setName(String name) {
 		this.name = name;
+		
+		extension = "";
+		if (name != null && name.length() > 0 && name.contains(".")) {
+			String[] parts = name.split("\\.");
+			extension = parts[parts.length - 1];
+		}
+	}
+	
+	/**
+	 * Sets encryption string.
+	 * This change is only local. You'll need to call updateFile to apply changes to server.
+	 * This string contains informations about file encryption.
+	 * Empty or null string indicates that file is not encrypted.
+	 * While format is not enforced in any way, it should follow Cipher format:
+	 *    ALGORITHM/MODE/PADDING
+	 * 
+	 * Example: AES/CBC/PKCS5Padding
+	 * 
+	 * @param encryption encryption string
+	 */
+	public void setEncryption(String encryption) {
+		this.encryption = encryption;
 	}
 
+	/**
+	 * Sets public avaibility of file.
+	 * This change is only local. You'll need to call updateFile to apply changes to server.
+	 * Public file can be accessed by any user.
+	 * Public file shouldn't be encrypted.
+	 * 
+	 * @param isPublic public avaibility of file
+	 */
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+	
 	/**
 	 * Returns file ID.
 	 * ID is used to definetly identify file on server.
@@ -302,5 +338,36 @@ public class File {
 	 */
 	public boolean isPublic() {
 		return isPublic;
+	}
+
+	/**
+	 * Builds list of parameters used to update file.
+	 * This list contains all changeable params of file.
+	 * It's used when calling updateFile method of API.
+	 * 
+	 * @return updatable file params with current values
+	 */
+	public Map<String, String> getUpdate() {
+		Map<String, String> items = new HashMap<>();
+		
+		if (getParent() != null) {
+			items.put("path_id", Integer.toString(getParent().getId()));
+		}
+		
+		items.put("filename", getName());
+		items.put("encryption", getEncryption());
+		items.put("public", Boolean.toString(isPublic()));
+		return items;
+	}
+	
+	/**
+	 * Applies local changes to server.
+	 * This is asychronous call.
+	 * You will need to listen on API for success event with same action id to confirm successfull save.
+	 * 
+	 * @return action id
+	 */
+	public String save() {
+		return getSource().updateFile(this);
 	}
 }

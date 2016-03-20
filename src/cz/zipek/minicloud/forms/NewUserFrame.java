@@ -4,11 +4,11 @@ import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Base64.Encoder;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.KeyGenerator;
@@ -108,12 +108,26 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+		if (!Arrays.equals(textPassword.getPassword(), textPassword2.getPassword())) {
+			JOptionPane.showMessageDialog(
+				this,
+				"Passwords don't match.",
+				"Problem with your input",
+				JOptionPane.WARNING_MESSAGE
+			);
+			
+			return;
+		}
+		
 		try {
 			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
 			SecretKey key = keyGen.generateKey();
-			Encoder encoder = Base64.getEncoder();
+			User user = Session.getUser();
 			
-			Manager.external.setUser(Session.getUser(), null, textPassword.getPassword(), encoder.encodeToString(key.getEncoded()));
+			user.setPassword(textPassword.getPassword());
+			user.setKey(key.getEncoded());
+			
+			Manager.external.setUser(user);
 		} catch (NoSuchAlgorithmException ex) {
 			JOptionPane.showMessageDialog(
 				this,

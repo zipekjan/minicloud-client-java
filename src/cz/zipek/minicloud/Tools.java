@@ -102,6 +102,18 @@ public class Tools {
 		return getHexString(MessageDigest.getInstance("MD5").digest(what));
 	}
 	
+	public static String sha256(String input) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return sha256(input.getBytes("UTF-8"));
+	}
+	
+	public static String sha256(char[] input) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return sha256(toBytes(input));
+	}
+	
+	public static String sha256(byte[] input) throws NoSuchAlgorithmException {
+		return getHexString(MessageDigest.getInstance("SHA-256").digest(input));
+	}
+	
 	public static byte[] toBytes(char[] chars) {
 		CharBuffer charBuffer = CharBuffer.wrap(chars);
 		ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
