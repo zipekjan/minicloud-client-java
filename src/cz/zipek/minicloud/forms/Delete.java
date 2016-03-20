@@ -60,6 +60,7 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
         buttonCancel = new javax.swing.JButton();
 
         setTitle("Delete files");
+        setMinimumSize(getPreferredSize());
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);

@@ -100,6 +100,9 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
         labelEncryption = new javax.swing.JLabel();
         buttonPublic = new javax.swing.JButton();
         buttonPrivate = new javax.swing.JButton();
+        buttonDelete = new javax.swing.JButton();
+
+        setMinimumSize(getPreferredSize());
 
         jLabel6.setText("Name:");
 
@@ -158,6 +161,14 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 
         buttonPrivate.setText("Make private");
 
+        buttonDelete.setText("Delete");
+        buttonDelete.setToolTipText("");
+        buttonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -169,7 +180,9 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                         .addComponent(buttonDownload)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonMove)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonDelete)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
                         .addComponent(buttonSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonCancel))
@@ -181,7 +194,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                             .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                             .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(textName)
                             .addComponent(labelSize, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -189,13 +202,11 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                             .addComponent(labelCreated, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(labelEncryption, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(buttonPublic)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(buttonPrivate))
-                                    .addComponent(textLink, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addComponent(buttonPublic)
+                                .addGap(11, 11, 11)
+                                .addComponent(buttonPrivate)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(textLink))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -234,7 +245,8 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                     .addComponent(buttonDownload)
                     .addComponent(buttonMove)
                     .addComponent(buttonCancel)
-                    .addComponent(buttonSave))
+                    .addComponent(buttonSave)
+                    .addComponent(buttonDelete))
                 .addContainerGap())
         );
 
@@ -262,8 +274,13 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 		setVisible(false);
     }//GEN-LAST:event_buttonCancelActionPerformed
 
+    private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonDeleteActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;
+    private javax.swing.JButton buttonDelete;
     private javax.swing.JButton buttonDownload;
     private javax.swing.JButton buttonMove;
     private javax.swing.JButton buttonPrivate;

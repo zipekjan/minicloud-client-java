@@ -22,6 +22,7 @@ public class ServerInfo {
 		source = from;
 		name = info.optString("name", "");
 		description = info.optString("description", "");
+		niceUrl = info.optBoolean("nice_url", false);
 		logo = info.optString("logo", null);
 	}
 

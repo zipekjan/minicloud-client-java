@@ -48,6 +48,7 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Account creation");
+        setMinimumSize(getPreferredSize());
 
         jLabel1.setText("Welcome to your new account. To continue you'll need to do some finishing steps.");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);

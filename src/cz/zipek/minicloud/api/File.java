@@ -89,7 +89,7 @@ public class File {
 				format = "%s/download/%s/%s/%s";
 			}
 			
-			return String.format(format, getSource().getApiUrl(), getId(), Tools.md5(getId() + getChecksum()).substring(0, 8), getName());
+			return String.format(format, pretty ? getSource().getServer() : getSource().getApiUrl(), getId(), Tools.md5(getId() + getChecksum()).substring(0, 8), getName());
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
 			Logger.getLogger(File.class.getName()).log(Level.SEVERE, null, ex);
 			return null;

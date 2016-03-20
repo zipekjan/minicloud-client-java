@@ -74,6 +74,7 @@ public class Upload extends javax.swing.JFrame implements Listener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Upload files");
+        setMinimumSize(getPreferredSize());
 
         comboTarget.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "/" }));
 

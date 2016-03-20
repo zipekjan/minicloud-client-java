@@ -85,6 +85,7 @@ public class SyncFolderFrame extends javax.swing.JFrame {
         buttonValidate = new javax.swing.JButton();
 
         setTitle("Synchronized folder");
+        setMinimumSize(getPreferredSize());
 
         jLabel1.setText("Local folder:");
 

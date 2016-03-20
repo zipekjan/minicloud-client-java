@@ -111,6 +111,7 @@ public class Sync extends javax.swing.JFrame implements Listener<SyncEvent> {
         buttonStop = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setMinimumSize(getPreferredSize());
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);

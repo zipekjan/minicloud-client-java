@@ -80,6 +80,7 @@ public class Download extends javax.swing.JFrame implements Listener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Download files");
+        setMinimumSize(getPreferredSize());
 
         tableFiles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

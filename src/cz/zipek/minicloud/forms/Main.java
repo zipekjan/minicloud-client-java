@@ -250,6 +250,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Minicloud Manager");
+        setMinimumSize(getPreferredSize());
 
         tableRemoteFiles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

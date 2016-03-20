@@ -82,6 +82,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
         buttonCancel = new javax.swing.JButton();
 
         setTitle("Settings");
+        setMinimumSize(getPreferredSize());
 
         jLabel1.setText("Default login:");
 

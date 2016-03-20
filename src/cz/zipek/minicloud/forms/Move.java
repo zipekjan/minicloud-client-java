@@ -72,6 +72,7 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Move files");
+        setMinimumSize(getPreferredSize());
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
