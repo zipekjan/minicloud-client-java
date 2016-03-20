@@ -5,7 +5,6 @@
  */
 package cz.zipek.minicloud.api.download;
 
-import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
@@ -19,6 +18,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ class DownloadThread extends Thread
 			URL url = new URL(this.getSource().getDownloadLink());
 			Encryptor encryptor = null;
 			if (getSource().getEncryption() != null) {
-				encryptor = new Encryptor(Session.getUser().getKey(), getSource().getEncryption());
+				encryptor = new Encryptor(key, getSource().getEncryption());
 			}
 			
 			HttpURLConnection httpConn;
@@ -126,7 +126,7 @@ class DownloadThread extends Thread
 							fireEvent(new DownloadFileDoneEvent(source, target));
 						}
 						
-					} catch (IOException | InvalidKeyException ex) {
+					} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException ex) {
 						fireEvent(new DownloadFailedEvent(source, ex));
 						Logger.getLogger(DownloadThread.class.getName()).log(Level.SEVERE, null, ex);
 					}

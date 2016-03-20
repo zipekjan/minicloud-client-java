@@ -11,8 +11,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * Helper class with possibly usefull and widely used methods.
@@ -80,6 +85,40 @@ public class Tools {
 				result.append("0").append(Integer.toHexString((0xFF & hash[i])));
 			} else {
 				result.append(Integer.toHexString(0xFF & hash[i]));
+			}
+		}
+		return result.toString();
+	}
+	
+	public static String md5(String what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return md5(what.getBytes("UTF-8"));
+	}
+	
+	public static String md5(char[] what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return md5(toBytes(what));
+	}
+		
+	public static String md5(byte[] what) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		return getHexString(MessageDigest.getInstance("MD5").digest(what));
+	}
+	
+	public static byte[] toBytes(char[] chars) {
+		CharBuffer charBuffer = CharBuffer.wrap(chars);
+		ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+		byte[] bytes = Arrays.copyOfRange(byteBuffer.array(),
+				byteBuffer.position(), byteBuffer.limit());
+		Arrays.fill(charBuffer.array(), '\u0000'); // clear sensitive data
+		Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
+		return bytes;
+	}
+	
+	public static String getHexString(byte[] bytes) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			if ((0xff & bytes[i]) < 0x10) {
+				result.append("0").append(Integer.toHexString((0xFF & bytes[i])));
+			} else {
+				result.append(Integer.toHexString(0xFF & bytes[i]));
 			}
 		}
 		return result.toString();
