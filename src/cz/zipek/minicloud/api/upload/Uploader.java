@@ -104,12 +104,9 @@ public class Uploader extends Eventor<UploadEvent> implements Listener {
 			if (target == null) {
 				file.setTarget(targetFolder);
 			}
-			thread = new UploadThread(this, file, encryptor);
-		} else if (file.getStream() == null) {
-			thread = new UploadThread(this, file, encryptor);
-		} else {
-			thread = new UploadThread(this, file, encryptor);
 		}
+		
+		thread = new UploadThread(this, file, encryptor);
 		
 		thread.addListener(this);
 		thread.start();

@@ -126,7 +126,7 @@ public class UploadItem {
 	
 	public String getChecksum() {
 		try {
-			return file == null ? Tools.md5Checksum(file) : existing.getChecksum();
+			return file != null ? Tools.md5Checksum(file) : existing.getChecksum();
 		} catch (NoSuchAlgorithmException | IOException ex) {
 			Logger.getLogger(UploadItem.class.getName()).log(Level.SEVERE, null, ex);
 		}
