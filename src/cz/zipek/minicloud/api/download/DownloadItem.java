@@ -16,10 +16,12 @@ import java.io.OutputStream;
  */
 public class DownloadItem {
 	private final File file;
+	private final String encryption;
 	private String target;
 	
 	public DownloadItem(File file, String target) {
 		this.file = file;
+		this.encryption = file.getEncryption();
 		this.target = target;
 	}
 
@@ -28,6 +30,10 @@ public class DownloadItem {
 	 */
 	public File getFile() {
 		return file;
+	}
+	
+	public String getEncryption() {
+		return this.encryption;
 	}
 
 	/**

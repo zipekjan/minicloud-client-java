@@ -66,13 +66,14 @@ class DownloadThread extends Thread
 	public void run() {
 		File source = item.getFile();
 		String target = item.getTarget();
+		String encryption = item.getEncryption();
 		
 		try {
 			URL url = new URL(this.getSource().getDownloadLink());
 			
 			Encryptor encryptor = null;
-			if (getSource().isEncrypted()) {
-				encryptor = new Encryptor(key, getSource().getEncryption());
+			if (encryption != null && encryption.length() > 0) {
+				encryptor = new Encryptor(key, encryption);
 			}
 			
 			HttpURLConnection httpConn;
@@ -97,8 +98,12 @@ class DownloadThread extends Thread
 						CipherOutputStream cipherStream = null;
 						if (encryptor != null) {
 							cipherStream = encryptor.getOutputStream(new NotClosingOutputStream(outputStream), Cipher.DECRYPT_MODE);
-						}
 						
+							System.out.println("(Download) Encryption used: " + encryptor.getConfig());
+						} else {
+							System.out.println("(Download) No encryption");
+						}
+
 						buffer = new byte[4096];
 						total = httpConn.getContentLengthLong();
 						downloaded = 0;
