@@ -15,13 +15,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.security.Permission;
 import java.security.PermissionCollection;
-import java.security.Security;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONException;
 
 /**
@@ -36,15 +34,7 @@ public class Manager {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-		// Security
-		Security.addProvider(new BouncyCastleProvider());
 
-		// BC is required
-		if (Security.getProvider("BC") == null){
-            System.err.println("Failed to load security provider.");
-			return;
-        }
-		
 		removeCryptographyRestrictions();
 		
 		//API

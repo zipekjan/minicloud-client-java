@@ -124,6 +124,12 @@ public class UploadThread extends Thread implements Listener {
 			// Override existing file
 			if (remote != null) {
 				sender.addFormField("replace[file]", remote.getId());
+				
+				// Save params of remote file
+				if (encryptor != null)
+					remote.setEncryption(encryptor.getConfig());
+				else
+					remote.setEncryption("");
 			}
 			
 			// Add file checksum (unencrypted)
