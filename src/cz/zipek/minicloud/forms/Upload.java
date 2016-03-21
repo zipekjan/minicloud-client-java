@@ -230,7 +230,7 @@ public class Upload extends javax.swing.JFrame implements Listener {
 				uploader = new Uploader(Manager.external, Session.getUser().getEncryptor(Settings.getEncryption()));
 				uploader.addListener(this);
 				for(File f : files) {
-					uploader.add(f);
+					uploader.add(f, false);
 				}
 				uploader.start(comboTarget.getSelectedItem().toString() + textTagret.getText());
 				

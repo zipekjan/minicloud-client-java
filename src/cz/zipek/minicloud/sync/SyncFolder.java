@@ -289,7 +289,8 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 								while (path.length() > 0 && path.charAt(0) == '/')
 									path = path.substring(1);
 								
-								uploader.add(file, path);
+								// @TODO: Allow user select default behaviour
+								uploader.add(file, path, false);
 							}
 						}
 					}

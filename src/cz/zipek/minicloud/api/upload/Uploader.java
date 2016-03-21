@@ -43,20 +43,28 @@ public class Uploader extends Eventor<UploadEvent> implements Listener {
 		encryptor = encryption;
 	}
 	
-	public void add(java.io.File file) {
-		add(new UploadItem(file));
+	public void add(java.io.File file, boolean isPublic) {
+		add(new UploadItem(file, isPublic));
 	}
 	
 	public void add(java.io.File local, File remote) {
 		add(new UploadItem(local, remote));
 	}
 	
-	public void add(java.io.File local, String target) {
-		add(new UploadItem(local, target));
+	public void add(java.io.File local, File remote, boolean isPublic) {
+		add(new UploadItem(local, remote, isPublic));
+	}
+	
+	public void add(java.io.File local, String target, boolean isPublic) {
+		add(new UploadItem(local, target, isPublic));
 	}
 	
 	public void add(InputStream local, File remote) {
 		add(new UploadItem(local, remote));
+	}
+	
+	public void add(InputStream local, File remote, boolean isPublic) {
+		add(new UploadItem(local, remote, isPublic));
 	}
 	
 	public void add(UploadItem item) {
@@ -94,13 +102,13 @@ public class Uploader extends Eventor<UploadEvent> implements Listener {
 		if (file.getExisting() == null) {
 			String target = file.getTarget();
 			if (target == null) {
-				target = targetFolder;
+				file.setTarget(targetFolder);
 			}
-			thread = new UploadThread(this, file.getFile(), target, false, encryptor);
+			thread = new UploadThread(this, file, encryptor);
 		} else if (file.getStream() == null) {
-			thread = new UploadThread(this, file.getFile(), file.getExisting(), file.getExisting().isPublic(), encryptor);
+			thread = new UploadThread(this, file, encryptor);
 		} else {
-			thread = new UploadThread(this, file.getStream(), file.getExisting().getName(), file.getExisting().getSize(), file.getExisting(), file.getExisting().isPublic(), encryptor);
+			thread = new UploadThread(this, file, encryptor);
 		}
 		
 		thread.addListener(this);
