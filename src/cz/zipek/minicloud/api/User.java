@@ -36,6 +36,7 @@ public class User {
 	protected char[] password;
 	
 	protected byte[] key;
+	private String keyEncryption;
 	
 	protected boolean admin;
 	
@@ -59,6 +60,8 @@ public class User {
 		if (keySource != null && keySource.length() > 0) {
 			key = Base64.getDecoder().decode(keySource);
 		}
+		
+		keyEncryption = data.optString("key_encryption", null);
 		
 		admin = data.optBoolean("admin", false);
 		
@@ -244,6 +247,7 @@ public class User {
 			byte[] crypto = getKey(true);
 			if (crypto != null) {
 				items.put("key", Base64.getEncoder().encodeToString(crypto));
+				items.put("key_encryption", getKeyEncryption());
 			}
 		} catch (InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
 			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
@@ -278,7 +282,31 @@ public class User {
 	 * @throws UnsupportedEncodingException 
 	 */
 	private Encryptor getKeyEncryptor() throws NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException {		
-		return new Encryptor(Tools.sha256Bytes(getPassword()), "AES/CBC/PKCS5Padding");
+		return new Encryptor(Tools.sha256Bytes(getPassword()), getKeyEncryption());
+	}
+
+	/**
+	 * Encryption options used to ecnrypt key.
+	 * User key is encrypted using SHA256 of user password.
+	 * Encryption options should have following format:
+	 *	ALGORITHM/MODE/PADDING
+	 * 
+	 * @return the keyEncryption
+	 */
+	public String getKeyEncryption() {
+		return keyEncryption;
+	}
+
+	/**
+	 * Sets encryption options used to encrypt key.
+	 * User key is encrypted using SHA256 of user password.
+	 * Encryption options should have following format:
+	 *	ALGORITHM/MODE/PADDING
+	 * 
+	 * @param keyEncryption the keyEncryption to set
+	 */
+	public void setKeyEncryption(String keyEncryption) {
+		this.keyEncryption = keyEncryption;
 	}
 	
 }

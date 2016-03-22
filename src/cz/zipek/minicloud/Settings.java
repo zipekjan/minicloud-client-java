@@ -43,7 +43,13 @@ public class Settings {
 	private static String encryption;
 	
 	///@var encryptionOptions possible encryption values
-	private static final String[] encryptionOptions = new String[] { null, "AES/CBC/PKCS5Padding" };
+	private static final String[] encryptionOptions = new String[] {
+		null,
+		"AES/CBC/PKCS5Padding",
+		"Blowfish/CBC/PKCS5Padding"
+	};
+	
+	private static final int defaultEncryption = 1;
 	
 	///@var server server url
 	protected static String server = "";
@@ -52,6 +58,13 @@ public class Settings {
 	protected static final List<Listener> listeners = new ArrayList<>();
 	///@var toRemove listeners to be removed after all event is handled by all listeners
 	protected static final List<Listener> toRemove = new ArrayList<>();
+	
+	/**
+	 * Initialize required default parameters.
+	 */ 
+	static {
+		encryption = encryptionOptions[defaultEncryption];
+	}
 	
 	/**
 	 * Adds new listener
@@ -130,7 +143,7 @@ public class Settings {
 		//Load basic data
 		username = data.optString("username", "");
 		server = data.optString("server", "");
-		encryption = data.optString("encryption", "");
+		encryption = data.optString("encryption", encryptionOptions[defaultEncryption]);
 		
 		//Load sync folders
 		JSONArray folders = data.getJSONArray("folders");

@@ -12,8 +12,8 @@ import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.events.SuccessEvent;
 import cz.zipek.minicloud.api.events.UpdateConflictEvent;
-import cz.zipek.minicloud.api.events.UpdateEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -276,8 +276,20 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonMoveActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
+		if (textName.getText().length() == 0) {
+			JOptionPane.showMessageDialog(
+					this,
+					"Unable to save changes. Filename must be specified.",
+					"Wrong input",
+					JOptionPane.WARNING_MESSAGE
+			);
+			
+			return;
+		}
+		
 		file.getSource().addListener(this);
-		actionId = file.getSource().updateFile(file, textName.getText());
+		file.setName(textName.getText());
+		actionId = file.save();
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
@@ -321,7 +333,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 	@Override
 	public void handleEvent(Event e, Object sender) {
 		if (e.getActionId() != null && e.getActionId().equals(actionId)) {
-			if (!(e instanceof UpdateEvent)) {
+			if (!(e instanceof SuccessEvent)) {
 				if (e instanceof UpdateConflictEvent) {
 					JOptionPane.showMessageDialog(this, "This file name already exists.", "Update failed", JOptionPane.ERROR_MESSAGE);
 				} else {

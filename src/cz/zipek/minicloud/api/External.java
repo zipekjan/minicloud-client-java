@@ -3,6 +3,7 @@
  */
 package cz.zipek.minicloud.api;
 
+import cz.zipek.minicloud.api.events.BoolEvent;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.FileEvent;
 import cz.zipek.minicloud.api.events.PathEvent;
@@ -50,6 +51,7 @@ public class External extends Eventor<Event> {
 		public static final String USER = "user";
 		public static final String SERVER_INFO = "server";
 		public static final String ERROR = "error";
+		public static final String BOOL = "bool";
 	}
 	
 	///@var events maps response type to class that parses said response
@@ -90,6 +92,7 @@ public class External extends Eventor<Event> {
 		events.put(codes.PATH, PathEvent.class);
 		events.put(codes.USER, UserEvent.class);
 		events.put(codes.SERVER_INFO, ServerInfoEvent.class);
+		events.put(codes.BOOL, BoolEvent.class);
 		
 	}
 

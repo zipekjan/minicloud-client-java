@@ -1,12 +1,16 @@
 package cz.zipek.minicloud.api.encryption;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -39,10 +43,18 @@ public class Encryptor {
 		config = aConfig;
 		cipher = Cipher.getInstance(config);
 		
-		byte[] ivParam = new byte[16];
+		// Load cipher name, needed for key config
+		String cipherName = config;
+		if (cipherName.contains("/")) {
+			cipherName = cipherName.split("/")[0];
+		}
+		
+		// Create IV, assume IV needs to be same size as block
+		byte[] ivParam = new byte[cipher.getBlockSize()];
 		Arrays.fill( ivParam, (byte) 0 );
 		
-		key = new SecretKeySpec(rawKey, "AES");
+		// Create encryption params
+		key = new SecretKeySpec(rawKey, cipherName);
 		iv = new IvParameterSpec(ivParam);
 		
 	}
