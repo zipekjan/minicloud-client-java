@@ -47,12 +47,14 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="buttonUpload" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="buttonSettings" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="buttonRefresh" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="buttonAdmin" alignment="1" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="buttonUpload" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="buttonSettings" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="buttonRefresh" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="tabsMain" max="32767" attributes="0"/>
@@ -384,6 +386,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="buttonAdmin">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/cz/zipek/minicloud/res/admin.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Administration"/>
       </Properties>
       <Events>

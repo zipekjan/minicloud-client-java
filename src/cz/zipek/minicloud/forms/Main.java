@@ -470,6 +470,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/wide-small.png"))); // NOI18N
 
+        buttonAdmin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/admin.png"))); // NOI18N
         buttonAdmin.setText("Administration");
         buttonAdmin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -499,12 +500,13 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonUpload)
-                    .addComponent(buttonSettings)
-                    .addComponent(buttonRefresh)
-                    .addComponent(jLabel2)
-                    .addComponent(buttonAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(buttonAdmin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(buttonUpload)
+                        .addComponent(buttonSettings)
+                        .addComponent(buttonRefresh)
+                        .addComponent(jLabel2)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(tabsMain))
         );
