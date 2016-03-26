@@ -266,6 +266,7 @@ public class Sync extends javax.swing.JFrame implements Listener<SyncEvent> {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
 	private void stop() {

@@ -232,6 +232,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed

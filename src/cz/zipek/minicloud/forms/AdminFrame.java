@@ -106,6 +106,7 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

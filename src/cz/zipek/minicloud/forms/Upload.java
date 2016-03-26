@@ -190,6 +190,7 @@ public class Upload extends javax.swing.JFrame implements Listener {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
 	private void addFile(File file) {
