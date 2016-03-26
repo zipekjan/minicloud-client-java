@@ -7,6 +7,9 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.User;
+import cz.zipek.minicloud.api.events.UsersEvent;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -14,6 +17,8 @@ import cz.zipek.minicloud.api.Listener;
  */
 public class AdminFrame extends javax.swing.JFrame implements Listener {
 
+	private User[] users;
+	
 	/**
 	 * Creates new form AdminFrame
 	 */
@@ -21,8 +26,13 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
 		initComponents();
 		
 		Manager.external.addListener(this);
+		Manager.external.getUsers();
 	}
 
+	public void reloadData() {
+		Manager.external.getUsers();
+	}
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -33,36 +43,36 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableUsers = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        buttonDelete = new javax.swing.JButton();
+        buttonCreate = new javax.swing.JButton();
 
         setTitle("Administration");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "User", "Email"
+                "User", "Email", "Admin"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tableUsers);
 
         jLabel1.setText("Selected:");
 
-        jButton1.setText("Delete");
+        buttonDelete.setText("Delete");
 
-        jButton2.setText("Create new user");
+        buttonCreate.setText("Create new user");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -75,23 +85,23 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                        .addComponent(buttonDelete))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton2)))
+                        .addComponent(buttonCreate)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
+                .addComponent(buttonCreate)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jButton1))
+                    .addComponent(buttonDelete))
                 .addContainerGap())
         );
 
@@ -99,15 +109,40 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton buttonCreate;
+    private javax.swing.JButton buttonDelete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tableUsers;
     // End of variables declaration//GEN-END:variables
 
 	@Override
 	public void handleEvent(Object event, Object sender) {
+		
+		if (event instanceof UsersEvent) {
+			
+			// Load event and table
+			UsersEvent e = (UsersEvent)event;
+			DefaultTableModel dm = (DefaultTableModel) tableUsers.getModel();
+			
+			// Load users from event
+			users = e.getUsers();
+
+			// Clear rows
+			while (dm.getRowCount() > 0) {
+				dm.removeRow(0);
+			}
+			
+			// Add users to table
+			for(User user : users) {
+				dm.addRow(new String[]{
+					user.getName(),
+					user.getEmail(),
+					user.isAdmin() ? "Yes" : "No"
+				});
+			}
+			
+		}
 		
 	}
 }

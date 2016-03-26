@@ -8,6 +8,7 @@ package cz.zipek.minicloud.forms;
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Icons;
 import cz.zipek.minicloud.Manager;
+import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.SettingsEvent;
 import cz.zipek.minicloud.Tools;
@@ -58,6 +59,8 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 	}
 	
 	private void initCustom() {
+		buttonAdmin.setVisible(Session.getUser().isAdmin());
+
 		setIconImages(Icons.getLogo());
 		
 		tableRemoteFiles.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
@@ -247,6 +250,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
         buttonUpload = new javax.swing.JButton();
         buttonRefresh = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        buttonAdmin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Minicloud Manager");
@@ -466,6 +470,13 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/wide-small.png"))); // NOI18N
 
+        buttonAdmin.setText("Administration");
+        buttonAdmin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAdminActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -475,6 +486,8 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonAdmin)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonRefresh)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonUpload)
@@ -490,12 +503,14 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
                     .addComponent(buttonUpload)
                     .addComponent(buttonSettings)
                     .addComponent(buttonRefresh)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(buttonAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(tabsMain))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableRemoteFilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableRemoteFilesMouseClicked
@@ -588,8 +603,13 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		}
     }//GEN-LAST:event_buttonRemoveActionPerformed
 
+    private void buttonAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAdminActionPerformed
+		Forms.showAdmin();
+    }//GEN-LAST:event_buttonAdminActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAdd;
+    private javax.swing.JButton buttonAdmin;
     private javax.swing.JButton buttonDelete;
     private javax.swing.JButton buttonDownload;
     private javax.swing.JButton buttonMove;

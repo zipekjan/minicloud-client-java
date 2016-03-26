@@ -405,6 +405,31 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
+	public String getUsers() {
+		return getUsers(false);
+	}
+	
+	public String getUsers(boolean wait) {
+		return getUsers(wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String getUsers(boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
+		
+		Thread request = request(createUrl("admin_get_users", params));
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
 	public String setUser(User user) throws NoSuchProviderException {
 		return setUser(user, false);
 	}

@@ -50,7 +50,7 @@ public class File {
 			mktime = new Date(data.getLong("mktime") * 1000);
 			mdtime = new Date(data.getLong("mktime") * 1000);
 
-			isPublic = data.optInt("public", 0) == 1;
+			isPublic = data.optBoolean("public", false) || (data.optInt("public", 0) == 1);
 			
 			extension = "";
 			if (name != null && name.length() > 0 && name.contains(".")) {

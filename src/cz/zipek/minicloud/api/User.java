@@ -63,7 +63,7 @@ public class User {
 		
 		keyEncryption = data.optString("key_encryption", null);
 		
-		admin = data.optBoolean("admin", false);
+		admin = data.optBoolean("admin", false) || (data.optInt("admin", 0) == 1);
 		
 	}
 

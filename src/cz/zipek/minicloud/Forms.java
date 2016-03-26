@@ -5,6 +5,7 @@
  */
 package cz.zipek.minicloud;
 
+import cz.zipek.minicloud.forms.AdminFrame;
 import cz.zipek.minicloud.forms.Delete;
 import cz.zipek.minicloud.forms.Download;
 import cz.zipek.minicloud.forms.FileAvailabilityFrame;
@@ -40,6 +41,7 @@ public class Forms {
 	private static Login login;
 	private static Main main;
 	private static NewUserFrame newUser;
+	private static AdminFrame admin;
 	
 	/**
 	 * Adds frame to frame control.
@@ -194,6 +196,21 @@ public class Forms {
 		if (!settings.isVisible())
 			settings.reloadData();
 		settings.setVisible(true);
+	}
+	
+	/**
+	 * Shows settings frame.
+	 */
+	public static void showAdmin() {
+		if (admin == null) {
+			admin = new AdminFrame();
+			add(admin);
+		}
+		
+		if (!admin.isVisible())
+			admin.reloadData();
+		
+		admin.setVisible(true);
 	}
 	
 	/**
