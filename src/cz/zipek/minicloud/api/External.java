@@ -6,10 +6,13 @@ package cz.zipek.minicloud.api;
 import cz.zipek.minicloud.api.events.BoolEvent;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.FileEvent;
+import cz.zipek.minicloud.api.events.FilesEvent;
 import cz.zipek.minicloud.api.events.PathEvent;
+import cz.zipek.minicloud.api.events.PathsEvent;
 import cz.zipek.minicloud.api.events.ServerInfoEvent;
 import cz.zipek.minicloud.api.events.SuccessEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
+import cz.zipek.minicloud.api.events.UsersEvent;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -46,9 +49,11 @@ public class External extends Eventor<Event> {
 	 */
 	class codes {
 		public static final String PATH = "path";
+		public static final String PATHS = "paths";
 		public static final String FILE = "file";
 		public static final String FILES = "files";
 		public static final String USER = "user";
+		public static final String USERS = "users";
 		public static final String SERVER_INFO = "server";
 		public static final String ERROR = "error";
 		public static final String BOOL = "bool";
@@ -88,9 +93,12 @@ public class External extends Eventor<Event> {
 		
 		events.put("", SuccessEvent.class);
 		events.put(codes.FILE, FileEvent.class);
+		events.put(codes.FILES, FilesEvent.class);
 		events.put(codes.ERROR, ErrorEvent.class);
 		events.put(codes.PATH, PathEvent.class);
+		events.put(codes.PATHS, PathsEvent.class);
 		events.put(codes.USER, UserEvent.class);
+		events.put(codes.USERS, UsersEvent.class);
 		events.put(codes.SERVER_INFO, ServerInfoEvent.class);
 		events.put(codes.BOOL, BoolEvent.class);
 		
@@ -211,7 +219,7 @@ public class External extends Eventor<Event> {
 		
 		String type = response.optString("type", "");
 		String action_id = response.optString("action_id", null);
-		JSONObject data = response.optJSONObject("data");
+		JSONObject data = response; //.optJSONObject("data");
 		
 		Class handler = events.get(type);
 		

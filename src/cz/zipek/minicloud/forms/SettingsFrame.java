@@ -10,8 +10,6 @@ import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.User;
-import cz.zipek.minicloud.api.events.SynckeyEvent;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;

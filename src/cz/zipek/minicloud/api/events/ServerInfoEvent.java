@@ -25,7 +25,7 @@ public class ServerInfoEvent extends SuccessEvent {
 		super(sender, data, action_id);
 		
 		try {
-			serverInfo = new ServerInfo(sender, data);
+			serverInfo = new ServerInfo(sender, data.optJSONObject("data"));
 		} catch(JSONException e) {
 			Logger.getLogger(ServerInfoEvent.class.getName()).log(Level.SEVERE, null, e);
 		}

@@ -19,7 +19,7 @@ public class BoolEvent extends SuccessEvent {
 	public BoolEvent(External sender, JSONObject data, String action_id) {
 		super(sender, data, action_id);
 		
-		bool = data.optBoolean("bool");
+		bool = data.optJSONObject("data").optBoolean("bool");
 	}
 	
 	public boolean getBool() {

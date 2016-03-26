@@ -8,12 +8,11 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
-import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.events.UpdateEvent;
+import cz.zipek.minicloud.api.events.SuccessEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -189,7 +188,7 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 	public synchronized void handleEvent(Event event, Object sender) {
 		String id = event.getActionId();
 		if (id != null && actions.contains(id)) {
-			if (!(event instanceof UpdateEvent)) {
+			if (!(event instanceof SuccessEvent)) {
 				JOptionPane.showMessageDialog(this, "Failed to move file.", "Error ocurred", JOptionPane.ERROR_MESSAGE);
 			}
 			

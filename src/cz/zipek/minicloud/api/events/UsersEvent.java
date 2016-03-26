@@ -7,8 +7,10 @@ package cz.zipek.minicloud.api.events;
 
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.Path;
+import cz.zipek.minicloud.api.User;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,25 +18,27 @@ import org.json.JSONObject;
  *
  * @author Kamen
  */
-public class PathEvent extends SuccessEvent {
+public class UsersEvent extends SuccessEvent {
 
-	protected Path path;
+	protected User[] users;
 	
-	public PathEvent(External sender, JSONObject data, String action_id) {
+	public UsersEvent(External sender, JSONObject data, String action_id) {
 		super(sender, data, action_id);
 		
 		try {
-			path = new Path(sender, data.optJSONObject("data"));
+			JSONArray list = data.optJSONArray("data");
+
+			users = new User[list.length()];
+			for(int i = 0; i < list.length(); i++) {
+				users[i] = new User(sender, list.optJSONObject(i));
+			}
 		} catch (JSONException ex) {
-			Logger.getLogger(PathEvent.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PathsEvent.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
-	/**
-	 * @return the path
-	 */
-	public Path getPath() {
-		return path;
+	public User[] getUsers() {
+		return users;
 	}
 	
 }

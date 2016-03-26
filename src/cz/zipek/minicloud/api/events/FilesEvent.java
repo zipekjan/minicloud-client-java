@@ -7,27 +7,30 @@ package cz.zipek.minicloud.api.events;
 
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.File;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  *
  * @author Kamen
  */
-public class FileEvent extends SuccessEvent {
+public class FilesEvent extends SuccessEvent {
 
-	protected File file;
+	protected File[] files;
 	
-	public FileEvent(External sender, JSONObject data, String action_id) {
+	public FilesEvent(External sender, JSONObject data, String action_id) {
 		super(sender, data, action_id);
 		
-		file = new File(sender, data.optJSONObject("data"));
+		JSONArray list = data.optJSONArray("data");
+		
+		files = new File[list.length()];
+		for(int i = 0; i < list.length(); i++) {
+			files[i] = new File(sender, list.optJSONObject(i));
+		}
 	}
-
-	/**
-	 * @return the path
-	 */
-	public File getFile() {
-		return file;
+	
+	public File[] getFiles() {
+		return files;
 	}
 	
 }

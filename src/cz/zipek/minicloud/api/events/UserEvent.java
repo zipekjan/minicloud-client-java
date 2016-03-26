@@ -24,7 +24,7 @@ public class UserEvent extends SuccessEvent {
 		super(sender, data, action_id);
 		
 		try {
-			user = new User(sender, data);
+			user = new User(sender, data.optJSONObject("data"));
 		} catch(JSONException e) {
 			Logger.getLogger(UserEvent.class.getName()).log(Level.SEVERE, null, e);
 		}

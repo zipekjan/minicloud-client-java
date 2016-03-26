@@ -6,10 +6,9 @@
 package cz.zipek.minicloud.tests;
 
 import cz.zipek.minicloud.Manager;
-import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.Listener;
-import cz.zipek.minicloud.api.events.LoginEvent;
+import cz.zipek.minicloud.api.events.SuccessEvent;
 import cz.zipek.minicloud.sync.SyncEvent;
 import cz.zipek.minicloud.sync.SyncFolder;
 import cz.zipek.minicloud.sync.events.SyncChecksumFailedEvent;
@@ -54,9 +53,11 @@ public class SyncFolderTest implements Listener {
 	
 	@Override
 	public void handleEvent(Object event, Object sender) {
-		if (event instanceof LoginEvent) {
+		
+		if (event instanceof SuccessEvent) {
 			sync.sync();
 		}
+		
 		if (event instanceof SyncEvent) {
 			if (event instanceof SyncMkdirFailedEvent) {
 				SyncMkdirFailedEvent syncMkdirFailedEvent = (SyncMkdirFailedEvent) event;
