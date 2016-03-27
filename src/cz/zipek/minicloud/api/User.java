@@ -7,6 +7,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -16,6 +17,8 @@ import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -309,14 +312,37 @@ public class User {
 	}
 	
 	/**
-	 * Craetes encryptor that can be used to encrypt/decrypt user key.
+	 * Creates encryptor that can be used to encrypt/decrypt user key.
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws UnsupportedEncodingException 
 	 */
 	private Encryptor getKeyEncryptor() throws NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException {		
-		return new Encryptor(Tools.sha256Bytes(getPassword()), getKeyEncryption());
+		return new Encryptor(getPasswordHash(), getKeyEncryption());
+	}
+	
+	/**
+	 * Builds password hash using PBKDF2
+	 * 
+	 * @return password hash
+	 * @throws NoSuchAlgorithmException 
+	 */
+	private byte[] getPasswordHash() throws NoSuchAlgorithmException {
+		int iterations = 1000;
+        char[] chars = getPassword();
+        byte[] salt = new byte[16];
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 256);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		
+		try {
+			return skf.generateSecret(spec).getEncoded();
+		} catch (InvalidKeySpecException ex) {
+			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		return null;
 	}
 
 	/**
