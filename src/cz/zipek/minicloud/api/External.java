@@ -459,6 +459,40 @@ public class External extends Eventor<Event> {
 		return action_id;
 	}
 	
+	public String createUser(User user) {
+		return createUser(user, false);
+	}
+	
+	public String createUser(User user, boolean wait) {
+		return createUser(user, wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String createUser(User user, boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
+		params.put("name", user.getName());
+		params.put("email", user.getEmail());
+		params.put("admin", Boolean.toString(user.isAdmin()));
+		
+		try {
+			params.put("password", sha256(user.getPassword()));
+		} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		Thread request = request(createUrl("admin_create_user", params));
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
 	/**
 	 * Requests root path info.
 	 * 

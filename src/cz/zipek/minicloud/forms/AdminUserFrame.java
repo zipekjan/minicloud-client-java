@@ -1,5 +1,8 @@
 package cz.zipek.minicloud.forms;
 
+import cz.zipek.minicloud.Manager;
+import cz.zipek.minicloud.api.User;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -17,6 +20,23 @@ public class AdminUserFrame extends javax.swing.JFrame {
 	 */
 	public AdminUserFrame() {
 		initComponents();
+	}
+	
+	public void setUser(User user) {
+		if (user == null) {
+			textLogin.setText("");
+			textEmail.setText("");
+			textPassword.setText("");
+			textPassword2.setText("");
+			comboRole.setSelectedIndex(0);
+		} else {
+			textLogin.setText(user.getName());
+			textEmail.setText(user.getEmail());
+			comboRole.setSelectedIndex(user.isAdmin() ? 1 : 0);
+		}
+		
+		textPassword.setVisible(user == null);
+		textPassword2.setVisible(user == null);
 	}
 
 	/**
@@ -57,8 +77,18 @@ public class AdminUserFrame extends javax.swing.JFrame {
         comboRole.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "User", "Admin" }));
 
         buttonSave.setText("Save");
+        buttonSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonSaveActionPerformed(evt);
+            }
+        });
 
         buttonCancel.setText("Cancel");
+        buttonCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -119,42 +149,16 @@ public class AdminUserFrame extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		/* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-		 * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-		 */
-		try {
-			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					javax.swing.UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(AdminUserFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(AdminUserFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(AdminUserFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(AdminUserFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		}
-        //</editor-fold>
+    private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
+		setVisible(false);
+    }//GEN-LAST:event_buttonCancelActionPerformed
 
-		/* Create and display the form */
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new AdminUserFrame().setVisible(true);
-			}
-		});
-	}
+    private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
+		//Manager.external.createUser(new User());
+    }//GEN-LAST:event_buttonSaveActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;

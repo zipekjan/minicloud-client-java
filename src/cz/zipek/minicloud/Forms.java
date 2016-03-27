@@ -5,7 +5,9 @@
  */
 package cz.zipek.minicloud;
 
+import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.forms.AdminFrame;
+import cz.zipek.minicloud.forms.AdminUserFrame;
 import cz.zipek.minicloud.forms.Delete;
 import cz.zipek.minicloud.forms.Download;
 import cz.zipek.minicloud.forms.FileAvailabilityFrame;
@@ -35,9 +37,11 @@ public class Forms {
 	private static final Map<Integer, FileFrame> files = new HashMap<>();
 	private static final Map<Integer, SyncFolderFrame> syncFolders = new HashMap<>();
 	private static final Map<Integer, FileAvailabilityFrame> availability = new HashMap<>();
+	private static final Map<Integer, AdminUserFrame> adminUsers = new HashMap<>();
 	
 	private static SettingsFrame settings;
 	private static SyncFolderFrame newSyncFolder;
+	private static AdminUserFrame newAdminUser;
 	private static Login login;
 	private static Main main;
 	private static NewUserFrame newUser;
@@ -247,5 +251,28 @@ public class Forms {
 			frames.add(getMain());
 		}
 		return main;
+	}
+
+	public static void showAdminUser(User user) {
+		if (user == null) {
+			if (newAdminUser == null) {
+				newAdminUser = new AdminUserFrame();
+			}
+			newAdminUser.setUser(null);
+			newAdminUser.setVisible(true);
+		} else {
+			AdminUserFrame frame;
+		
+			if (!adminUsers.containsKey(user.getId())) {
+				frame = new AdminUserFrame();
+				adminUsers.put(user.getId(), frame);
+				add(frame);
+			} else {
+				frame = adminUsers.get(user.getId());
+			}
+			
+			frame.setUser(user);
+			frame.setVisible(true);
+		}
 	}
 }

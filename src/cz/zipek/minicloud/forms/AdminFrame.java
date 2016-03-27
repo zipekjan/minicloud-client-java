@@ -5,6 +5,7 @@
  */
 package cz.zipek.minicloud.forms;
 
+import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.User;
@@ -75,7 +76,6 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
         });
         tableUsers.setRowHeight(20);
         tableUsers.setRowMargin(2);
-        tableUsers.setRowSelectionAllowed(true);
         jScrollPane1.setViewportView(tableUsers);
 
         jLabel1.setText("Selected:");
@@ -83,6 +83,11 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
         buttonDelete.setText("Delete");
 
         buttonCreate.setText("Create new user");
+        buttonCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonCreateActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -118,6 +123,10 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void buttonCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCreateActionPerformed
+		Forms.showAdminUser(null);
+    }//GEN-LAST:event_buttonCreateActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCreate;

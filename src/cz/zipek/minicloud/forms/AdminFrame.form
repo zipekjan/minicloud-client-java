@@ -77,7 +77,6 @@
             </Property>
             <Property name="rowHeight" type="int" value="20"/>
             <Property name="rowMargin" type="int" value="2"/>
-            <Property name="rowSelectionAllowed" type="boolean" value="true"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -96,6 +95,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Create new user"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonCreateActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
