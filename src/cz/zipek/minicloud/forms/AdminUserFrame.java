@@ -1,3 +1,5 @@
+package cz.zipek.minicloud.forms;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -40,7 +42,6 @@ public class AdminUserFrame extends javax.swing.JFrame {
         buttonCancel = new javax.swing.JButton();
 
         setTitle("User");
-        setMaximumSize(new java.awt.Dimension(2147483647, 210));
         setMinimumSize(new java.awt.Dimension(0, 210));
 
         jLabel1.setText("Login");

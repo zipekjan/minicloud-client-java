@@ -61,11 +61,21 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
+        tableUsers.setRowHeight(20);
+        tableUsers.setRowMargin(2);
+        tableUsers.setRowSelectionAllowed(true);
         jScrollPane1.setViewportView(tableUsers);
 
         jLabel1.setText("Selected:");
