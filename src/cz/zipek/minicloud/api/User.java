@@ -1,7 +1,6 @@
 package cz.zipek.minicloud.api;
 
 import cz.zipek.minicloud.Tools;
-import cz.zipek.minicloud.Tools.Hash;
 import cz.zipek.minicloud.api.encryption.Encryptor;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
@@ -66,6 +65,16 @@ public class User {
 		admin = data.optBoolean("admin", false) || (data.optInt("admin", 0) == 1);
 		
 	}
+	
+	public User(External api, String name, String email, char[] password, boolean admin) {
+		
+		source = api;
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.admin = admin;
+		
+	}
 
 	/**
 	 * API used to fetch this info.
@@ -121,6 +130,14 @@ public class User {
 		if (password == null)
 			return password;
 		return Arrays.copyOf(password, password.length);
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 	
 	/**
@@ -230,9 +247,21 @@ public class User {
 	 * It's used when calling updateFile method of API.
 	 * 
 	 * @return updatable file params with current values
-	 * @throws java.security.NoSuchProviderException
 	 */
-	public Map<String, String> getUpdate() throws NoSuchProviderException {
+	public Map<String, String> getUpdate() {
+		return getUpdate(false);
+		
+	}
+	
+	/**
+	 * Builds list of parameters used to update file.
+	 * This list contains all changeable params of file.
+	 * It's used when calling updateFile method of API.
+	 * 
+	 * @param extended include name and role
+	 * @return updatable file params with current values
+	 */
+	public Map<String, String> getUpdate(boolean extended) {
 		Map<String, String> items = new HashMap<>();
 		
 		if (getPassword() != null) {
@@ -249,11 +278,16 @@ public class User {
 				items.put("key", Base64.getEncoder().encodeToString(crypto));
 				items.put("key_encryption", getKeyEncryption());
 			}
-		} catch (InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+		} catch (NoSuchProviderException | InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
 			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		items.put("email", getEmail());
+		
+		if (extended) {
+			items.put("name", getName());
+			items.put("admin", Boolean.toString(isAdmin()));
+		}
 		
 		return items;
 	}

@@ -1,7 +1,12 @@
 package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Manager;
+import cz.zipek.minicloud.api.Event;
+import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.User;
+import cz.zipek.minicloud.api.events.ErrorEvent;
+import cz.zipek.minicloud.api.events.SuccessEvent;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,30 +18,18 @@ import cz.zipek.minicloud.api.User;
  *
  * @author Kamen
  */
-public class AdminUserFrame extends javax.swing.JFrame {
+public class AdminUserFrame extends javax.swing.JFrame implements Listener {
 
+	private User user;
+	private String actionId;
+	
 	/**
 	 * Creates new form AdminUserFrame
 	 */
 	public AdminUserFrame() {
 		initComponents();
-	}
-	
-	public void setUser(User user) {
-		if (user == null) {
-			textLogin.setText("");
-			textEmail.setText("");
-			textPassword.setText("");
-			textPassword2.setText("");
-			comboRole.setSelectedIndex(0);
-		} else {
-			textLogin.setText(user.getName());
-			textEmail.setText(user.getEmail());
-			comboRole.setSelectedIndex(user.isAdmin() ? 1 : 0);
-		}
 		
-		textPassword.setVisible(user == null);
-		textPassword2.setVisible(user == null);
+		Manager.external.addListener(this);
 	}
 
 	/**
@@ -157,7 +150,22 @@ public class AdminUserFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-		//Manager.external.createUser(new User());
+		String name = textLogin.getText();
+		String email = textEmail.getText();
+		char[] password = textPassword.getPassword();
+		boolean admin = comboRole.getSelectedIndex() == 1;
+		
+		enableEditing(false);
+		
+		if (user == null) {
+			actionId = Manager.external.createUser(new User(Manager.external, name, email, password, admin));
+		} else {
+			user.setEmail(email);
+			user.setName(name);
+			user.setAdmin(admin);
+			
+			actionId = Manager.external.adminSetUser(user);
+		}
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -174,4 +182,52 @@ public class AdminUserFrame extends javax.swing.JFrame {
     private javax.swing.JPasswordField textPassword;
     private javax.swing.JPasswordField textPassword2;
     // End of variables declaration//GEN-END:variables
+
+	public void setUser(User user) {
+		this.user = user;
+		
+		if (user == null) {
+			textLogin.setText("");
+			textEmail.setText("");
+			textPassword.setText("");
+			textPassword2.setText("");
+			comboRole.setSelectedIndex(0);
+		} else {
+			textLogin.setText(user.getName());
+			textEmail.setText(user.getEmail());
+			comboRole.setSelectedIndex(user.isAdmin() ? 1 : 0);
+		}
+		
+		textPassword.setVisible(user == null);
+		textPassword2.setVisible(user == null);
+		
+		enableEditing(true);
+	}	
+	
+	private void enableEditing(boolean flag) {
+		textLogin.setEditable(flag);
+		textEmail.setEditable(flag);
+		textPassword.setEditable(flag);
+		comboRole.setEditable(flag);
+		buttonSave.setEnabled(flag);
+	}
+	
+	@Override
+	public void handleEvent(Object event, Object sender) {
+		if (((Event)event).getActionId().equals(actionId)) {
+			if (event instanceof SuccessEvent) {
+				setVisible(false);
+			}
+			if (event instanceof ErrorEvent) {
+				JOptionPane.showMessageDialog(
+						this,
+						"Failed to save changes.",
+						"Error ocurred",
+						JOptionPane.ERROR_MESSAGE
+				);
+			}
+			
+			enableEditing(true);
+		}
+	}
 }

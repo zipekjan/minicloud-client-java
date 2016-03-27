@@ -470,17 +470,63 @@ public class External extends Eventor<Event> {
 	public String createUser(User user, boolean wait, String action_id) {
 		Map<String, String> params = new HashMap<>();
 		params.put("action_id", action_id);
-		params.put("name", user.getName());
-		params.put("email", user.getEmail());
-		params.put("admin", Boolean.toString(user.isAdmin()));
 		
-		try {
-			params.put("password", sha256(user.getPassword()));
-		} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
-			Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		params.putAll(user.getUpdate(true));
 		
 		Thread request = request(createUrl("admin_create_user", params));
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
+	public String adminSetUser(User user) {
+		return adminSetUser(user, false);
+	}
+	
+	public String adminSetUser(User user, boolean wait) {
+		return adminSetUser(user, wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String adminSetUser(User user, boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
+		
+		params.putAll(user.getUpdate(true));
+		
+		Thread request = request(createUrl("admin_set_user", params));
+
+		if (wait) {
+			try {
+				request.join();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(External.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		return action_id;
+	}
+	
+	public String deleteUser(User user) {
+		return adminSetUser(user, false);
+	}
+	
+	public String deleteUser(User user, boolean wait) {
+		return adminSetUser(user, wait, Long.toString(this.actionCounter++));
+	}
+	
+	public String deleteUser(User user, boolean wait, String action_id) {
+		Map<String, String> params = new HashMap<>();
+		params.put("action_id", action_id);
+		params.put("id", Integer.toString(user.getId()));
+		
+		Thread request = request(createUrl("admin_delete_user", params));
 
 		if (wait) {
 			try {
