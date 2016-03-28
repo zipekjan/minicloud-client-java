@@ -11,6 +11,7 @@ import cz.zipek.minicloud.Icons;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
+import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.events.SuccessEvent;
 import java.text.SimpleDateFormat;
@@ -300,7 +301,9 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteActionPerformed
-        // TODO add your handling code here:
+		List<File> files = new ArrayList<>();
+		files.add(file);
+		Forms.showDelete(files);
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
     private void buttonPrivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrivateActionPerformed
