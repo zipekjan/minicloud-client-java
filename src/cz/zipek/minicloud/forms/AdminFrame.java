@@ -90,6 +90,7 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
             }
         });
 
+        buttonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/refresh-small.png"))); // NOI18N
         buttonRefresh.setText("Refresh");
         buttonRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

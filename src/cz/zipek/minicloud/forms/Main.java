@@ -242,6 +242,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
         buttonMove = new javax.swing.JButton();
         buttonDelete = new javax.swing.JButton();
         labelCurrentPath = new javax.swing.JLabel();
+        buttonRefresh = new javax.swing.JButton();
         tabSync = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tableSyncFolders = new javax.swing.JTable();
@@ -251,7 +252,6 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
         buttonSync = new javax.swing.JButton();
         buttonSettings = new javax.swing.JButton();
         buttonUpload = new javax.swing.JButton();
-        buttonRefresh = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         buttonAdmin = new javax.swing.JButton();
 
@@ -291,6 +291,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
         }
         tableRemoteFiles.getAccessibleContext().setAccessibleDescription("");
 
+        buttonDownload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/download-small.png"))); // NOI18N
         buttonDownload.setText("Download");
         buttonDownload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -300,6 +301,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
         jLabel1.setText("Selected files:");
 
+        buttonMove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/move-small.png"))); // NOI18N
         buttonMove.setText("Move");
         buttonMove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -307,6 +309,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
+        buttonDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/delete-small.png"))); // NOI18N
         buttonDelete.setText("Delete");
         buttonDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -321,7 +324,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 334, Short.MAX_VALUE)
                 .addComponent(buttonDelete)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonMove)
@@ -343,6 +346,14 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
         labelCurrentPath.setText("/current/path");
 
+        buttonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/refresh-small.png"))); // NOI18N
+        buttonRefresh.setText("Refresh");
+        buttonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonRefreshActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout tabRemoteLayout = new javax.swing.GroupLayout(tabRemote);
         tabRemote.setLayout(tabRemoteLayout);
         tabRemoteLayout.setHorizontalGroup(
@@ -351,17 +362,22 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             .addGroup(tabRemoteLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(tabRemoteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
-                    .addComponent(labelCurrentPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(tabRemoteLayout.createSequentialGroup()
+                        .addComponent(labelCurrentPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonRefresh)))
                 .addContainerGap())
         );
         tabRemoteLayout.setVerticalGroup(
             tabRemoteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tabRemoteLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
+                .addGroup(tabRemoteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonRefresh)
+                    .addComponent(labelCurrentPath))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelCurrentPath)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -426,7 +442,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             .addGroup(tabSyncLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(tabSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
                     .addGroup(tabSyncLayout.createSequentialGroup()
                         .addComponent(buttonAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -441,7 +457,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             tabSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tabSyncLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(tabSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonAdd)
@@ -469,14 +485,6 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
-        buttonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/refresh.png"))); // NOI18N
-        buttonRefresh.setText("Refresh");
-        buttonRefresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonRefreshActionPerformed(evt);
-            }
-        });
-
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/wide-small.png"))); // NOI18N
 
         buttonAdmin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/admin.png"))); // NOI18N
@@ -498,8 +506,6 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(buttonAdmin)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonRefresh)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonUpload)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonSettings)
@@ -509,14 +515,12 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(buttonUpload)
-                        .addComponent(buttonSettings)
-                        .addComponent(buttonRefresh)
-                        .addComponent(jLabel2))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonUpload)
+                    .addComponent(buttonSettings)
+                    .addComponent(jLabel2)
                     .addComponent(buttonAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(tabsMain))
         );
 

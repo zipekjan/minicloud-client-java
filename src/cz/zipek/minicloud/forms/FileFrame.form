@@ -34,7 +34,7 @@
                       <Component id="buttonMove" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="buttonDelete" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="106" max="32767" attributes="0"/>
+                      <EmptySpace pref="46" max="32767" attributes="0"/>
                       <Component id="buttonSave" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="buttonCancel" min="-2" max="-2" attributes="0"/>
@@ -107,7 +107,7 @@
                   <Component id="buttonPublic" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="buttonPrivate" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="33" max="32767" attributes="0"/>
+              <EmptySpace pref="31" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="buttonDownload" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="buttonMove" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -153,6 +153,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="buttonDownload">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/cz/zipek/minicloud/res/download-small.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Download"/>
       </Properties>
       <Events>
@@ -161,6 +164,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="buttonMove">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/cz/zipek/minicloud/res/move-small.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Move"/>
       </Properties>
       <Events>
@@ -232,6 +238,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="buttonDelete">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/cz/zipek/minicloud/res/delete-small.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Delete"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>

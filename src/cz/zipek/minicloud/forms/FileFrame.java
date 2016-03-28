@@ -115,6 +115,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 
         labelUpdated.setText("10.11.2014 13:22");
 
+        buttonDownload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/download-small.png"))); // NOI18N
         buttonDownload.setText("Download");
         buttonDownload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -122,6 +123,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
+        buttonMove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/move-small.png"))); // NOI18N
         buttonMove.setText("Move");
         buttonMove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -170,6 +172,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
+        buttonDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/delete-small.png"))); // NOI18N
         buttonDelete.setText("Delete");
         buttonDelete.setToolTipText("");
         buttonDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -191,7 +194,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                         .addComponent(buttonMove)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonDelete)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                         .addComponent(buttonSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonCancel))
@@ -249,7 +252,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonPublic)
                     .addComponent(buttonPrivate))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonDownload)
                     .addComponent(buttonMove)
