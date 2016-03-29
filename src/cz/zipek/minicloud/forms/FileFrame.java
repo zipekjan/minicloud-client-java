@@ -14,6 +14,8 @@ import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.events.SuccessEvent;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +71,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 		
 		buttonPrivate.setVisible(file.isPublic());
 		buttonPublic.setVisible(!file.isPublic());
+		buttonCopy.setEnabled(file.isPublic());
 		
 		return this;
 	}
@@ -101,6 +104,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
         buttonPublic = new javax.swing.JButton();
         buttonPrivate = new javax.swing.JButton();
         buttonDelete = new javax.swing.JButton();
+        buttonCopy = new javax.swing.JButton();
 
         setMinimumSize(getPreferredSize());
 
@@ -182,6 +186,13 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
+        buttonCopy.setText("Copy");
+        buttonCopy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonCopyActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -219,7 +230,10 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                                 .addGap(11, 11, 11)
                                 .addComponent(buttonPrivate)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(textLink))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(textLink)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buttonCopy)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -248,12 +262,13 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14))
+                    .addComponent(jLabel14)
+                    .addComponent(buttonCopy))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonPublic)
                     .addComponent(buttonPrivate))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonDownload)
                     .addComponent(buttonMove)
@@ -314,8 +329,15 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 		Forms.showAvailability(this, file, true);
     }//GEN-LAST:event_buttonPublicActionPerformed
 
+    private void buttonCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
+        if (file.isPublic()) {
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(file.getPublicDownloadLink(Session.getServer().hasNiceUrl())), null);
+		}
+    }//GEN-LAST:event_buttonCopyActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;
+    private javax.swing.JButton buttonCopy;
     private javax.swing.JButton buttonDelete;
     private javax.swing.JButton buttonDownload;
     private javax.swing.JButton buttonMove;
