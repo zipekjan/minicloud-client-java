@@ -6,6 +6,7 @@
 package cz.zipek.minicloud.api.download;
 
 import cz.zipek.minicloud.api.File;
+import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
 import cz.zipek.minicloud.api.download.events.DownloadStoppedEvent;
@@ -65,11 +66,12 @@ class DownloadThread extends Thread
 	@Override
 	public void run() {
 		File source = item.getFile();
+		FileVersion version = item.getVersion();
 		String target = item.getTarget();
 		String encryption = item.getEncryption();
 		
 		try {
-			URL url = new URL(this.getSource().getDownloadLink());
+			URL url = new URL(this.getSource().getDownloadLink(version));
 			
 			Encryptor encryptor = null;
 			if (encryption != null && encryption.length() > 0) {

@@ -6,6 +6,7 @@
 package cz.zipek.minicloud.api.download;
 
 import cz.zipek.minicloud.api.File;
+import cz.zipek.minicloud.api.FileVersion;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -16,6 +17,7 @@ import java.io.OutputStream;
  */
 public class DownloadItem {
 	private final File file;
+	private final FileVersion version;
 	private final String encryption;
 	private String target;
 	
@@ -23,6 +25,14 @@ public class DownloadItem {
 		this.file = file;
 		this.encryption = file.getEncryption();
 		this.target = target;
+		this.version = null;
+	}
+	
+	public DownloadItem(File file, FileVersion version, String target) {
+		this.file = file;
+		this.encryption = file.getEncryption();
+		this.target = target;
+		this.version = version;
 	}
 
 	/**
@@ -55,5 +65,12 @@ public class DownloadItem {
 	 */
 	public String getTarget() {
 		return target;
+	}
+
+	/**
+	 * @return the version
+	 */
+	public FileVersion getVersion() {
+		return version;
 	}
 }

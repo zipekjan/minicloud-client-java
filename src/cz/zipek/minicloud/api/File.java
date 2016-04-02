@@ -122,6 +122,19 @@ public class File {
 	 * @return internal download link
 	 */
 	public String getDownloadLink() {
+		return getDownloadLink(null);
+	}
+	
+	/**
+	 * Returns internal download link.
+	 * This link can be used only by authorized clients.
+	 * 
+	 * @param ver version of file to download
+	 * @return internal download link
+	 */
+	public String getDownloadLink(FileVersion ver) {
+		if (ver != null)
+			return String.format("%s?action=download_file&id=%s&version=%s", getSource().getApiUrl(), getId(), ver.getId());
 		return String.format("%s?action=download_file&id=%s", getSource().getApiUrl(), getId());
 	}
 	
