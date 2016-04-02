@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,6 +35,9 @@ public class File {
 	private Date mdtime;
 	
 	private boolean isPublic;
+	
+	private FileVersion[] versions;
+	private FileVersion version;
 
 	public File(External source, JSONObject data) {
 		this.source = source;
@@ -51,6 +55,17 @@ public class File {
 			mdtime = new Date(data.getLong("mktime") * 1000);
 
 			isPublic = data.optBoolean("public", false) || (data.optInt("public", 0) == 1);
+			
+			JSONArray list = data.getJSONArray("versions");
+			int current = data.optInt("version", -1);
+			
+			versions = new FileVersion[list.length()];
+			
+			for(int i = 0; i < list.length(); i++) {
+				versions[i] = new FileVersion(this, list.getJSONObject(i));
+				if (versions[i].getId() == current)
+					version = versions[i];
+			}
 			
 			extension = "";
 			if (name != null && name.length() > 0 && name.contains(".")) {
@@ -383,6 +398,20 @@ public class File {
 	 */
 	public boolean isEncrypted() {
 		return !(getEncryption() == null || getEncryption().isEmpty());
+	}
+
+	/**
+	 * @return the versions
+	 */
+	public FileVersion[] getVersions() {
+		return versions;
+	}
+
+	/**
+	 * @return the version
+	 */
+	public FileVersion getVersion() {
+		return version;
 	}
 	
 }

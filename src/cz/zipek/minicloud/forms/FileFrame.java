@@ -69,6 +69,10 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 			textLink.setText("Private file");
 		}
 		
+		labelVersions.setText(Integer.toString(file.getVersions().length));
+		
+		buttonVersions.setVisible(file.getVersions().length > 1);
+
 		buttonPrivate.setVisible(file.isPublic());
 		buttonPublic.setVisible(!file.isPublic());
 		buttonCopy.setEnabled(file.isPublic());
@@ -105,6 +109,9 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
         buttonPrivate = new javax.swing.JButton();
         buttonDelete = new javax.swing.JButton();
         buttonCopy = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        labelVersions = new javax.swing.JLabel();
+        buttonVersions = new javax.swing.JButton();
 
         setMinimumSize(getPreferredSize());
 
@@ -193,6 +200,18 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
             }
         });
 
+        jLabel1.setText("Versions");
+
+        labelVersions.setText("2");
+
+        buttonVersions.setText("Older versions");
+        buttonVersions.setToolTipText("");
+        buttonVersions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonVersionsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -211,13 +230,15 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonCancel))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel1))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(textName)
@@ -230,10 +251,17 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                                 .addGap(11, 11, 11)
                                 .addComponent(buttonPrivate)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(textLink)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonCopy)))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(labelVersions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(159, 159, 159)
+                                        .addComponent(buttonVersions))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(textLink)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(buttonCopy)))
+                                .addGap(10, 10, 10)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -268,7 +296,12 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonPublic)
                     .addComponent(buttonPrivate))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(labelVersions)
+                    .addComponent(buttonVersions))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonDownload)
                     .addComponent(buttonMove)
@@ -335,6 +368,10 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 		}
     }//GEN-LAST:event_buttonCopyActionPerformed
 
+    private void buttonVersionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonVersionsActionPerformed
+		Forms.showFileVersions(file);
+    }//GEN-LAST:event_buttonVersionsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;
     private javax.swing.JButton buttonCopy;
@@ -344,6 +381,8 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     private javax.swing.JButton buttonPrivate;
     private javax.swing.JButton buttonPublic;
     private javax.swing.JButton buttonSave;
+    private javax.swing.JButton buttonVersions;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel14;
@@ -354,6 +393,7 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     private javax.swing.JLabel labelEncryption;
     private javax.swing.JLabel labelSize;
     private javax.swing.JLabel labelUpdated;
+    private javax.swing.JLabel labelVersions;
     private javax.swing.JTextField textLink;
     private javax.swing.JTextField textName;
     // End of variables declaration//GEN-END:variables

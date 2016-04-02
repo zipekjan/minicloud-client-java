@@ -14,6 +14,7 @@ import cz.zipek.minicloud.forms.FileAvailabilityFrame;
 import cz.zipek.minicloud.forms.Login;
 import cz.zipek.minicloud.forms.SyncFolderFrame;
 import cz.zipek.minicloud.forms.FileFrame;
+import cz.zipek.minicloud.forms.FileVersionsFrame;
 import cz.zipek.minicloud.forms.Sync;
 import cz.zipek.minicloud.forms.Upload;
 import cz.zipek.minicloud.forms.Move;
@@ -35,6 +36,7 @@ import java.util.Map;
 public class Forms {
 	private static final List<JFrame> frames = new ArrayList<>();
 	private static final Map<Integer, FileFrame> files = new HashMap<>();
+	private static final Map<Integer, FileVersionsFrame> fileVersions = new HashMap<>();
 	private static final Map<Integer, SyncFolderFrame> syncFolders = new HashMap<>();
 	private static final Map<Integer, FileAvailabilityFrame> availability = new HashMap<>();
 	private static final Map<Integer, AdminUserFrame> adminUsers = new HashMap<>();
@@ -185,6 +187,24 @@ public class Forms {
 		}
 		
 		frame.updateFile(file);
+		frame.setVisible(true);
+	}
+	
+	/**
+	 * @param file file to be shown
+	 */
+	public static void showFileVersions(cz.zipek.minicloud.api.File file) {
+		FileVersionsFrame frame;
+		
+		if (!fileVersions.containsKey(file.getId())) {
+			frame = new FileVersionsFrame();
+			fileVersions.put(file.getId(), frame);
+			frames.add(frame);
+		} else {
+			frame = fileVersions.get(file.getId());
+		}
+		
+		frame.setFile(file);
 		frame.setVisible(true);
 	}
 	
