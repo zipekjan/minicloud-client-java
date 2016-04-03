@@ -514,11 +514,11 @@ public class External extends Eventor<Event> {
 	}
 	
 	public String deleteUser(User user) {
-		return adminSetUser(user, false);
+		return deleteUser(user, false);
 	}
 	
 	public String deleteUser(User user, boolean wait) {
-		return adminSetUser(user, wait, Long.toString(this.actionCounter++));
+		return deleteUser(user, wait, Long.toString(this.actionCounter++));
 	}
 	
 	public String deleteUser(User user, boolean wait, String action_id) {

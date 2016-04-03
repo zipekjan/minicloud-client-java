@@ -223,7 +223,14 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
 			
 			actions.remove(event.getActionId());
 			
-			if (actions.size() > 0) {
+			if (actions.isEmpty()) {
+				
+				JOptionPane.showMessageDialog(
+						this,
+						"Selected users and their files were deleted.",
+						"Operation is success",
+						JOptionPane.INFORMATION_MESSAGE
+				);
 				
 				reloadData();
 				
