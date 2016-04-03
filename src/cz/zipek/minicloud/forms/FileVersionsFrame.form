@@ -26,7 +26,8 @@
                   <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="labelPath" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="buttonDownload" min="-2" max="-2" attributes="0"/>
@@ -42,7 +43,10 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelPath" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="227" max="-2" attributes="0"/>
               <EmptySpace pref="8" max="32767" attributes="0"/>
@@ -71,13 +75,17 @@
                 <StringItem index="1" value="13.8.2015 12:30"/>
               </StringArray>
             </Property>
+            <Property name="selectionMode" type="int" value="0"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="listVersionsMouseClicked"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Versions available for this file:"/>
+        <Property name="text" type="java.lang.String" value="File:"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
@@ -85,6 +93,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Download"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonDownloadActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="buttonClose">
       <Properties>
@@ -93,6 +104,11 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonCloseActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelPath">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="/folder/name.ext"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

@@ -336,7 +336,7 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 				fireEvent(new SyncMkdirFailedEvent(local.getParentFile().getAbsolutePath()));
 				return false;
 			}
-			downloader.add(remote, local.getAbsolutePath());
+			downloader.add(remote.getVersion(), local.getAbsolutePath());
 		} else {
 			//Check if file has changed
 			String md5;
@@ -353,7 +353,7 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 				if (local.lastModified() > remote.getMdtime().getTime() + timeOffset) {
 					uploader.add(local, remote);
 				} else {
-					downloader.add(remote, local.getAbsolutePath());
+					downloader.add(remote.getVersion(), local.getAbsolutePath());
 				}
 			}
 		}

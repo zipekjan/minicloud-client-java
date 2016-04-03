@@ -5,9 +5,12 @@
  */
 package cz.zipek.minicloud.forms;
 
+import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.FileVersion;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.DefaultListModel;
 
 /**
@@ -35,6 +38,8 @@ public class FileVersionsFrame extends javax.swing.JFrame {
 		}
 		
 		listVersions.setModel(model);
+		
+		labelPath.setText(file.getPath());
 	}
 
 	/**
@@ -51,18 +56,30 @@ public class FileVersionsFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         buttonDownload = new javax.swing.JButton();
         buttonClose = new javax.swing.JButton();
+        labelPath = new javax.swing.JLabel();
 
         listVersions.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "12.8.2015 10:12", "13.8.2015 12:30" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        listVersions.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listVersions.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listVersionsMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(listVersions);
 
-        jLabel1.setText("Versions available for this file:");
+        jLabel1.setText("File:");
         jLabel1.setToolTipText("");
 
         buttonDownload.setText("Download");
+        buttonDownload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonDownloadActionPerformed(evt);
+            }
+        });
 
         buttonClose.setText("Close");
         buttonClose.addActionListener(new java.awt.event.ActionListener() {
@@ -70,6 +87,8 @@ public class FileVersionsFrame extends javax.swing.JFrame {
                 buttonCloseActionPerformed(evt);
             }
         });
+
+        labelPath.setText("/folder/name.ext");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -81,7 +100,8 @@ public class FileVersionsFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(labelPath))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(buttonDownload)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 242, Short.MAX_VALUE)
@@ -92,7 +112,9 @@ public class FileVersionsFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(labelPath))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
@@ -110,46 +132,30 @@ public class FileVersionsFrame extends javax.swing.JFrame {
 		setVisible(false);
     }//GEN-LAST:event_buttonCloseActionPerformed
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		/* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-		 * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-		 */
-		try {
-			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					javax.swing.UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(FileVersionsFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(FileVersionsFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(FileVersionsFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(FileVersionsFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    private void buttonDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDownloadActionPerformed
+        int index = listVersions.getSelectedIndex();
+		if (index >= 0) {
+			List<FileVersion> versions = new ArrayList<>();
+			versions.add(file.getVersions()[index]);
+			
+			Forms.showDownload(versions);
+			
+			setVisible(false);
 		}
-        //</editor-fold>
+    }//GEN-LAST:event_buttonDownloadActionPerformed
 
-		/* Create and display the form */
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new FileVersionsFrame().setVisible(true);
-			}
-		});
-	}
+    private void listVersionsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listVersionsMouseClicked
+        if (evt.getClickCount() == 2) {
+			buttonDownloadActionPerformed(null);
+		}
+    }//GEN-LAST:event_listVersionsMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonClose;
     private javax.swing.JButton buttonDownload;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelPath;
     private javax.swing.JList listVersions;
     // End of variables declaration//GEN-END:variables
 }

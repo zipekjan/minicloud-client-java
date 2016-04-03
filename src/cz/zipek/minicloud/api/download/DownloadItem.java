@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this template version, choose Tools | Templates
  * and open the template in the editor.
  */
 package cz.zipek.minicloud.api.download;
@@ -16,30 +16,27 @@ import java.io.OutputStream;
  * @author Kamen
  */
 public class DownloadItem {
-	private final File file;
 	private final FileVersion version;
 	private final String encryption;
 	private String target;
 	
-	public DownloadItem(File file, String target) {
-		this.file = file;
-		this.encryption = file.getEncryption();
+	public DownloadItem(FileVersion file, String target) {
+		this.version = file;
+		this.encryption = file.getFile().getEncryption();
 		this.target = target;
-		this.version = null;
 	}
-	
-	public DownloadItem(File file, FileVersion version, String target) {
-		this.file = file;
-		this.encryption = file.getEncryption();
-		this.target = target;
-		this.version = version;
-	}
-
 	/**
-	 * @return the file
+	 * @return the version
 	 */
 	public File getFile() {
-		return file;
+		return version.getFile();
+	}
+	
+	/**
+	 * @return 
+	 */
+	public FileVersion getVersion() {
+		return version;
 	}
 	
 	public String getEncryption() {
@@ -61,16 +58,10 @@ public class DownloadItem {
 	}
 	
 	/**
-	 * @return path to target file
+	 * @return path to target version
 	 */
 	public String getTarget() {
 		return target;
 	}
-
-	/**
-	 * @return the version
-	 */
-	public FileVersion getVersion() {
-		return version;
-	}
+	
 }

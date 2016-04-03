@@ -8,6 +8,7 @@ package cz.zipek.minicloud.api.download;
 import cz.zipek.minicloud.api.Eventor;
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.File;
+import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.download.events.DownloadAllDoneEvent;
@@ -37,15 +38,15 @@ public class Downloader extends Eventor<DownloadEvent> implements Listener {
 		user = aUser;
 	}
 	
-	public void add(File file) {
+	public void add(FileVersion file) {
 		add(new DownloadItem(file, null));
 	}
 
-	public void add(File file, String target) {
+	public void add(FileVersion file, String target) {
 		add(new DownloadItem(file, target));
 	}
 	
-	public void add(File file, OutputStream target) {
+	public void add(FileVersion file, OutputStream target) {
 		add(new DownloadItemStream(file, target));
 	}
 	

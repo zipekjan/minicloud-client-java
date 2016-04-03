@@ -12,6 +12,7 @@ import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
+import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.events.SuccessEvent;
 import java.awt.Toolkit;
@@ -316,8 +317,8 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDownloadActionPerformed
-		List<cz.zipek.minicloud.api.File> files = new ArrayList<>();
-		files.add(this.file);
+		List<FileVersion> files = new ArrayList<>();
+		files.add(file.getVersion());
 		Forms.showDownload(files);
     }//GEN-LAST:event_buttonDownloadActionPerformed
 

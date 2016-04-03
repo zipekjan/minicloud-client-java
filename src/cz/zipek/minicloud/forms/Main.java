@@ -14,6 +14,7 @@ import cz.zipek.minicloud.SettingsEvent;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
+import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.Path;
 import cz.zipek.minicloud.api.events.PathEvent;
@@ -554,8 +555,13 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 
     private void buttonDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDownloadActionPerformed
 		List<File> files = getSelectedFiles();
+		List<FileVersion> versions = new ArrayList<>();
 		if (files.size() > 0) {
-			Forms.showDownload(files);
+			for(File f : files) {
+				versions.add(f.getVersion());
+			}
+			
+			Forms.showDownload(versions);
 		}
     }//GEN-LAST:event_buttonDownloadActionPerformed
 

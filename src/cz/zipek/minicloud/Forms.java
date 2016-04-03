@@ -5,6 +5,7 @@
  */
 package cz.zipek.minicloud;
 
+import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.forms.AdminFrame;
 import cz.zipek.minicloud.forms.AdminUserFrame;
@@ -110,7 +111,7 @@ public class Forms {
 	/**
 	 * @param files files to be downloaded
 	 */
-	public static void showDownload(List<cz.zipek.minicloud.api.File> files) {
+	public static void showDownload(List<FileVersion> files) {
 		Download frame = new Download(files);
 		frames.add(frame);
 		frame.setVisible(true);

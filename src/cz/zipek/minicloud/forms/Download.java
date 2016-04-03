@@ -9,7 +9,7 @@ package cz.zipek.minicloud.forms;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Tools;
-import cz.zipek.minicloud.api.File;
+import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.download.Downloader;
 import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
@@ -30,7 +30,7 @@ import javax.swing.table.TableModel;
  * @author Kamen
  */
 public class Download extends javax.swing.JFrame implements Listener {
-	private List<File> files = new ArrayList<>();
+	private List<FileVersion> files = new ArrayList<>();
 	private Map<Integer, Integer> rows = new HashMap<>();
 	private Downloader downloader;
 	
@@ -38,7 +38,7 @@ public class Download extends javax.swing.JFrame implements Listener {
 	 * Creates new form Download
 	 * @param files
 	 */
-	public Download(List<cz.zipek.minicloud.api.File> files) {
+	public Download(List<FileVersion> files) {
 		initComponents();
 		
 		this.files = files;
@@ -48,13 +48,13 @@ public class Download extends javax.swing.JFrame implements Listener {
 		
 		DefaultTableModel dm = ((DefaultTableModel)tableFiles.getModel());
 		int row = 0;
-		for(cz.zipek.minicloud.api.File file : files) {
+		for(FileVersion version : files) {
 			dm.addRow(new String[] {
-				file.getName(),
-				Tools.humanFileSize(file.getSize(), 2),
+				version.getFile().getName(),
+				Tools.humanFileSize(version.getFile().getSize(), 2),
 				"Queued"
 			});
-			rows.put(file.getId(), row++);
+			rows.put(version.getFile().getId(), row++);
 		}
 	}
 
@@ -198,7 +198,7 @@ public class Download extends javax.swing.JFrame implements Listener {
 			if (path.exists() && path.isDirectory()) {
 				downloader = new Downloader(Manager.external, Session.getUser());
 				downloader.addListener(this);
-				for(File f : files) {
+				for(FileVersion f : files) {
 					downloader.add(f);
 				}
 				downloader.start(path.getAbsolutePath());
