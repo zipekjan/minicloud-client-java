@@ -80,7 +80,7 @@ public class MultipartUtility extends Eventor<UploadEvent> {
      * @param value field value
      */
     public void addFormField(String name, String value) {
-        writer.append("--" + boundary).append(LINE_FEED);
+		writer.append("--" + boundary).append(LINE_FEED);
         writer.append("Content-Disposition: form-data; name=\"" + name + "\"")
                 .append(LINE_FEED);
         writer.append("Content-Type: text/plain; charset=" + charset).append(

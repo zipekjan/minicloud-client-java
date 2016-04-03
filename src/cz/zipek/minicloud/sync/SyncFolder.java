@@ -117,6 +117,16 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 	public Date getLastSync() {
 		return lastSync;
 	}
+	
+	public void setExternal(External external) {
+		
+		if (this.external != null)
+			this.external.removeListener(this);
+		
+		this.external = external;
+		this.external.addListener(this);
+		
+	}
 
 	/**
 	 * @param lastSync the lastSync to set
@@ -245,14 +255,18 @@ public class SyncFolder extends Eventor<SyncEvent> implements Listener {
 						//Download new files, sync changed
 						for(cz.zipek.minicloud.api.File file : files) {
 							boolean invalid = false;
+							
 							//Check if there isn't copy
-							for(cz.zipek.minicloud.api.File brother : file.getParent().getFiles()) {
-								if (brother.getName().equals(file.getName()) &&
-										brother.getMdtime().before(file.getMdtime())) {
-									invalid = true;
-									break;
+							if (file.getParent() != null) {
+								for(cz.zipek.minicloud.api.File brother : file.getParent().getFiles()) {
+									if (brother.getName().equals(file.getName()) &&
+											brother.getMdtime().before(file.getMdtime())) {
+										invalid = true;
+										break;
+									}
 								}
 							}
+							
 							if (!invalid) {
 								if (!syncFile(remoteFileToLocal(local.getAbsolutePath(), file, folder), file)) {
 									return;

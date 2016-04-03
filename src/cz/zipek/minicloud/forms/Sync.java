@@ -6,6 +6,7 @@
 package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
+import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
@@ -82,6 +83,7 @@ public class Sync extends javax.swing.JFrame implements Listener<SyncEvent> {
 			tableFolders.getModel().setValueAt("Syncing...", row, 2);
 		}
 		
+		folder.setExternal(Manager.external);
 		folder.addListener(this);
 		syncThread = folder.syncAsync();
 	}

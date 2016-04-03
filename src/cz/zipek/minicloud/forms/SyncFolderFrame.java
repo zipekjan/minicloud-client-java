@@ -5,6 +5,7 @@
  */
 package cz.zipek.minicloud.forms;
 
+import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.sync.SyncFolder;
 import java.io.File;
@@ -277,6 +278,7 @@ public class SyncFolderFrame extends javax.swing.JFrame {
 			Settings.syncFolderModified(folder);
 		} else {
 			folder = new SyncFolder(loc, textRemote.getText(), maxSize, regexp, null);
+			folder.setExternal(Manager.external);
 			Settings.add(folder);
 		}
 		setVisible(false);

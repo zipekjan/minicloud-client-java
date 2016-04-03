@@ -7,9 +7,16 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
+import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.User;
+import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.UsersEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -19,6 +26,7 @@ import javax.swing.table.DefaultTableModel;
 public class AdminFrame extends javax.swing.JFrame implements Listener {
 
 	private User[] users;
+	private final Map<String, User> actions = new HashMap<>();
 	
 	/**
 	 * Creates new form AdminFrame
@@ -81,7 +89,13 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
 
         jLabel1.setText("Selected:");
 
+        buttonDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/zipek/minicloud/res/delete-small.png"))); // NOI18N
         buttonDelete.setText("Delete");
+        buttonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonDeleteActionPerformed(evt);
+            }
+        });
 
         buttonCreate.setText("Create new user");
         buttonCreate.addActionListener(new java.awt.event.ActionListener() {
@@ -144,6 +158,17 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
         reloadData();
     }//GEN-LAST:event_buttonRefreshActionPerformed
 
+    private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteActionPerformed
+		List<User> selected = new ArrayList<>();
+		for(int row : tableUsers.getSelectedRows()) {
+			selected.add(users[row]);
+		}
+		
+		for(User user : selected) {
+			actions.put(Manager.external.deleteUser(user), user);
+		}
+    }//GEN-LAST:event_buttonDeleteActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCreate;
     private javax.swing.JButton buttonDelete;
@@ -154,7 +179,9 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
     // End of variables declaration//GEN-END:variables
 
 	@Override
-	public void handleEvent(Object event, Object sender) {
+	public void handleEvent(Object obj, Object sender) {
+		
+		Event event = (Event)obj;
 		
 		if (event instanceof UsersEvent) {
 			
@@ -177,6 +204,29 @@ public class AdminFrame extends javax.swing.JFrame implements Listener {
 					user.getEmail(),
 					user.isAdmin() ? "Yes" : "No"
 				});
+			}
+			
+		}
+		
+		if (actions.containsKey(event.getActionId())) {
+			
+			if (event instanceof ErrorEvent) {
+				
+				JOptionPane.showMessageDialog(
+						this,
+						"Failed to delete user.",
+						"Error ocurred",
+						JOptionPane.ERROR_MESSAGE
+				);
+				
+			}
+			
+			actions.remove(event.getActionId());
+			
+			if (actions.size() > 0) {
+				
+				reloadData();
+				
 			}
 			
 		}

@@ -34,7 +34,7 @@ public class FileVersionsFrame extends javax.swing.JFrame {
 		DefaultListModel model = new DefaultListModel();
 
 		for(FileVersion ver : file.getVersions()) {
-			model.addElement(new SimpleDateFormat("dd.MM.YYYY HH:mm").format(ver.getCreated()));
+			model.addElement(new SimpleDateFormat("dd.MM.YYYY HH:mm:ss").format(ver.getCreated()));
 		}
 		
 		listVersions.setModel(model);
