@@ -12,6 +12,8 @@ import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.Path;
+import cz.zipek.minicloud.api.events.PathsEvent;
 import cz.zipek.minicloud.api.events.SuccessEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +46,8 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 			});
 		}
 		
-		//@TODO: How to do this?
-		/*
-		for(String folder : Forms.getMain().getFoldersPaths()) {
-			comboFolder.addItem(folder);
-		}
-		*/
+		Manager.external.addListener(this);
+		Manager.external.getPaths();
 	}
 
 	/**
@@ -188,6 +186,17 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 	@Override
 	public synchronized void handleEvent(Event event, Object sender) {
 		String id = event.getActionId();
+		
+		if (event instanceof PathsEvent) {
+			Path[] paths = ((PathsEvent)event).getPaths();
+			
+			comboFolder.removeAllItems();
+			comboFolder.addItem("/");
+			for(Path path : paths) {
+				comboFolder.addItem("/" + path.getPath());
+			}
+		}
+		
 		if (id != null && actions.contains(id)) {
 			if (!(event instanceof SuccessEvent)) {
 				JOptionPane.showMessageDialog(this, "Failed to move file.", "Error ocurred", JOptionPane.ERROR_MESSAGE);

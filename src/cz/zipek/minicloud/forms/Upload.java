@@ -10,6 +10,8 @@ import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.Path;
+import cz.zipek.minicloud.api.events.PathsEvent;
 import cz.zipek.minicloud.api.upload.Uploader;
 import cz.zipek.minicloud.api.upload.events.UploadAllDoneEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFailedEvent;
@@ -35,6 +37,7 @@ public class Upload extends javax.swing.JFrame implements Listener {
 	private final List<File> files = new ArrayList<>();
 	
 	private Uploader uploader;
+	private int uploaded = 0;
 	
 	
 	/**
@@ -42,13 +45,12 @@ public class Upload extends javax.swing.JFrame implements Listener {
 	 */
 	public Upload() {
 		initComponents();
-
-		//@TODO: How to do this
-		/*
-		for(String folder : Forms.getMain().getFoldersPaths()) {
-			comboTarget.addItem(folder);
-		}
-		*/
+		initCustom();
+	}
+	
+	private void initCustom() {
+		Manager.external.addListener(this);
+		Manager.external.getPaths();
 	}
 
 	/**
@@ -235,6 +237,12 @@ public class Upload extends javax.swing.JFrame implements Listener {
 				}
 				uploader.start(comboTarget.getSelectedItem().toString() + textTagret.getText());
 				
+				progressTotal.setValue(0);
+				progressTotal.setMaximum(files.size() * 100);
+				progressFile.setValue(0);
+				
+				uploaded = 0;
+				
 			} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
 				JOptionPane.showMessageDialog(
 						this,
@@ -320,7 +328,15 @@ public class Upload extends javax.swing.JFrame implements Listener {
 	
 	@Override
 	public void handleEvent(Object event, Object sender) {
-		if (event instanceof UploadFailedEvent) {
+		if (event instanceof PathsEvent) {
+			Path[] paths = ((PathsEvent)event).getPaths();
+			
+			comboTarget.removeAllItems();
+			comboTarget.addItem("/");
+			for(Path path : paths) {
+				comboTarget.addItem("/" + path.getPath());
+			}
+		} else if (event instanceof UploadFailedEvent) {
 			JOptionPane.showMessageDialog(this, "Upload failed from unexpected reason", "Upload error", JOptionPane.ERROR_MESSAGE);
 			uploader = null;
 			setStartEnabled(true);
@@ -330,13 +346,31 @@ public class Upload extends javax.swing.JFrame implements Listener {
 			
 			DefaultTableModel dm = ((DefaultTableModel)tableFiles.getModel());
 			dm.setValueAt(Integer.toString(done) + " %",0,3);
+			
+			progressFile.setValue(done);
+			progressTotal.setValue(uploaded * 100 + done);
+			
 		} else if (event instanceof UploadFileDoneEvent) {
 			DefaultTableModel dm = ((DefaultTableModel)tableFiles.getModel());
 			dm.removeRow(0);
 			files.remove(0);
+			
+			progressFile.setValue(100);
+			progressTotal.setValue((++uploaded) * 100);
 		} else if (event instanceof UploadAllDoneEvent) {
 			setStartEnabled(true);
 			uploader = null;
+			
+			JOptionPane.showMessageDialog(this, "All files uploaded", "Done", JOptionPane.INFORMATION_MESSAGE);
+			setVisible(false);
+			dispose();
 		}
+	}
+	
+	@Override
+	public void dispose() {
+		Manager.external.removeListener(this);
+		
+		super.dispose();
 	}
 }
