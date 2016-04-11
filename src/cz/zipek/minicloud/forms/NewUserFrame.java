@@ -197,6 +197,12 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
 			UserEvent user = (UserEvent)event;
 			Session.setUser(user.getUser());
 			
+			try {
+				Session.getUser().setPassword(textPassword.getPassword(), true);
+			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchProviderException ex) {
+				Logger.getLogger(NewUserFrame.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			
 			setVisible(false);
 
 			Forms.showMain();
