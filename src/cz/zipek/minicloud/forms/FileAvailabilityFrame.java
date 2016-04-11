@@ -95,7 +95,7 @@ public class FileAvailabilityFrame extends javax.swing.JFrame implements Listene
 			PipedOutputStream output = new PipedOutputStream(input);
 			
 			downloader.add(file.getVersion(), output);
-			uploader.add(input, file, setPublic);
+			uploader.add(input, file, setPublic, false);
 		} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException | IOException ex) {
 			Logger.getLogger(FileAvailabilityFrame.class.getName()).log(Level.SEVERE, null, ex);
 		}
