@@ -120,7 +120,7 @@ public class Forms {
 	/**
 	 * @param files files to be deleted
 	 */
-	public static void showDelete(List<cz.zipek.minicloud.api.File> files) {
+	public static void showDelete(List<MetaItem> files) {
 		Delete frame = new Delete(files);
 		frames.add(frame);
 		frame.setVisible(true);
@@ -129,7 +129,7 @@ public class Forms {
 	/**
 	 * @param files files to be moved
 	 */
-	public static void showMove(List<cz.zipek.minicloud.api.File> files) {
+	public static void showMove(List<MetaItem> files) {
 		Move frame = new Move(files);
 		frames.add(frame);
 		frame.setVisible(true);

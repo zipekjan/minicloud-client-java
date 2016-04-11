@@ -8,10 +8,10 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Icons;
+import cz.zipek.minicloud.MetaItem;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
-import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.events.SuccessEvent;
@@ -323,8 +323,8 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonDownloadActionPerformed
 
     private void buttonMoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMoveActionPerformed
-        List<cz.zipek.minicloud.api.File> files = new ArrayList<>();
-		files.add(this.file);
+        List<MetaItem> files = new ArrayList<>();
+		files.add(new MetaItem(file));
 		Forms.showMove(files);
     }//GEN-LAST:event_buttonMoveActionPerformed
 
@@ -350,8 +350,8 @@ public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteActionPerformed
-		List<File> files = new ArrayList<>();
-		files.add(file);
+		List<MetaItem> files = new ArrayList<>();
+		files.add(new MetaItem(file));
 		Forms.showDelete(files);
     }//GEN-LAST:event_buttonDeleteActionPerformed
 

@@ -8,6 +8,7 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
+import cz.zipek.minicloud.MetaItem;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
@@ -25,24 +26,24 @@ import javax.swing.table.DefaultTableModel;
  * @author Kamen
  */
 public class Move extends javax.swing.JFrame implements Listener<Event> {
-	private final List<File> files;
+	private final List<MetaItem> files;
 	private final List<String> actions = new ArrayList<>();
 	
 	/**
 	 * Creates new form Download
 	 * @param files
 	 */
-	public Move(List<cz.zipek.minicloud.api.File> files) {
+	public Move(List<MetaItem> files) {
 		initComponents();
 		
 		this.files = files;
 		
 		DefaultTableModel dm = ((DefaultTableModel)tableFiles.getModel());
-		for(cz.zipek.minicloud.api.File file : files) {
+		for(MetaItem file : files) {
 			dm.addRow(new String[] {
 				file.getName(),
-				file.getPath(),
-				Tools.humanFileSize(file.getSize(), 2),
+				file.isFile() ? file.getFile().getPath() : file.getPath().getPath(),
+				file.isFile() ? Tools.humanFileSize(file.getFile().getSize(), 2) : ""
 			});
 		}
 		
@@ -156,12 +157,17 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
     private void buttonMoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMoveActionPerformed
 		String path = comboFolder.getSelectedItem().toString() + textTarget.getText();
 		boolean first = true;
-		for(File f : files) {
+		
+		for(MetaItem item : files) {
 			if (first) {
 				first = false;
-				f.getSource().addListener(this);
+				item.getSource().addListener(this);
 			}
-			actions.add(f.getSource().moveFile(f, path));
+			
+			if (item.isFile())
+				actions.add(item.getSource().moveFile(item.getFile(), path));
+			else
+				actions.add(item.getSource().movePath(item.getPath(), path));
 		}
     }//GEN-LAST:event_buttonMoveActionPerformed
 
@@ -191,23 +197,33 @@ public class Move extends javax.swing.JFrame implements Listener<Event> {
 			Path[] paths = ((PathsEvent)event).getPaths();
 			
 			comboFolder.removeAllItems();
-			comboFolder.addItem("/");
 			for(Path path : paths) {
-				comboFolder.addItem("/" + path.getPath());
+				comboFolder.addItem("/" + path.getPath() + "/");
 			}
 		}
 		
 		if (id != null && actions.contains(id)) {
 			if (!(event instanceof SuccessEvent)) {
-				JOptionPane.showMessageDialog(this, "Failed to move file.", "Error ocurred", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Failed to move items.", "Error ocurred", JOptionPane.ERROR_MESSAGE);
 			}
 			
 			actions.remove(id);
 			if (actions.isEmpty()) {
-				Manager.external.removeListenerLater(this);
-				Manager.external.getPath();
+				
 				this.setVisible(false);
+				dispose();
+				
+				Forms.getMain().refreshList();
 			}
 		}
 	}
+
+	@Override
+	public void dispose() {
+		Manager.external.removeListenerLater(this);
+		Forms.remove(this);
+		
+		super.dispose();
+	}
+
 }

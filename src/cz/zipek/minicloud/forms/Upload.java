@@ -5,6 +5,7 @@
  */
 package cz.zipek.minicloud.forms;
 
+import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
@@ -332,7 +333,6 @@ public class Upload extends javax.swing.JFrame implements Listener {
 			Path[] paths = ((PathsEvent)event).getPaths();
 			
 			comboTarget.removeAllItems();
-			comboTarget.addItem("/");
 			for(Path path : paths) {
 				comboTarget.addItem("/" + path.getPath());
 			}
@@ -364,12 +364,15 @@ public class Upload extends javax.swing.JFrame implements Listener {
 			JOptionPane.showMessageDialog(this, "All files uploaded", "Done", JOptionPane.INFORMATION_MESSAGE);
 			setVisible(false);
 			dispose();
+			
+			Forms.getMain().refreshList();
 		}
 	}
 	
 	@Override
 	public void dispose() {
 		Manager.external.removeListener(this);
+		Forms.remove(this);
 		
 		super.dispose();
 	}

@@ -8,6 +8,7 @@ package cz.zipek.minicloud.forms;
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Icons;
 import cz.zipek.minicloud.Manager;
+import cz.zipek.minicloud.MetaItem;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.SettingsEvent;
@@ -181,8 +182,8 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		Manager.external.getPath(path_id);
 	}
 	
-	private List<File> getSelectedFiles() {
-		List<File> files = new ArrayList<>();
+	private List<MetaItem> getSelectedFiles() {
+		List<MetaItem> selected = new ArrayList<>();
 
 		int folders = currentPath.getPaths().size();
 		if (currentPath.getParent() != -1) {
@@ -192,25 +193,16 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		int[] rows = tableRemoteFiles.getSelectedRows();
 		for (int row : rows) {
 			if (row >= folders) {
-				files.add(currentPath.getFiles().get(row - folders));
+				selected.add(new MetaItem(currentPath.getFiles().get(row - folders)));
 			} else {
 				if (currentPath.getParent() != -1)
 					row -= 1;
 				
-				//@TODO: Add handling of selected folders
-				
-				/*
-				files.addAll(
-					currentPath
-					.getPaths()
-					.get(row)
-					.getAllFiles()
-				);
-				*/
+				selected.add(new MetaItem(currentPath.getPaths().get(row)));
 			}
 		}
 
-		return files;
+		return selected;
 	}
 	
 	private List<SyncFolder> getSelectedSyncFolders() {
@@ -224,6 +216,13 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		return items;
 	}
 
+	public void refreshList() {
+		if (currentPath != null)
+			Manager.external.getPath(currentPath.getId());
+		else
+			Manager.external.getPath();
+	}
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -554,11 +553,12 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_tableRemoteFilesMouseClicked
 
     private void buttonDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDownloadActionPerformed
-		List<File> files = getSelectedFiles();
+		List<MetaItem> files = getSelectedFiles();
 		List<FileVersion> versions = new ArrayList<>();
-		if (files.size() > 0) {
-			for(File f : files) {
-				versions.add(f.getVersion());
+		if (!files.isEmpty()) {
+			for(MetaItem item : files) {
+				if (item.isFile())
+					versions.add(item.getFile().getVersion());
 			}
 			
 			Forms.showDownload(versions);
@@ -566,7 +566,7 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonDownloadActionPerformed
 
     private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteActionPerformed
-        List<File> files = getSelectedFiles();
+        List<MetaItem> files = getSelectedFiles();
 		if (files.size() > 0) {
 			Forms.showDelete(files);
 		}
@@ -577,12 +577,12 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
     }//GEN-LAST:event_buttonUploadActionPerformed
 
     private void buttonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRefreshActionPerformed
-		Manager.external.getPath();
+		refreshList();
     }//GEN-LAST:event_buttonRefreshActionPerformed
 
     private void buttonMoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMoveActionPerformed
-        List<File> files = getSelectedFiles();
-		if (files.size() > 0) {
+        List<MetaItem> files = getSelectedFiles();
+		if (!files.isEmpty()) {
 			Forms.showMove(files);
 		}
     }//GEN-LAST:event_buttonMoveActionPerformed

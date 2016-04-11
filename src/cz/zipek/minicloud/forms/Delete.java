@@ -8,10 +8,12 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Forms;
 import cz.zipek.minicloud.Manager;
+import cz.zipek.minicloud.MetaItem;
 import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.Path;
 import cz.zipek.minicloud.api.events.SuccessEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,24 +25,26 @@ import javax.swing.table.DefaultTableModel;
  * @author Kamen
  */
 public class Delete extends javax.swing.JFrame implements Listener<Event> {
-	private final List<File> files = new ArrayList<>();
-	private String actionId;
+	private final List<MetaItem> items = new ArrayList<>();
+	
+	private String filesActionId;
+	private String pathsActionId;
 	
 	/**
 	 * Creates new form Delete
-	 * @param files
+	 * @param items
 	 */
-	public Delete(List<File> files) {
+	public Delete(List<MetaItem> items) {
 		initComponents();
 		
-		this.files.addAll(files);
+		this.items.addAll(items);
 		
 		DefaultTableModel dm = ((DefaultTableModel)tableFiles.getModel());
-		for(File file : this.files) {
+		for(MetaItem file : this.items) {
 			dm.addRow(new String[] {
 				file.getName(),
-				Tools.humanFileSize(file.getSize(), 2),
-				file.getPath()
+				file.isFile() ? Tools.humanFileSize(file.getFile().getSize(), 2) : "",
+				file.isFile() ? file.getFile().getPath() : file.getPath().getPath()
 			});
 		}
 	}
@@ -133,7 +137,20 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 		Manager.external.addListener(this);
 		
 		buttonDelete.setEnabled(false);
-		actionId = Manager.external.deleteFiles(files);
+		
+		List<File> files = new ArrayList<>();
+		List<Path> paths = new ArrayList<>();
+		for(MetaItem item : items) {
+			if (item.isFile())
+				files.add(item.getFile());
+			else
+				paths.add(item.getPath());
+		}
+		
+		if (files.size() > 0)
+			filesActionId = Manager.external.deleteFiles(files);
+		if (paths.size() > 0)
+			pathsActionId = Manager.external.deletePaths(paths);
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
@@ -153,21 +170,26 @@ public class Delete extends javax.swing.JFrame implements Listener<Event> {
 
 	@Override
 	public synchronized void handleEvent(Event e, Object sender) {
-		if (e.getActionId() != null &&
-			e.getActionId().equals(this.actionId)) {
-			
-			Manager.external.removeListenerLater(this);
-			
-			if (!(e instanceof SuccessEvent)) {
-				JOptionPane.showMessageDialog(this, "Failed to detele files.", "Error ocurred", JOptionPane.ERROR_MESSAGE);
+		if (e.getActionId() != null) {
+			if (e.getActionId().equals(filesActionId) || e.getActionId().equals(pathsActionId)) {
+
+				if (!(e instanceof SuccessEvent)) {
+					JOptionPane.showMessageDialog(this, "Deletion operation failed.", "Error ocurred", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				if (e.getActionId().equals(filesActionId))
+					filesActionId = null;
+				if (e.getActionId().equals(pathsActionId))
+					pathsActionId = null;
+
+				if (filesActionId == null && pathsActionId == null) {
+					Manager.external.removeListenerLater(this);
+
+					this.setVisible(false);
+					Forms.remove(this);
+					Forms.getMain().refreshList();
+				}
 			}
-			
-			this.setVisible(false);
-			Forms.remove(this);
-			
-			Manager.external.getPath();
-		} else {
-			System.err.println("Received unexpected action-id (" + this.actionId + "," + e.getActionId() + ")");
 		}
 	}
 }
