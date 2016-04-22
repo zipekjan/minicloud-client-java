@@ -44,6 +44,12 @@ public class Login extends javax.swing.JFrame implements Listener {
 		setIconImages(Icons.getLogo());
 		
 		textServer.setText(Settings.getServer());
+		textServer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textLogin.requestFocus();
+			}
+		});
 		
 		textLogin.setText(Settings.getUsername());
 		textLogin.addActionListener(new ActionListener() {
