@@ -8,6 +8,7 @@ package cz.zipek.minicloud.forms;
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
+import cz.zipek.minicloud.api.Base64;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.Listener;
 import java.io.FileNotFoundException;
@@ -48,7 +49,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 	public final void reloadData() {
 		textEmail.setText(Session.getUser().getEmail());
 		textUsername.setText(Settings.getUsername());
-		textSyncKey.setText(Manager.external.getAuth());
+		textSyncKey.setText(Manager.external.getAuth() + ":" + Base64.encodeBytes(Session.getUser().getKey()));
 		
 		comboEncryption.removeAllItems();
 		
