@@ -44,7 +44,7 @@ public class Login extends javax.swing.JFrame implements Listener {
 		setIconImages(Icons.getLogo());
 		
 		textServer.setText(Settings.getServer());
-
+		
 		textLogin.setText(Settings.getUsername());
 		textLogin.addActionListener(new ActionListener() {
 			@Override
@@ -58,6 +58,14 @@ public class Login extends javax.swing.JFrame implements Listener {
 				loginButtonActionPerformed(null);
 			}
 		});
+		
+		if (textServer.getText().isEmpty()) {
+			textServer.requestFocus();
+		} else if (textLogin.getText().isEmpty()) {
+			textLogin.requestFocus();
+		} else {
+			textPassword.requestFocus();
+		}
 		
 		Manager.external.addListener(this);
 	}
