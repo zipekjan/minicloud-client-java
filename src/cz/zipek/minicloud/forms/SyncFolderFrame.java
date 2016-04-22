@@ -7,6 +7,10 @@ package cz.zipek.minicloud.forms;
 
 import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Settings;
+import cz.zipek.minicloud.api.Event;
+import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.Path;
+import cz.zipek.minicloud.api.events.PathsEvent;
 import cz.zipek.minicloud.sync.SyncFolder;
 import java.io.File;
 import java.util.logging.Level;
@@ -20,7 +24,7 @@ import javax.swing.JOptionPane;
  *
  * @author Kamen
  */
-public class SyncFolderFrame extends javax.swing.JFrame {
+public class SyncFolderFrame extends javax.swing.JFrame implements Listener<Event> {
 	private SyncFolder folder;
 	
 	/**
@@ -31,18 +35,19 @@ public class SyncFolderFrame extends javax.swing.JFrame {
 		initComponents();
 		
 		setFolder(folder);
+		
+		Manager.external.addListener(this);
+		Manager.external.getPaths();
 	}
 	
 	public final void setFolder(SyncFolder folder) {
 		this.folder = folder;
 		if (folder == null) {
-			textRemote.setText("");
 			textLocal.setText("");
 			textRegexp.setText("");
 			textMaxSize.setText("");
 			buttonSync.setVisible(false);
 		} else {
-			textRemote.setText(folder.getRemote());
 			textLocal.setText(folder.getLocal().getAbsolutePath());
 			textRegexp.setText("");
 			textMaxSize.setText("");
@@ -72,7 +77,6 @@ public class SyncFolderFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         textLocal = new javax.swing.JTextField();
         buttonPick = new javax.swing.JButton();
-        textRemote = new javax.swing.JTextField();
         buttonSave = new javax.swing.JButton();
         buttonCancel = new javax.swing.JButton();
         buttonSync = new javax.swing.JButton();
@@ -84,6 +88,7 @@ public class SyncFolderFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         textRegexp = new javax.swing.JTextArea();
         buttonValidate = new javax.swing.JButton();
+        comboRemote = new javax.swing.JComboBox();
 
         setTitle("Synchronized folder");
         setMinimumSize(getPreferredSize());
@@ -139,6 +144,8 @@ public class SyncFolderFrame extends javax.swing.JFrame {
             }
         });
 
+        comboRemote.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "/" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -161,9 +168,6 @@ public class SyncFolderFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(textLocal)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(buttonPick))
@@ -171,7 +175,10 @@ public class SyncFolderFrame extends javax.swing.JFrame {
                                 .addComponent(textMaxSize)
                                 .addGap(10, 10, 10)
                                 .addComponent(jLabel4))
-                            .addComponent(textRemote)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(comboRemote, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -186,10 +193,10 @@ public class SyncFolderFrame extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(textLocal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonPick))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(9, 9, 9)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(textRemote, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboRemote, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -202,7 +209,7 @@ public class SyncFolderFrame extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addComponent(buttonValidate))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonSave)
@@ -245,10 +252,12 @@ public class SyncFolderFrame extends javax.swing.JFrame {
 			return;
 		}
 		
+		/*
 		if (textRemote.getText().isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Please enter remote path", "Not a path", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		*/
 		
 		if (!loc.exists()) {
 			if (JOptionPane.showConfirmDialog(this, "Selected local path doesn't exists. Continue anyway?", "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
@@ -272,12 +281,12 @@ public class SyncFolderFrame extends javax.swing.JFrame {
 		
 		if (folder != null) {
 			folder.setLocal(loc);
-			folder.setRemote(textRemote.getText());
+			folder.setRemote((String)comboRemote.getSelectedItem());
 			folder.setRegexp(regexp);
 			folder.setMaxSize(maxSize);
 			Settings.syncFolderModified(folder);
 		} else {
-			folder = new SyncFolder(loc, textRemote.getText(), maxSize, regexp, null);
+			folder = new SyncFolder(loc,(String)comboRemote.getSelectedItem(), maxSize, regexp, null);
 			folder.setExternal(Manager.external);
 			Settings.add(folder);
 		}
@@ -294,6 +303,7 @@ public class SyncFolderFrame extends javax.swing.JFrame {
     private javax.swing.JButton buttonSave;
     private javax.swing.JButton buttonSync;
     private javax.swing.JButton buttonValidate;
+    private javax.swing.JComboBox comboRemote;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -304,6 +314,22 @@ public class SyncFolderFrame extends javax.swing.JFrame {
     private javax.swing.JTextField textLocal;
     private javax.swing.JTextField textMaxSize;
     private javax.swing.JTextArea textRegexp;
-    private javax.swing.JTextField textRemote;
     // End of variables declaration//GEN-END:variables
+
+	@Override
+	public void handleEvent(Event event, Object sender) {
+		if (event instanceof PathsEvent) {
+			Path[] paths = ((PathsEvent)event).getPaths();
+			
+			comboRemote.removeAllItems();
+			for(Path path : paths) {
+				String value = "/" + ((!path.getPath().isEmpty()) ? path.getPath() + "/" : "");
+				comboRemote.addItem(value);
+				
+				if (folder != null && value.equals(folder.getRemote())) {
+					comboRemote.setSelectedItem(value);
+				}
+			}
+		}
+	}
 }

@@ -242,6 +242,8 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
 		String enc = comboEncryption.getSelectedItem().toString();
+		boolean modified = false;
+		
 		if (enc.equals("Disabled"))
 			enc = null;
 		
@@ -261,11 +263,19 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 
 			try {
 				Session.getUser().setPassword(textPassword.getPassword(), false);
+				modified = true;
 			} catch (NoSuchProviderException | UnsupportedEncodingException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
 				Logger.getLogger(SettingsFrame.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 		
+		if (!textEmail.getText().equals(Session.getUser().getEmail())) {
+			Session.getUser().setEmail(textEmail.getText());
+			modified = true;
+		}
+		
+		Session.getUser().save();
+
 		try {
 			Settings.save();
 		} catch (JSONException | FileNotFoundException | UnsupportedEncodingException ex) {
