@@ -5,14 +5,18 @@
  */
 package cz.zipek.minicloud;
 
+import cz.zipek.minicloud.api.Base64;
 import cz.zipek.minicloud.api.Event;
+import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.download.DownloadEvent;
 import cz.zipek.minicloud.api.download.events.DownloadAllDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileStartedEvent;
 import cz.zipek.minicloud.api.events.UnauthorizedEvent;
+import cz.zipek.minicloud.api.events.UserEvent;
 import cz.zipek.minicloud.api.upload.UploadEvent;
 import cz.zipek.minicloud.api.upload.events.UploadAllDoneEvent;
 import cz.zipek.minicloud.api.upload.events.UploadFailedEvent;
@@ -26,34 +30,52 @@ import cz.zipek.minicloud.sync.events.SyncDownloadEvent;
 import cz.zipek.minicloud.sync.events.SyncExternalEvent;
 import cz.zipek.minicloud.sync.events.SyncMkdirFailedEvent;
 import cz.zipek.minicloud.sync.events.SyncUploadEvent;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class managers command line synchronization
  * 
  * @author Kamen
  */
-public class TextSync implements Listener<SyncEvent> {
+public class TextSync implements Listener {
 	private final List<SyncFolder> folders = new ArrayList<>();
 	private int currentFolder = -1;
 	
+	private final String auth;
+	private final String key;
+	
+	private User user;
+	
+	private final External api;
+	
 	/**
 	 * 
+	 * @param api
 	 * @param folders folders to sync
+	 * @param auth
+	 * @param key
 	 */
-	public TextSync(List<SyncFolder> folders) {
+	public TextSync(External api, List<SyncFolder> folders, String auth, String key) {
 		this.folders.addAll(folders);
+		
+		this.api = api;
+		this.auth = auth;
+		this.key = key;
+		
+		this.api.setAuth(auth);
+		this.api.addListener(this);
 	}
 	
 	/**
 	 * Starts the synchronization. Can only be called when synchronization isn't already started.
 	 */
 	public void start() {
-		if (currentFolder == -1) {
-			next();
-		}
+		this.api.getUser();
 	}
 	
 	/**
@@ -76,6 +98,7 @@ public class TextSync implements Listener<SyncEvent> {
 	private void sync(SyncFolder folder) {
 		log(System.out, "STRT Synchronizing " + folder.getLocal().getAbsolutePath());
 		
+		folder.setExternal(api);
 		folder.addListener(this);
 		folder.sync();
 	}
@@ -91,8 +114,10 @@ public class TextSync implements Listener<SyncEvent> {
 	}
 
 	@Override
-	public void handleEvent(SyncEvent event, Object sender) {
-		if (event instanceof SyncDownloadEvent) {
+	public void handleEvent(Object event, Object sender) {
+		if (event instanceof Event) {
+			handleEvent((Event)event);
+		} else if (event instanceof SyncDownloadEvent) {
 			handleEvent(((SyncDownloadEvent)event).getEvent());
 		} else if (event instanceof SyncUploadEvent) {
 			handleEvent(((SyncUploadEvent)event).getEvent());
@@ -111,6 +136,19 @@ public class TextSync implements Listener<SyncEvent> {
 	public void handleEvent(Event event) {
 		if (event instanceof UnauthorizedEvent) {
 			log(System.err, "AUTH Authorization failed");
+		}
+		
+		if (event instanceof UserEvent) {
+			try {
+				user = ((UserEvent)event).getUser();
+				user.setKey(Base64.decode(key));
+				
+				if (currentFolder == -1) {
+					next();
+				}
+			} catch (IOException ex) {
+				Logger.getLogger(TextSync.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 	

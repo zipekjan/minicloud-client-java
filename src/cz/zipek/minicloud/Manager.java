@@ -72,9 +72,9 @@ public class Manager {
 	 * @param key sync key
 	 */
 	private static void startSync(String key) {
-		external.setAuth(key);
+		String[] values = key.split(":");
 		
-		TextSync sync = new TextSync(Settings.getSyncFolders());
+		TextSync sync = new TextSync(external, Settings.getSyncFolders(), values[0], values[1]);
 		sync.start();
 	}
 	
