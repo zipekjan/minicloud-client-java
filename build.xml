@@ -73,10 +73,13 @@
 	
 	
 	<target name="-post-jar">
-		<copy todir="${dist.dir}" override="true">
+		<copy todir="${dist.dir}">
 			<fileset dir="dist-src/">
 				<include name="*" />
 			</fileset>
-		</copy>   
+		</copy>
+		<exec executable="launch4jc">
+			<arg file="build-exe.xml" />
+		</exec>
 	</target>
 </project>
