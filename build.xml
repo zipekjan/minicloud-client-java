@@ -81,5 +81,6 @@
 		<exec executable="launch4jc">
 			<arg file="build-exe.xml" />
 		</exec>
+		<zip destfile="${dist.zip}" basedir="${dist.dir}" />
 	</target>
 </project>
