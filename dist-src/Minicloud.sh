@@ -1,1 +1,2 @@
-java -jar Minicloud.jar
+#!/bin/sh
+java -jar Minicloud.jar "$@"
