@@ -71,6 +71,9 @@
 
     -->
 	
+	<target name="-post-clean">
+		<delete dir="${dist.zip.dir}" />
+	</target>
 	
 	<target name="-post-jar">
 		<copy todir="${dist.dir}">
@@ -81,6 +84,6 @@
 		<exec executable="launch4jc">
 			<arg file="build-exe.xml" />
 		</exec>
-		<zip destfile="${dist.zip}" basedir="${dist.dir}" />
+		<zip destfile="${dist.zip.dir}/${dist.zip.file}" basedir="${dist.dir}" />
 	</target>
 </project>
