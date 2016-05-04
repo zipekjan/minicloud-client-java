@@ -99,6 +99,7 @@ public class TextSync implements Listener {
 		log(System.out, "STRT Synchronizing " + folder.getLocal().getAbsolutePath());
 		
 		folder.setExternal(api);
+		folder.setEncryption(Settings.getEncryption());
 		folder.addListener(this);
 		folder.sync();
 	}
