@@ -10,6 +10,6 @@ You can find more about minicloud at [minicloud.cz](http://minicloud.cz).
 
 JRE 1.6.x
 
-[minicloud-client-java-api](https://github.com/zipekjan/minicloud-client-java-api) (linked into project, for compiling)
+[minicloud-client-java-lib](https://github.com/zipekjan/minicloud-client-java-lib) (linked into project, for compiling)
 
 [launch4j](http://launch4j.sourceforge.net/) (for compiling)
