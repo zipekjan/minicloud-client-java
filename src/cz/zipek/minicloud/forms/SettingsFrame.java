@@ -274,7 +274,13 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 			modified = true;
 		}
 		
-		Session.getUser().save();
+		if (modified) {
+			Session.getUser().save();
+			
+			if (textPassword.getPassword().length > 0) {
+				Manager.external.setAuth(Session.getUser().getName(), textPassword.getPassword());
+			}
+		}
 
 		try {
 			Settings.save();

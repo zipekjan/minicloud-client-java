@@ -203,6 +203,8 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
 				Logger.getLogger(NewUserFrame.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			
+			Manager.external.setAuth(Session.getUser().getName(), textPassword.getPassword());
+			
 			setVisible(false);
 
 			Forms.showMain();
