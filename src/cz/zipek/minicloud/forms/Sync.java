@@ -85,6 +85,7 @@ public class Sync extends javax.swing.JFrame implements Listener<SyncEvent> {
 			tableFolders.getModel().setValueAt("Syncing...", row, 2);
 		}
 		
+		folder.setTimeOffset((int)Session.getServer().getOffset());
 		folder.setUser(Session.getUser());
 		folder.setExternal(Manager.external);
 		folder.setEncryption(Settings.getEncryption());

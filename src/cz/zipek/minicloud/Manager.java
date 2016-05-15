@@ -13,11 +13,14 @@ import cz.zipek.minicloud.api.events.UnauthorizedEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.security.NoSuchAlgorithmException;
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.Cipher;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.json.JSONException;
@@ -66,6 +69,14 @@ public class Manager {
 		}
 	}
 	
+	public static boolean checkKeyLength() {
+		try {
+			return Cipher.getMaxAllowedKeyLength("AES") >= 256;
+		} catch (NoSuchAlgorithmException ex) {
+			return false;
+		}
+	}
+	
 	/**
 	 * Start text synchronization.
 	 * 
@@ -73,8 +84,12 @@ public class Manager {
 	 */
 	private static void startSync(String key) {
 		String[] values = key.split(":");
+		String auth = values[0] + ":" + values[1];
+		String k = values[2];
 		
-		TextSync sync = new TextSync(external, Settings.getSyncFolders(), values[0], values[1]);
+		external.setServer(Settings.getServer());
+		
+		TextSync sync = new TextSync(external, Settings.getSyncFolders(), auth, k);
 		sync.start();
 	}
 	
@@ -109,7 +124,7 @@ public class Manager {
 		//Show main form
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			@Override
-			public void run() {
+			public void run() {	
 				Forms.showLogin();
 			}
 		});

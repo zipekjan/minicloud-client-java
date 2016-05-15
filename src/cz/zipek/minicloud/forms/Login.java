@@ -74,6 +74,18 @@ public class Login extends javax.swing.JFrame implements Listener {
 		}
 		
 		Manager.external.addListener(this);
+		
+		if (!Manager.checkKeyLength()) {
+			JOptionPane.showMessageDialog(this,
+				"You JRE doesn't support AES key length of 256 bits. This can be fixed by running install_key script.",
+				"AES key length limited",
+				JOptionPane.ERROR_MESSAGE
+			);
+			
+			setVisible(false);
+			dispose();
+		}
+		
 	}
 
 	public synchronized void setState(String state) {

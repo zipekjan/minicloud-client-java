@@ -1,2 +1,2 @@
 @ECHO OFF
-start javaw -jar Minicloud.jar %*
+java -jar Minicloud.jar %*

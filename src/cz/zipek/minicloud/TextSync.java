@@ -9,12 +9,14 @@ import cz.zipek.minicloud.api.Base64;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.External;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.ServerInfo;
 import cz.zipek.minicloud.api.User;
 import cz.zipek.minicloud.api.download.DownloadEvent;
 import cz.zipek.minicloud.api.download.events.DownloadAllDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFailedEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileDoneEvent;
 import cz.zipek.minicloud.api.download.events.DownloadFileStartedEvent;
+import cz.zipek.minicloud.api.events.ServerInfoEvent;
 import cz.zipek.minicloud.api.events.UnauthorizedEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
 import cz.zipek.minicloud.api.upload.UploadEvent;
@@ -50,6 +52,7 @@ public class TextSync implements Listener {
 	private final String key;
 	
 	private User user;
+	private ServerInfo info;
 	
 	private final External api;
 	
@@ -75,7 +78,7 @@ public class TextSync implements Listener {
 	 * Starts the synchronization. Can only be called when synchronization isn't already started.
 	 */
 	public void start() {
-		this.api.getUser();
+		api.getServerInfo();
 	}
 	
 	/**
@@ -98,6 +101,7 @@ public class TextSync implements Listener {
 	private void sync(SyncFolder folder) {
 		log(System.out, "STRT Synchronizing " + folder.getLocal().getAbsolutePath());
 		
+		folder.setTimeOffset((int)info.getOffset());
 		folder.setExternal(api);
 		folder.setEncryption(Settings.getEncryption());
 		folder.addListener(this);
@@ -137,6 +141,11 @@ public class TextSync implements Listener {
 	public void handleEvent(Event event) {
 		if (event instanceof UnauthorizedEvent) {
 			log(System.err, "AUTH Authorization failed");
+		}
+		
+		if (event instanceof ServerInfoEvent) {
+			info = ((ServerInfoEvent)event).getServerInfo();
+			api.getUser();
 		}
 		
 		if (event instanceof UserEvent) {
