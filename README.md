@@ -13,3 +13,9 @@ JRE 1.6.x
 [minicloud-client-java-lib](https://github.com/zipekjan/minicloud-client-java-lib) (linked into project, for compiling)
 
 [launch4j](http://launch4j.sourceforge.net/) (for compiling)
+
+## License
+
+This software is available under the following licenses:
+
+ - MIT
