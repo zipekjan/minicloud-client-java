@@ -121,6 +121,7 @@ public class TextSync implements Listener {
 		
 		folder.setTimeOffset((int)info.getOffset());
 		folder.setExternal(api);
+		folder.setUser(user);
 		folder.setEncryption(Settings.getEncryption());
 		folder.addListener(this);
 		folder.sync();
