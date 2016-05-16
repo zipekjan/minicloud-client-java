@@ -11,6 +11,7 @@ import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.events.ConnectionErrorEvent;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.ServerInfoEvent;
 import cz.zipek.minicloud.api.events.UserEvent;
@@ -274,6 +275,13 @@ public class Login extends javax.swing.JFrame implements Listener {
 				Forms.showMain();
 			}
 
+		} else if (e instanceof ConnectionErrorEvent) {
+			setState("Server connection error");
+
+			loginButton.setEnabled(true);
+			textLogin.setEnabled(true);
+			textServer.setEnabled(true);
+			
 		} else if (e instanceof ErrorEvent) {
 			setState("Wrong login or password");
 

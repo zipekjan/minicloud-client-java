@@ -12,12 +12,14 @@ import cz.zipek.minicloud.MetaItem;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.SettingsEvent;
-import cz.zipek.minicloud.Tools;
 import cz.zipek.minicloud.api.Event;
 import cz.zipek.minicloud.api.File;
 import cz.zipek.minicloud.api.FileVersion;
 import cz.zipek.minicloud.api.Listener;
 import cz.zipek.minicloud.api.Path;
+import cz.zipek.minicloud.api.Tools;
+import cz.zipek.minicloud.api.events.ConnectionErrorEvent;
+import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.PathEvent;
 import cz.zipek.minicloud.events.SyncFolderAddedEvent;
 import cz.zipek.minicloud.events.SyncFolderModifiedEvent;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -117,11 +120,36 @@ public class Main extends javax.swing.JFrame implements Listener<Event> {
 		if (event instanceof PathEvent) {
 			handleSubEvent((PathEvent) event);
 		}
+		
+		if (event instanceof ConnectionErrorEvent) {
+			handleSubEvent((ConnectionErrorEvent)event);
+		} else if (event instanceof ErrorEvent) {
+			handleSubEvent((ErrorEvent)event);
+		}
 	}
 	
 	private void handleSubEvent(PathEvent event) {		
 		setPath(event.getPath());
 	}
+	
+	private void handleSubEvent(ErrorEvent event) {
+		JOptionPane.showMessageDialog(
+			this,
+			"There was error in communication. Error: " + event.getMessage(),
+			"Unexpected error.",
+			JOptionPane.ERROR_MESSAGE
+		);
+	}
+	
+	private void handleSubEvent(ConnectionErrorEvent event) {
+		JOptionPane.showMessageDialog(
+			this,
+			"There was connection error. Error: " + event.getException().getMessage(),
+			"Unexpected error.",
+			JOptionPane.ERROR_MESSAGE
+		);
+	}
+
 
 	private void setPath(Path folder) {
 		currentPath = folder;
