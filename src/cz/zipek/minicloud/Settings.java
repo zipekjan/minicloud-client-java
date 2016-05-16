@@ -46,7 +46,7 @@ import org.json.JSONObject;
 /**
  * Stores persistent application settings.
  * 
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class Settings {
 	///@var filename default settings file

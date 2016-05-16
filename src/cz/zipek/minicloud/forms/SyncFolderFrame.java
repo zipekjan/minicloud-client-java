@@ -40,7 +40,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class SyncFolderFrame extends javax.swing.JFrame implements Listener<Event> {
 	private SyncFolder folder;

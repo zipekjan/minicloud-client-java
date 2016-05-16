@@ -60,7 +60,7 @@ import java.util.logging.Logger;
 /**
  * This class managers command line synchronization
  * 
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class TextSync implements Listener {
 	private final List<SyncFolder> folders = new ArrayList<>();

@@ -50,7 +50,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class Upload extends javax.swing.JFrame implements Listener {
 	private final List<File> files = new ArrayList<>();

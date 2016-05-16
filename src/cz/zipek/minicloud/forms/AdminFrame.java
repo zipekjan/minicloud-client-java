@@ -39,7 +39,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class AdminFrame extends javax.swing.JFrame implements Listener {
 

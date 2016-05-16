@@ -47,7 +47,7 @@ import org.json.JSONException;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class SettingsFrame extends javax.swing.JFrame implements Listener<Event> {
 

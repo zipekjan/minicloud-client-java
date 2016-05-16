@@ -25,7 +25,7 @@ package cz.zipek.minicloud;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class SettingsEvent {
 	

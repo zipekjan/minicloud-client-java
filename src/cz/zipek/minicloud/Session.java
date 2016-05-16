@@ -28,7 +28,7 @@ import cz.zipek.minicloud.api.User;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class Session {
 

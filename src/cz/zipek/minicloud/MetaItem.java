@@ -29,7 +29,7 @@ import cz.zipek.minicloud.api.Path;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class MetaItem {
 	private File file;

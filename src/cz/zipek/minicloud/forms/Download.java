@@ -44,7 +44,7 @@ import javax.swing.table.TableModel;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class Download extends javax.swing.JFrame implements Listener {
 	private List<FileVersion> files = new ArrayList<>();

@@ -33,7 +33,7 @@ import javax.swing.DefaultListModel;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class FileVersionsFrame extends javax.swing.JFrame {
 

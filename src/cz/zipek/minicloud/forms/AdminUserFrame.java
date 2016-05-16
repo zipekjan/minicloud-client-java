@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class AdminUserFrame extends javax.swing.JFrame implements Listener {
 

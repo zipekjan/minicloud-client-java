@@ -39,7 +39,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class Delete extends javax.swing.JFrame implements Listener<Event> {
 	private final List<MetaItem> items = new ArrayList<>();

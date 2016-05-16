@@ -55,7 +55,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class Sync extends javax.swing.JFrame implements Listener<SyncEvent> {
 	private final List<SyncFolder> folders = new ArrayList<>();

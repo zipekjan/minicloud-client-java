@@ -28,7 +28,7 @@ import cz.zipek.minicloud.sync.SyncFolder;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class SyncFolderAddedEvent extends SettingsEvent {
 	private final SyncFolder folder;

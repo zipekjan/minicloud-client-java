@@ -30,7 +30,7 @@ import javax.swing.ImageIcon;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class Icons {
     

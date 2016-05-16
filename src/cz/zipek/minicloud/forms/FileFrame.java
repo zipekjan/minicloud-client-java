@@ -41,7 +41,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class FileFrame extends javax.swing.JFrame implements Listener<Event> {
 	private cz.zipek.minicloud.api.File file;

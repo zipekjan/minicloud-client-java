@@ -51,7 +51,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class FileAvailabilityFrame extends javax.swing.JFrame implements Listener {
 

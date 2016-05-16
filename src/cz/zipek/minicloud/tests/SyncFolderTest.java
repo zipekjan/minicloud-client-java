@@ -38,7 +38,7 @@ import org.json.JSONObject;
 
 /**
  *
- * @author Jan Zípek <jan at zipek.cz>
+ * @author Jan Zípek
  */
 public class SyncFolderTest implements Listener {
 	private SyncFolder sync;
