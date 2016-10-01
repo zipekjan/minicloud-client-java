@@ -29,6 +29,7 @@ import cz.zipek.minicloud.Manager;
 import cz.zipek.minicloud.Session;
 import cz.zipek.minicloud.Settings;
 import cz.zipek.minicloud.api.Listener;
+import cz.zipek.minicloud.api.ServerInfo;
 import cz.zipek.minicloud.api.events.ConnectionErrorEvent;
 import cz.zipek.minicloud.api.events.ErrorEvent;
 import cz.zipek.minicloud.api.events.ServerInfoEvent;
@@ -229,11 +230,7 @@ public class Login extends javax.swing.JFrame implements Listener {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-		setState("Logging in ...");
-		
-		loginButton.setEnabled(false);
-		textLogin.setEnabled(false);
-		textServer.setEnabled(false);
+		resetForm("Logging in ...", false);
 		
 		Settings.setUsername(textLogin.getText());
 		Settings.setServer(textServer.getText());
@@ -244,10 +241,8 @@ public class Login extends javax.swing.JFrame implements Listener {
 			Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
-		Manager.external.setServer(textServer.getText());
-		Manager.external.setAuth(textLogin.getText(), textPassword.getPassword());
-		
-		Manager.external.getUser();
+		Manager.external.setServer(textServer.getText());		
+		Manager.external.getServerInfo();
     }//GEN-LAST:event_loginButtonActionPerformed
 
 	@Override
@@ -259,7 +254,7 @@ public class Login extends javax.swing.JFrame implements Listener {
 		if (e instanceof UserEvent) {
 			Session.setUser(((UserEvent)e).getUser());
 			try {
-				Session.getUser().setPassword(textPassword.getPassword(), true);
+				Session.getUser().setPassword(textPassword.getPassword(), Session.getServer().getSalt().toCharArray(), true);
 			} catch (NoSuchProviderException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException ex) {
 
 				JOptionPane.showMessageDialog(
@@ -271,20 +266,12 @@ public class Login extends javax.swing.JFrame implements Listener {
 
 				Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
 				
-				loginButton.setEnabled(true);
-				textLogin.setEnabled(true);
-				textServer.setEnabled(true);
-				
-				setState("Invalid password");
+				resetForm("Invalid password");
 				
 				return;
 			}
 
-			Manager.external.getServerInfo();
-		} else if (e instanceof ServerInfoEvent) {
-			Session.setServer(((ServerInfoEvent)e).getServerInfo());
-
-			setState("");
+			resetForm("");
 			setVisible(false);
 
 			if (Session.getUser().getKey() == null) {
@@ -292,21 +279,60 @@ public class Login extends javax.swing.JFrame implements Listener {
 			} else {
 				Forms.showMain();
 			}
-
-		} else if (e instanceof ConnectionErrorEvent) {
-			setState("Server connection error");
-
-			loginButton.setEnabled(true);
-			textLogin.setEnabled(true);
-			textServer.setEnabled(true);
+		} else if (e instanceof ServerInfoEvent) {
+			ServerInfo info = ((ServerInfoEvent)e).getServerInfo();
 			
+			if (!info.getVersion().equals(Manager.external.getVersion())) {
+				resetForm("Invalid server version");
+				
+				JOptionPane.showMessageDialog(
+					this,
+					String.format(
+						"Server version is not supported. Server version: %s. Supported version: %s.",
+						info.getVersion(),
+						Manager.external.getVersion()
+					),
+					"Server version mismatch.",
+					JOptionPane.ERROR_MESSAGE
+				);
+				
+				return;
+			}
+			
+			Session.setServer(info);
+			
+			Manager.external.setAuth(textLogin.getText(), textPassword.getPassword(), info.getSalt().toCharArray());
+			Manager.external.getUser();
+			
+		} else if (e instanceof ConnectionErrorEvent) {
+			resetForm("Server connection error");
 		} else if (e instanceof ErrorEvent) {
-			setState("Wrong login or password");
-
-			loginButton.setEnabled(true);
-			textLogin.setEnabled(true);
-			textServer.setEnabled(true);
+			resetForm("Wrong login or password");
 		}
+	}
+
+	/**
+	 * Resets form to specified state (enabled/disabled) and changes state message.
+	 * 
+	 * @param state state message
+	 * @param enabled desired form state
+	 */
+	private void resetForm(String state, boolean enabled) {
+		if (state != null)
+			setState(state);
+		
+		loginButton.setEnabled(enabled);
+		textLogin.setEnabled(enabled);
+		textServer.setEnabled(enabled);
+	}
+	
+	/**
+	 * Resets form to initial state and changes state message.
+	 * 
+	 * @param state state message
+	 */
+	private void resetForm(String state) {
+		resetForm(state, true);
 	}
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables

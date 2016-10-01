@@ -280,7 +280,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 			}
 
 			try {
-				Session.getUser().setPassword(textPassword.getPassword(), false);
+				Session.getUser().setPassword(textPassword.getPassword(), Session.getServer().getSalt().toCharArray(), false);
 				modified = true;
 			} catch (NoSuchProviderException | UnsupportedEncodingException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
 				Logger.getLogger(SettingsFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -296,7 +296,7 @@ public class SettingsFrame extends javax.swing.JFrame implements Listener<Event>
 			Session.getUser().save();
 			
 			if (textPassword.getPassword().length > 0) {
-				Manager.external.setAuth(Session.getUser().getName(), textPassword.getPassword());
+				Manager.external.setAuth(Session.getUser().getName(), textPassword.getPassword(), Session.getServer().getSalt().toCharArray());
 			}
 		}
 

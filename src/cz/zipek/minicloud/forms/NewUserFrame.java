@@ -185,7 +185,7 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
 			
 			user.setKeyEncryption("Blowfish/CBC/PKCS5Padding");
 			user.setKey(key.getEncoded());
-			user.setPassword(textPassword.getPassword(), false);
+			user.setPassword(textPassword.getPassword(), Session.getServer().getSalt().toCharArray(), false);
 			
 			user.save();
 		} catch (NoSuchProviderException | InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
@@ -221,12 +221,12 @@ public class NewUserFrame extends javax.swing.JFrame implements Listener {
 			Session.setUser(user.getUser());
 			
 			try {
-				Session.getUser().setPassword(textPassword.getPassword(), true);
+				Session.getUser().setPassword(textPassword.getPassword(), Session.getServer().getSalt().toCharArray(), true);
 			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException | NoSuchProviderException ex) {
 				Logger.getLogger(NewUserFrame.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			
-			Manager.external.setAuth(Session.getUser().getName(), textPassword.getPassword());
+			Manager.external.setAuth(Session.getUser().getName(), textPassword.getPassword(), Session.getServer().getSalt().toCharArray());
 			
 			setVisible(false);
 
